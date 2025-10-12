@@ -1345,6 +1345,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   Widget _buildClientTypeField() {
     return DropdownButtonFormField<String>(
       initialValue: _clientType,
+      isExpanded: true,
       decoration: InputDecoration(
         labelText: 'Client Type',
         prefixIcon: const Icon(Icons.badge_outlined),
@@ -1356,12 +1357,16 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
       ),
-      items: const [
-        DropdownMenuItem(value: 'Citizen', child: Text('Citizen')),
-        DropdownMenuItem(value: 'Business', child: Text('Business')),
+      items: [
+        const DropdownMenuItem(value: 'Citizen', child: Text('Citizen')),
+        const DropdownMenuItem(value: 'Business', child: Text('Business')),
         DropdownMenuItem(
           value: 'Government',
-          child: Text('Government (Employee or another agency)'),
+          child: Text(
+            'Government (Employee or another agency)',
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(fontSize: 14),
+          ),
         ),
       ],
       onChanged: (value) => setState(() => _clientType = value),
@@ -1372,6 +1377,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   Widget _buildSexField() {
     return DropdownButtonFormField<String>(
       initialValue: _sex,
+      isExpanded: true,
       decoration: InputDecoration(
         labelText: 'Sex',
         prefixIcon: const Icon(Icons.person_outline),
@@ -1600,9 +1606,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     return List.generate(questions.length, (index) {
       final key = 'SQD$index';
       return Padding(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -1620,9 +1626,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             children: [
               // Question header
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.secondary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
@@ -1630,47 +1637,103 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     child: Text(
                       'SQD$index',
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: AppColors.secondary,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       questions[index],
                       style: GoogleFonts.poppins(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textPrimary,
-                        height: 1.4,
+                        height: 1.5,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               // Emoji buttons
               Row(
                 children: [
-                  ...List.generate(5, (rating) {
-                    final value = rating + 1;
-                    final isSelected = _sqdAnswers[key] == value;
-                    final tooltips = [
-                      'Strongly Disagree',
-                      'Disagree',
-                      'Neither Agree nor Disagree',
-                      'Agree',
-                      'Strongly Agree',
-                    ];
-                    return Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: rating < 4 ? 8 : 0),
+                  ...List.generate(6, (index) {
+                    if (index < 5) {
+                      // Emoji rating buttons
+                      final rating = index;
+                      final value = rating + 1;
+                      final isSelected = _sqdAnswers[key] == value;
+                      final tooltips = [
+                        'Strongly Disagree',
+                        'Disagree',
+                        'Neither Agree nor Disagree',
+                        'Agree',
+                        'Strongly Agree',
+                      ];
+                      // Color based on rating
+                      final selectedColors = [
+                        const Color(0xFFE53935), // Red - Strongly Disagree
+                        const Color(0xFFFF7043), // Orange - Disagree
+                        const Color(0xFFFFA726), // Light Orange - Neither
+                        const Color(0xFF66BB6A), // Light Green - Agree
+                        const Color(0xFF4CAF50), // Green - Strongly Agree
+                      ];
+                      return Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: index < 5 ? 4 : 0),
+                          child: Tooltip(
+                            message: tooltips[rating],
+                            textStyle: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.white,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black87,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: InkWell(
+                              onTap: () => setState(() => _sqdAnswers[key] = value),
+                              borderRadius: BorderRadius.circular(10),
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? selectedColors[rating]
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? selectedColors[rating]
+                                          : Colors.grey.shade300,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      ['😠', '😕', '😐', '🙂', '😄'][rating],
+                                      style: TextStyle(
+                                        fontSize: isSelected ? 26 : 24,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Not Applicable button
+                      return Expanded(
                         child: Tooltip(
-                          message: tooltips[rating],
+                          message: 'Not Applicable',
                           textStyle: GoogleFonts.poppins(
-                            fontSize: 12,
+                            fontSize: 11,
                             color: Colors.white,
                           ),
                           decoration: BoxDecoration(
@@ -1678,77 +1741,38 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: InkWell(
-                            onTap: () => setState(() => _sqdAnswers[key] = value),
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFF4CAF50)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? const Color(0xFF4CAF50)
-                                      : Colors.grey.shade300,
-                                  width: isSelected ? 2 : 1,
+                            onTap: () => setState(() => _sqdAnswers[key] = 0),
+                            borderRadius: BorderRadius.circular(10),
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: _sqdAnswers[key] == 0
+                                      ? Colors.grey.shade400
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: _sqdAnswers[key] == 0
+                                        ? Colors.grey.shade400
+                                        : Colors.grey.shade300,
+                                    width: _sqdAnswers[key] == 0 ? 2 : 1,
+                                  ),
                                 ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  ['😠', '😕', '😐', '🙂', '😄'][rating],
-                                  style: TextStyle(
-                                    fontSize: isSelected ? 32 : 28,
+                                child: Center(
+                                  child: Text(
+                                    '❓',
+                                    style: TextStyle(
+                                      fontSize: _sqdAnswers[key] == 0 ? 26 : 24,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   }),
-                  const SizedBox(width: 8),
-                  // Not Applicable button
-                  Tooltip(
-                    message: 'Not Applicable',
-                    textStyle: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.white,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black87,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: InkWell(
-                      onTap: () => setState(() => _sqdAnswers[key] = 0),
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: _sqdAnswers[key] == 0
-                              ? Colors.grey.shade400
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _sqdAnswers[key] == 0
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade300,
-                            width: _sqdAnswers[key] == 0 ? 2 : 1,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '❓',
-                            style: TextStyle(
-                              fontSize: _sqdAnswers[key] == 0 ? 32 : 28,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ],
