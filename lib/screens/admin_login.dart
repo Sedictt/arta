@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/survey_service.dart';
+import '../services/auth_service.dart';
 import '../main.dart';
 import 'admin_dashboard.dart';
 
@@ -13,13 +13,25 @@ class AdminLogin extends StatefulWidget {
 
 class _AdminLoginState extends State<AdminLogin> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController(text: 'admin');
   final _passwordController = TextEditingController();
-  final SurveyService _surveyService = SurveyService();
+  final AuthService _authService = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _initializeAuth();
+  }
+
+  Future<void> _initializeAuth() async {
+    await _authService.initializeDefaultAdmin();
+  }
+
+  @override
   void dispose() {
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -29,17 +41,18 @@ class _AdminLoginState extends State<AdminLogin> {
 
     setState(() => _isLoading = true);
 
-    final isValid = await _surveyService.verifyAdminPassword(
+    final user = await _authService.login(
+      _usernameController.text,
       _passwordController.text,
     );
 
     setState(() => _isLoading = false);
 
     if (mounted) {
-      if (isValid) {
+      if (user != null) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const AdminDashboard(),
+            builder: (context) => AdminDashboard(currentUser: user),
           ),
         );
       } else {

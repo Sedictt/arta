@@ -937,6 +937,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         sex: _sex!,
         age: _age!,
         region: _region!,
+        serviceAvailed: _serviceAvailed,
         cc1Answer: _cc1Answer,
         cc2Answer: _cc2Answer,
         cc3Answer: _cc3Answer,
@@ -946,6 +947,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         suggestions: _suggestions,
         submittedAt: DateTime.now(),
       );
+      
+      // TODO: Save response to database/backend
+      debugPrint('Survey submitted: ${response.id}');
       
       // Navigate to thank you page
       if (mounted) {

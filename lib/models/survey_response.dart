@@ -5,6 +5,7 @@ class SurveyResponse {
   final String sex;
   final int age;
   final String region;
+  final String? serviceAvailed;
   final String? cc1Answer;
   final String? cc2Answer;
   final String? cc3Answer;
@@ -19,6 +20,7 @@ class SurveyResponse {
     required this.sex,
     required this.age,
     required this.region,
+    this.serviceAvailed,
     this.cc1Answer,
     this.cc2Answer,
     this.cc3Answer,
@@ -35,6 +37,7 @@ class SurveyResponse {
       'sex': sex,
       'age': age,
       'region': region,
+      'serviceAvailed': serviceAvailed,
       'cc1Answer': cc1Answer,
       'cc2Answer': cc2Answer,
       'cc3Answer': cc3Answer,
@@ -52,6 +55,7 @@ class SurveyResponse {
       sex: json['sex'],
       age: json['age'],
       region: json['region'],
+      serviceAvailed: json['serviceAvailed'],
       cc1Answer: json['cc1Answer'],
       cc2Answer: json['cc2Answer'],
       cc3Answer: json['cc3Answer'],
