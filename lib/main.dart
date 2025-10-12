@@ -522,6 +522,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   final PageController _pageController = PageController();
   // final SurveyService _surveyService = SurveyService(); // Removed
   int _currentPage = 0;
+  bool _hasShownConsent = false;
 
   // Demographic Information
   String? _clientType;
@@ -551,13 +552,267 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   String _suggestions = '';
 
   @override
+  void initState() {
+    super.initState();
+    // Show consent modal after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_hasShownConsent) {
+        _showConsentModal();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
 
+  Future<void> _showConsentModal() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header Icon
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppColors.secondary, AppColors.primary],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.shield_outlined,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Title
+                  Text(
+                    'Data Privacy & Consent',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Content
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildModalInfoSection(
+                            icon: Icons.info_outline,
+                            title: 'Why We Collect Data',
+                            description: 'Your feedback helps us improve services.',
+                            color: AppColors.primary,
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
+                          _buildModalInfoSection(
+                            icon: Icons.assignment_outlined,
+                            title: 'What We Collect',
+                            description: 'Demographics, service experience, and ratings.',
+                            color: AppColors.secondary,
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
+                          _buildModalInfoSection(
+                            icon: Icons.verified_user_outlined,
+                            title: 'Your Rights',
+                            description: 'Voluntary participation. All data is confidential.',
+                            color: AppColors.accent,
+                          ),
+                          
+                          const SizedBox(height: 20),
+                          
+                          // Consent Statement
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.secondary.withValues(alpha: 0.1),
+                                  AppColors.primary.withValues(alpha: 0.1),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.secondary.withValues(alpha: 0.3),
+                                width: 2,
+                              ),
+                            ),
+                            child: Text(
+                              'By clicking "I Agree", you consent to the collection and use of your information as described.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textPrimary,
+                                height: 1.4,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: Colors.grey.shade400),
+                            foregroundColor: AppColors.textSecondary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Decline',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [AppColors.secondary, AppColors.primary],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              foregroundColor: Colors.white,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'I Agree',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (result == true) {
+      setState(() {
+        _hasShownConsent = true;
+      });
+    } else {
+      // User declined, go back to welcome page
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const WelcomePage(),
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildModalInfoSection({
+    required IconData icon,
+    required String title,
+    required String description,
+    required Color color,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   void _nextPage() {
-    if (_currentPage < 4) {
+    if (_currentPage < 3) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -698,7 +953,6 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     });
                   },
                   children: [
-                    _buildInstructionsPage(),
                     _buildDemographicPage(),
                     _buildCCAwarenessPage(),
                     _buildServiceQualityPage(),
@@ -749,7 +1003,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'CGOV Customer Survey',
+                  'ARTA Client Satisfaction Survey',
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -778,7 +1032,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       child: Column(
         children: [
           Row(
-            children: List.generate(5, (index) {
+            children: List.generate(4, (index) {
               final isCompleted = index < _currentPage;
               final isCurrent = index == _currentPage;
               return Expanded(
@@ -798,7 +1052,6 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           const SizedBox(height: 12),
           Text(
             [
-              'Instructions',
               'Personal Information',
               'Citizen\'s Charter Awareness',
               'Service Quality',
@@ -815,201 +1068,6 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     );
   }
 
-  Widget _buildInstructionsPage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            elevation: 3,
-            shadowColor: AppColors.primary.withValues(alpha: 0.2),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [AppColors.secondary, AppColors.primary],
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.info_outline,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          'INSTRUCTIONS',
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  Text(
-                    'Please place a Check mark (✓) in the designated box that corresponds to your answer on the Citizen\'s Charter (CC) questions. The Citizen\'s Charter is an official document that reflects the services of a government agency/office including its requirements, fees, and processing times among others.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                      height: 1.6,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.secondary.withValues(alpha: 0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star_rounded,
-                              color: AppColors.secondary,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'For Service Quality Dimensions',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Please put a check mark (✓) on the column that best corresponds to your answer.',
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                            height: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildRatingLegend(),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue.shade200),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.privacy_tip_outlined,
-                          color: Colors.blue.shade700,
-                          size: 22,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Your responses will be kept confidential and will be used solely for improving our services.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.blue.shade900,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRatingLegend() {
-    final ratings = [
-      {'emoji': '😠', 'label': 'Strongly Disagree', 'value': '1'},
-      {'emoji': '😕', 'label': 'Disagree', 'value': '2'},
-      {'emoji': '😐', 'label': 'Neither Agree nor Disagree', 'value': '3'},
-      {'emoji': '🙂', 'label': 'Agree', 'value': '4'},
-      {'emoji': '😄', 'label': 'Strongly Agree', 'value': '5'},
-    ];
-    
-    return Column(
-      children: ratings.map((rating) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
-                ),
-                child: Center(
-                  child: Text(
-                    rating['emoji']!,
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '${rating['value']} - ',
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  rating['label']!,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
 
   Widget _buildDemographicPage() {
     return SingleChildScrollView(
@@ -1074,34 +1132,32 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 (value) => setState(() => _cc1Answer = value),
               ),
               const SizedBox(height: 24),
-              if (_cc1Answer != null && _cc1Answer!.contains('know what a CC is'))
-                _buildCCQuestion(
-                  'CC2',
-                  'If aware of CC (answered 1-3 in CC1), would you say that the CC of this office was...?',
-                  [
-                    'Easy to see',
-                    'Somewhat easy to see',
-                    'Difficult to see',
-                    'Not visible at all',
-                    'Not Applicable',
-                  ],
-                  _cc2Answer,
-                  (value) => setState(() => _cc2Answer = value),
-                ),
-              if (_cc2Answer != null) const SizedBox(height: 24),
-              if (_cc1Answer != null && _cc1Answer!.contains('know what a CC is'))
-                _buildCCQuestion(
-                  'CC3',
-                  'If aware of CC (answered codes 1-3 in CC1), how much did the CC help you in your transaction?',
-                  [
-                    'Helped very much',
-                    'Somewhat helped',
-                    'Did not help',
-                    'Not Applicable',
-                  ],
-                  _cc3Answer,
-                  (value) => setState(() => _cc3Answer = value),
-                ),
+              _buildCCQuestion(
+                'CC2',
+                'If aware of CC (answered 1-3 in CC1), would you say that the CC of this office was...?',
+                [
+                  'Easy to see',
+                  'Somewhat easy to see',
+                  'Difficult to see',
+                  'Not visible at all',
+                  'Not Applicable',
+                ],
+                _cc2Answer,
+                (value) => setState(() => _cc2Answer = value),
+              ),
+              const SizedBox(height: 24),
+              _buildCCQuestion(
+                'CC3',
+                'If aware of CC (answered codes 1-3 in CC1), how much did the CC help you in your transaction?',
+                [
+                  'Helped very much',
+                  'Somewhat helped',
+                  'Did not help',
+                  'Not Applicable',
+                ],
+                _cc3Answer,
+                (value) => setState(() => _cc3Answer = value),
+              ),
             ],
           ),
         ],
@@ -1530,80 +1586,173 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   List<Widget> _buildSQDQuestions() {
     final questions = [
-      'I am satisfied with the service that I availed',
-      'I spent a reasonable amount of time for my transaction',
-      'The office followed the transaction\'s requirements and steps',
-      'The steps I needed to do for my transaction were easy and simple',
-      'I easily found information about my transaction',
-      'I paid a reasonable amount of fees for my transaction',
-      'I feel the office was fair to everyone',
-      'I was treated courteously by the staff',
-      'I got what I needed from the government office',
+      'I am satisfied with the service that I availed.',
+      'I spent a reasonable amount of time for my transaction.',
+      'The office followed the transaction\'s requirements and steps.',
+      'The steps I needed to do for my transaction were easy and simple.',
+      'I easily found information about my transaction.',
+      'I paid a reasonable amount of fees for my transaction.',
+      'I feel the office was fair to everyone.',
+      'I was treated courteously by the staff.',
+      'I got what I needed from the government office.',
     ];
 
     return List.generate(questions.length, (index) {
       final key = 'SQD$index';
       return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'SQD$index. ${questions[index]}',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade200),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(5, (rating) {
-                final value = rating + 1;
-                final isSelected = _sqdAnswers[key] == value;
-                return InkWell(
-                  onTap: () => setState(() => _sqdAnswers[key] = value),
-                  child: Container(
-                    width: 50,
-                    height: 50,
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Question header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      gradient: isSelected
-                          ? LinearGradient(
-                              colors: [AppColors.secondary, AppColors.secondary.withValues(alpha: 0.8)],
-                            )
-                          : null,
-                      color: isSelected ? null : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.secondary
-                            : Colors.grey.shade300,
-                        width: isSelected ? 2 : 1,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: AppColors.secondary.withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              )
-                            ]
-                          : null,
+                      color: AppColors.secondary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Center(
-                      child: Text(
-                        ['😠', '😕', '😐', '🙂', '😄'][rating],
-                        style: TextStyle(
-                          fontSize: isSelected ? 28 : 24,
+                    child: Text(
+                      'SQD$index',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      questions[index],
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Emoji buttons
+              Row(
+                children: [
+                  ...List.generate(5, (rating) {
+                    final value = rating + 1;
+                    final isSelected = _sqdAnswers[key] == value;
+                    final tooltips = [
+                      'Strongly Disagree',
+                      'Disagree',
+                      'Neither Agree nor Disagree',
+                      'Agree',
+                      'Strongly Agree',
+                    ];
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: rating < 4 ? 8 : 0),
+                        child: Tooltip(
+                          message: tooltips[rating],
+                          textStyle: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () => setState(() => _sqdAnswers[key] = value),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF4CAF50)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? const Color(0xFF4CAF50)
+                                      : Colors.grey.shade300,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  ['😠', '😕', '😐', '🙂', '😄'][rating],
+                                  style: TextStyle(
+                                    fontSize: isSelected ? 32 : 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(width: 8),
+                  // Not Applicable button
+                  Tooltip(
+                    message: 'Not Applicable',
+                    textStyle: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.white,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: InkWell(
+                      onTap: () => setState(() => _sqdAnswers[key] = 0),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: _sqdAnswers[key] == 0
+                              ? Colors.grey.shade400
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _sqdAnswers[key] == 0
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade300,
+                            width: _sqdAnswers[key] == 0 ? 2 : 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '❓',
+                            style: TextStyle(
+                              fontSize: _sqdAnswers[key] == 0 ? 32 : 28,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                );
-              }),
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       );
     });
@@ -1664,7 +1813,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 ],
               ),
               child: ElevatedButton(
-                onPressed: _currentPage < 4 ? _nextPage : _submitSurvey,
+                onPressed: _currentPage < 3 ? _nextPage : _submitSurvey,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   foregroundColor: Colors.white,
@@ -1674,7 +1823,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   ),
                 ),
                 child: Text(
-                  _currentPage < 4 ? 'Next' : 'Submit Survey',
+                  _currentPage < 3 ? 'Next' : 'Submit Survey',
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
