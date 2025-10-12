@@ -13,8 +13,8 @@ import '../utils/test_data_generator.dart';
 import 'admin/user_management_tab.dart';
 import 'admin/survey_editor_tab.dart';
 import 'dart:convert';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'dart:typed_data';
+import 'package:file_selector/file_selector.dart';
 
 class AdminDashboard extends StatefulWidget {
   final AdminUser currentUser;
@@ -798,34 +798,22 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       serviceType: _selectedService,
     );
     final csv = await _exportService.exportToCSV(_allResponses, config);
+    
+    final suggestedName = 'survey_export_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
+    final saveLocation = await getSaveLocation(
+      suggestedName: suggestedName,
+      acceptedTypeGroups: [XTypeGroup(label: 'CSV', extensions: ['csv'])],
+    );
+    if (saveLocation == null) return;
 
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'survey_export_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsString(csv);
+    final data = Uint8List.fromList(utf8.encode(csv));
+    final xfile = XFile.fromData(data, mimeType: 'text/csv', name: suggestedName);
+    await xfile.saveTo(saveLocation.path);
 
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('CSV saved to ${file.path}', style: GoogleFonts.poppins(fontSize: 12)),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 5),
-          action: SnackBarAction(
-            label: 'OPEN FOLDER',
-            textColor: Colors.white,
-            onPressed: () async {
-              await Process.run('explorer', [directory.path]);
-            },
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e', style: GoogleFonts.poppins()), backgroundColor: Colors.red),
-      );
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('CSV saved', style: GoogleFonts.poppins()), backgroundColor: AppColors.success),
+    );
   }
 
   Future<void> _exportExcelJSONSaveAs() async {
@@ -867,33 +855,21 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
   }
 
   Future<void> _saveJsonData(Map<String, dynamic> data, {required String suggestedName}) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$suggestedName');
-      final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
-      await file.writeAsString(jsonStr);
+    final saveLocation = await getSaveLocation(
+      suggestedName: suggestedName,
+      acceptedTypeGroups: [XTypeGroup(label: 'JSON', extensions: ['json'])],
+    );
+    if (saveLocation == null) return;
 
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Saved to ${file.path}', style: GoogleFonts.poppins(fontSize: 12)),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 5),
-          action: SnackBarAction(
-            label: 'OPEN FOLDER',
-            textColor: Colors.white,
-            onPressed: () async {
-              await Process.run('explorer', [directory.path]);
-            },
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e', style: GoogleFonts.poppins()), backgroundColor: Colors.red),
-      );
-    }
+    final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
+    final bytes = Uint8List.fromList(utf8.encode(jsonStr));
+    final xfile = XFile.fromData(bytes, mimeType: 'application/json', name: suggestedName);
+    await xfile.saveTo(saveLocation.path);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Saved', style: GoogleFonts.poppins()), backgroundColor: AppColors.success),
+    );
   }
 
   Widget _buildStatsCards() {
