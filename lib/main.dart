@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'models/survey_response.dart';
-// import 'services/survey_service.dart'; // Removed
+import 'services/survey_service.dart';
 import 'screens/admin_login.dart';
 import 'screens/qr_code_screen.dart';
 
@@ -520,7 +520,7 @@ class SurveyHomePage extends StatefulWidget {
 class _SurveyHomePageState extends State<SurveyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
-  // final SurveyService _surveyService = SurveyService(); // Removed
+  final SurveyService _surveyService = SurveyService();
   int _currentPage = 0;
   bool _hasShownConsent = false;
 
@@ -929,7 +929,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       
-      // Create survey response object (not saved anywhere)
+      // Create survey response object
       final response = SurveyResponse(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         date: _date ?? DateTime.now(),
@@ -948,8 +948,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         submittedAt: DateTime.now(),
       );
       
-      // TODO: Save response to database/backend
-      debugPrint('Survey submitted: ${response.id}');
+      // Save response locally
+      await _surveyService.saveSurveyResponse(response);
+      
+      debugPrint('Survey submitted and saved: ${response.id}');
       
       // Navigate to thank you page
       if (mounted) {
