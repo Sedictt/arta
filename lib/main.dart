@@ -115,7 +115,7 @@ class WelcomePage extends StatelessWidget {
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.secondary.withValues(alpha: 0.9),
+                            color: Colors.white.withValues(alpha: 0.95),
                           ),
                         ),
                       ],
@@ -349,7 +349,7 @@ class WelcomePage extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.secondary.withValues(alpha: 0.9),
+                        color: Colors.white.withValues(alpha: 0.95),
                       ),
                     ),
                   ],
@@ -528,6 +528,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   String? _clientType;
   String? _sex;
   String? _region;
+  String? _serviceAvailed;
   DateTime? _date;
   int? _age;
 
@@ -812,12 +813,71 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   void _nextPage() {
+    // Validate current page before proceeding
+    if (!_validateCurrentPage()) {
+      return;
+    }
+    
     if (_currentPage < 3) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  bool _validateCurrentPage() {
+    final missingFields = <String>[];
+    
+    switch (_currentPage) {
+      case 0: // Personal Information
+        if (_clientType == null) missingFields.add('Client Type');
+        if (_sex == null) missingFields.add('Sex');
+        if (_age == null) missingFields.add('Age');
+        if (_region == null || _region!.isEmpty) missingFields.add('Region');
+        if (_serviceAvailed == null || _serviceAvailed!.isEmpty) missingFields.add('Service Availed');
+        if (_date == null) missingFields.add('Date');
+        break;
+      case 1: // CC Awareness
+        if (_cc1Answer == null) missingFields.add('CC1');
+        if (_cc2Answer == null) missingFields.add('CC2');
+        if (_cc3Answer == null) missingFields.add('CC3');
+        break;
+      case 2: // Service Quality
+        for (var i = 0; i < 9; i++) {
+          if (_sqdAnswers['SQD$i'] == null) {
+            missingFields.add('SQD$i');
+          }
+        }
+        break;
+    }
+    
+    if (missingFields.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Please complete all required fields: ${missingFields.join(", ")}',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange.shade700,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return false;
+    }
+    return true;
   }
 
   void _previousPage() {
@@ -887,47 +947,13 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         submittedAt: DateTime.now(),
       );
       
-      // Show success message only (no database/local saving)
+      // Navigate to thank you page
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Survey submitted successfully! Thank you for your feedback.',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            duration: const Duration(seconds: 4),
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ThankYouPage(),
           ),
         );
-        
-        // Reset form
-        _formKey.currentState!.reset();
-        setState(() {
-          _currentPage = 0;
-          _clientType = null;
-          _sex = null;
-          _region = null;
-          _date = null;
-          _age = null;
-          _cc1Answer = null;
-          _cc2Answer = null;
-          _cc3Answer = null;
-          _sqdAnswers.updateAll((key, value) => null);
-          _suggestions = '';
-        });
-        _pageController.jumpToPage(0);
       }
     }
   }
@@ -1097,6 +1123,8 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               ),
               const SizedBox(height: 16),
               _buildRegionField(),
+              const SizedBox(height: 16),
+              _buildServiceAvailedField(),
             ],
           ),
         ],
@@ -1427,26 +1455,134 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildRegionField() {
-    return TextFormField(
-      initialValue: _region,
-      decoration: InputDecoration(
-        labelText: 'Region of Residence',
-        prefixIcon: const Icon(Icons.location_on_outlined),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-      ),
-      onChanged: (value) {
-        setState(() {
-          _region = value;
+    final regions = [
+      'NCR - National Capital Region',
+      'CAR - Cordillera Administrative Region',
+      'Region I - Ilocos Region',
+      'Region II - Cagayan Valley',
+      'Region III - Central Luzon',
+      'Region IV-A - CALABARZON',
+      'Region IV-B - MIMAROPA',
+      'Region V - Bicol Region',
+      'Region VI - Western Visayas',
+      'Region VII - Central Visayas',
+      'Region VIII - Eastern Visayas',
+      'Region IX - Zamboanga Peninsula',
+      'Region X - Northern Mindanao',
+      'Region XI - Davao Region',
+      'Region XII - SOCCSKSARGEN',
+      'Region XIII - Caraga',
+      'BARMM - Bangsamoro Autonomous Region',
+    ];
+
+    return Autocomplete<String>(
+      initialValue: _region != null ? TextEditingValue(text: _region!) : null,
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text.isEmpty) {
+          return regions;
+        }
+        return regions.where((String option) {
+          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
         });
       },
-      validator: (value) =>
-          value == null || value.isEmpty ? 'Please enter region' : null,
+      onSelected: (String selection) {
+        setState(() {
+          _region = selection;
+        });
+      },
+      fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+        if (_region != null && controller.text.isEmpty) {
+          controller.text = _region!;
+        }
+        return TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            labelText: 'Region of Residence',
+            prefixIcon: const Icon(Icons.location_on_outlined),
+            suffixIcon: const Icon(Icons.arrow_drop_down),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _region = value;
+            });
+          },
+          validator: (value) =>
+              value == null || value.isEmpty ? 'Please enter region' : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildServiceAvailedField() {
+    final services = [
+      'Business Permit',
+      'Building Permit',
+      'Cedula',
+      'Community Tax Certificate',
+      'Death Certificate',
+      'Birth Certificate',
+      'Marriage Certificate',
+      'Barangay Clearance',
+      'Police Clearance',
+      'Health Certificate',
+      'Occupancy Permit',
+      'Zoning Clearance',
+      'Fire Safety Inspection Certificate',
+      'Sanitary Permit',
+      'Mayor\'s Permit',
+    ];
+
+    return Autocomplete<String>(
+      initialValue: _serviceAvailed != null ? TextEditingValue(text: _serviceAvailed!) : null,
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text.isEmpty) {
+          return services;
+        }
+        return services.where((String option) {
+          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+        });
+      },
+      onSelected: (String selection) {
+        setState(() {
+          _serviceAvailed = selection;
+        });
+      },
+      fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+        if (_serviceAvailed != null && controller.text.isEmpty) {
+          controller.text = _serviceAvailed!;
+        }
+        return TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            labelText: 'Service Availed',
+            prefixIcon: const Icon(Icons.business_center_outlined),
+            suffixIcon: const Icon(Icons.arrow_drop_down),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _serviceAvailed = value;
+            });
+          },
+          validator: (value) =>
+              value == null || value.isEmpty ? 'Please enter service availed' : null,
+        );
+      },
     );
   }
 
@@ -1857,6 +1993,189 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ThankYouPage extends StatelessWidget {
+  const ThankYouPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 900;
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.secondary,
+              AppColors.primary,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(isDesktop ? 48 : 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Success Icon Animation
+                  Container(
+                    width: isDesktop ? 160 : 120,
+                    height: isDesktop ? 160 : 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.check_circle,
+                      size: isDesktop ? 100 : 70,
+                      color: AppColors.success,
+                    ),
+                  ),
+                  
+                  SizedBox(height: isDesktop ? 48 : 32),
+                  
+                  // Thank You Title
+                  Text(
+                    'Thank You!',
+                    style: GoogleFonts.poppins(
+                      fontSize: isDesktop ? 56 : 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Subtitle
+                  Text(
+                    'Your feedback has been submitted successfully',
+                    style: GoogleFonts.poppins(
+                      fontSize: isDesktop ? 20 : 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white.withValues(alpha: 0.95),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Message Card
+                  Container(
+                    constraints: BoxConstraints(maxWidth: isDesktop ? 600 : double.infinity),
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.favorite,
+                          size: 48,
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Your input helps us improve our services and better serve the community. We truly appreciate you taking the time to share your experience with us.',
+                          style: GoogleFonts.poppins(
+                            fontSize: isDesktop ? 16 : 14,
+                            color: Colors.white.withValues(alpha: 0.95),
+                            height: 1.6,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  SizedBox(height: isDesktop ? 48 : 32),
+                  
+                  // Return Button
+                  Container(
+                    constraints: BoxConstraints(maxWidth: isDesktop ? 400 : double.infinity),
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const WelcomePage(),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(28),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.home_outlined,
+                                color: AppColors.primary,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Return to Home',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Footer
+                  Text(
+                    'City Government of Valenzuela',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
