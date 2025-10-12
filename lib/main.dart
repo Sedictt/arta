@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'models/survey_response.dart';
-import 'services/survey_service.dart';
+// import 'services/survey_service.dart'; // Removed
 import 'screens/admin_login.dart';
 import 'screens/qr_code_screen.dart';
 
@@ -347,7 +347,7 @@ class SurveyHomePage extends StatefulWidget {
 class _SurveyHomePageState extends State<SurveyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
-  final SurveyService _surveyService = SurveyService();
+  // final SurveyService _surveyService = SurveyService(); // Removed
   int _currentPage = 0;
 
   // Demographic Information
@@ -441,7 +441,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       
-      // Create survey response object
+      // Create survey response object (not saved anywhere)
       final response = SurveyResponse(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         date: _date ?? DateTime.now(),
@@ -459,34 +459,23 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         submittedAt: DateTime.now(),
       );
       
-      // Save using survey service (with MongoDB sync)
-      final result = await _surveyService.saveSurveyResponse(response);
-      
+      // Show success message only (no database/local saving)
       if (mounted) {
-        // Show appropriate message based on API result
-        final bool isSuccess = result['success'] == true;
-        final String message = isSuccess 
-            ? 'Survey submitted to database successfully! Thank you for your feedback.'
-            : 'Survey saved locally. ${result['message'] ?? 'Unable to connect to server.'}';
-        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
-                Icon(
-                  isSuccess ? Icons.check_circle : Icons.info_outline, 
-                  color: Colors.white,
-                ),
+                Icon(Icons.check_circle, color: Colors.white),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    message,
+                    'Survey submitted successfully! Thank you for your feedback.',
                     style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
             ),
-            backgroundColor: isSuccess ? AppColors.success : Colors.orange.shade700,
+            backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -1126,7 +1115,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   Widget _buildClientTypeField() {
     return DropdownButtonFormField<String>(
-      value: _clientType,
+      initialValue: _clientType,
       decoration: InputDecoration(
         labelText: 'Client Type',
         prefixIcon: const Icon(Icons.badge_outlined),
@@ -1153,7 +1142,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   Widget _buildSexField() {
     return DropdownButtonFormField<String>(
-      value: _sex,
+      initialValue: _sex,
       decoration: InputDecoration(
         labelText: 'Sex',
         prefixIcon: const Icon(Icons.person_outline),
