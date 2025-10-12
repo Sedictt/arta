@@ -21,7 +21,7 @@ class QRCodeScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, AppColors.accent],
+              colors: [AppColors.secondary, AppColors.primary],
             ),
           ),
         ),
@@ -45,7 +45,7 @@ class QRCodeScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [AppColors.primary, AppColors.accent],
+                        colors: [AppColors.secondary, AppColors.primary],
                       ),
                       shape: BoxShape.circle,
                     ),

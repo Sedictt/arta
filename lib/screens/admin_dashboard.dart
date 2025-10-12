@@ -140,7 +140,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, AppColors.accent],
+              colors: [AppColors.secondary, AppColors.primary],
             ),
           ),
         ),

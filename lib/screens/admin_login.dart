@@ -77,8 +77,8 @@ class _AdminLoginState extends State<AdminLogin> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
+              AppColors.secondary,
               AppColors.primary,
-              AppColors.accent,
             ],
           ),
         ),
@@ -104,7 +104,7 @@ class _AdminLoginState extends State<AdminLogin> {
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [AppColors.primary, AppColors.accent],
+                              colors: [AppColors.secondary, AppColors.primary],
                             ),
                             shape: BoxShape.circle,
                           ),
@@ -217,18 +217,37 @@ class _AdminLoginState extends State<AdminLogin> {
                         const SizedBox(height: 32),
 
                         // Login Button
-                        SizedBox(
+                        Container(
                           width: double.infinity,
+                          height: 54,
+                          decoration: BoxDecoration(
+                            gradient: _isLoading
+                                ? null
+                                : LinearGradient(
+                                    colors: [AppColors.secondary, AppColors.primary],
+                                  ),
+                            color: _isLoading ? Colors.grey.shade300 : null,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: _isLoading
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                          ),
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              backgroundColor: AppColors.primary,
+                              backgroundColor: Colors.transparent,
                               foregroundColor: Colors.white,
+                              shadowColor: Colors.transparent,
+                              disabledBackgroundColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              elevation: 4,
                             ),
                             child: _isLoading
                                 ? const SizedBox(

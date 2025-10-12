@@ -12,13 +12,13 @@ void main() {
 
 // Color Palette
 class AppColors {
-  static const primary = Color(0xFF0D47A1); // Deep Blue
-  static const secondary = Color(0xFFFFA000); // Amber/Gold
-  static const accent = Color(0xFF1976D2); // Light Blue
+  static const primary = Color(0xFF7B3FF2); // Purple
+  static const secondary = Color(0xFF1E90FF); // Cyan Blue
+  static const accent = Color(0xFFB794F6); // Light Purple/Lavender
   static const success = Color(0xFF2E7D32); // Green
   static const background = Color(0xFFF5F7FA); // Light Gray Blue
   static const cardBg = Colors.white;
-  static const textPrimary = Color(0xFF1A237E); // Dark Blue
+  static const textPrimary = Color(0xFF1A1A1A); // Near Black
   static const textSecondary = Color(0xFF546E7A); // Blue Gray
 }
 
@@ -64,8 +64,8 @@ class WelcomePage extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
+              AppColors.secondary,
               AppColors.primary,
-              AppColors.accent,
             ],
           ),
         ),
@@ -89,7 +89,7 @@ class WelcomePage extends StatelessWidget {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [AppColors.primary, AppColors.accent],
+                            colors: [AppColors.secondary, AppColors.primary],
                           ),
                           shape: BoxShape.circle,
                         ),
@@ -216,8 +216,22 @@ class WelcomePage extends StatelessWidget {
                       const SizedBox(height: 32),
                       
                       // Start Button
-                      SizedBox(
+                      Container(
                         width: double.infinity,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [AppColors.secondary, AppColors.primary],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pushReplacement(
@@ -227,13 +241,12 @@ class WelcomePage extends StatelessWidget {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            backgroundColor: AppColors.primary,
+                            backgroundColor: Colors.transparent,
                             foregroundColor: Colors.white,
+                            shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            elevation: 4,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -546,7 +559,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.accent],
+          colors: [AppColors.secondary, AppColors.primary],
         ),
         boxShadow: [
           BoxShadow(
@@ -662,7 +675,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [AppColors.primary, AppColors.accent],
+                            colors: [AppColors.secondary, AppColors.primary],
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -1051,7 +1064,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppColors.primary, AppColors.accent],
+                      colors: [AppColors.secondary, AppColors.primary],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -1238,7 +1251,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.primary, AppColors.accent],
+                    colors: [AppColors.secondary, AppColors.primary],
                   ),
                   borderRadius: BorderRadius.circular(6),
                 ),
@@ -1475,22 +1488,37 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           if (_currentPage > 0) const SizedBox(width: 16),
           Expanded(
             flex: _currentPage == 0 ? 1 : 1,
-            child: ElevatedButton(
-              onPressed: _currentPage < 4 ? _nextPage : _submitSurvey,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.secondary, AppColors.primary],
                 ),
-                elevation: 3,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              child: Text(
-                _currentPage < 4 ? 'Next' : 'Submit Survey',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              child: ElevatedButton(
+                onPressed: _currentPage < 4 ? _nextPage : _submitSurvey,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  _currentPage < 4 ? 'Next' : 'Submit Survey',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
