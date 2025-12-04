@@ -1510,8 +1510,8 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                     style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
-                    DateFormat('MMM dd, yyyy HH:mm')
-                        .format(response.submittedAt),
+                    DateFormat('MMM dd, yyyy hh:mm a')
+                        .format(response.submittedAt.toLocal()),
                     style: GoogleFonts.poppins(fontSize: 12),
                   ),
                   trailing: Container(

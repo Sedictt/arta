@@ -13,6 +13,9 @@ class AuthService {
   // Login with backend API
   Future<AdminUser?> login(String username, String password) async {
     try {
+      print('🔐 Attempting login to: $baseUrl/api/admin/login');
+      print('👤 Username: $username');
+      
       final url = Uri.parse('$baseUrl/api/admin/login');
       
       final response = await http.post(
@@ -22,7 +25,16 @@ class AuthService {
           'username': username,
           'password': password,
         }),
-      ).timeout(const Duration(seconds: 10));
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          print('❌ Login request timeout');
+          throw Exception('Connection timeout');
+        },
+      );
+
+      print('📡 Response status: ${response.statusCode}');
+      print('📄 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -30,6 +42,8 @@ class AuthService {
         if (data['success'] == true) {
           final token = data['token'];
           final adminData = data['admin'];
+          
+          print('✅ Login successful! Token received.');
           
           // Save token and user data
           final prefs = await SharedPreferences.getInstance();
@@ -51,12 +65,17 @@ class AuthService {
           await prefs.setString(_currentUserKey, jsonEncode(user.toJson()));
           
           return user;
+        } else {
+          print('❌ Login failed: ${data['message']}');
         }
+      } else {
+        print('❌ HTTP Error: ${response.statusCode} - ${response.body}');
       }
       
       return null;
-    } catch (e) {
-      print('Login error: $e');
+    } catch (e, stackTrace) {
+      print('❌ Login error: $e');
+      print('Stack trace: $stackTrace');
       return null;
     }
   }
