@@ -93,159 +93,156 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
 
     final maxY = spots.isEmpty ? 10.0 : spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) * 1.2;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary.withValues(alpha: 0.05), Colors.white],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.show_chart, color: AppColors.primary, size: 20),
                 ),
-                child: Icon(Icons.show_chart, color: AppColors.primary, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Responses Over Time',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                const SizedBox(width: 12),
+                Text(
+                  'Responses Over Time',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-                child: Text(
-                  '${dates.length} days',
-                  style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 280,
-            child: LineChart(
-              LineChartData(
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    isCurved: true,
-                    curveSmoothness: 0.4,
-                    color: AppColors.primary,
-                    barWidth: 4,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                      getDotPainter: (spot, percent, barData, index) {
-                        return FlDotCirclePainter(
-                          radius: 4,
-                          color: Colors.white,
-                          strokeWidth: 3,
-                          strokeColor: AppColors.primary,
-                        );
-                      },
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${dates.length} days',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
                     ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary.withValues(alpha: 0.3),
-                          AppColors.primary.withValues(alpha: 0.05),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 280,
+              child: LineChart(
+                LineChartData(
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      isCurved: true,
+                      curveSmoothness: 0.4,
+                      color: AppColors.primary,
+                      barWidth: 3,
+                      isStrokeCapRound: true,
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 4,
+                            color: AppColors.surface,
+                            strokeWidth: 2,
+                            strokeColor: AppColors.primary,
+                          );
+                        },
+                      ),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.2),
+                            AppColors.primary.withValues(alpha: 0.0),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-                minY: 0,
-                maxY: maxY,
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: maxY / 5,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      strokeWidth: 1,
-                      dashArray: [5, 5],
-                    );
-                  },
-                ),
-                titlesData: FlTitlesData(
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 32,
-                      interval: dates.length > 10 ? (dates.length / 7).ceilToDouble() : 1,
-                      getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx < 0 || idx >= dates.length) return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            DateFormat('MMM dd').format(dates[idx]),
-                            style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 40,
-                      interval: maxY / 5,
-                      getTitlesWidget: (value, meta) {
-                        return Text(
-                          value.toInt().toString(),
-                          style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
-                        );
-                      },
-                    ),
-                  ),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                ),
-                borderData: FlBorderData(
-                  show: true,
-                  border: Border(
-                    bottom: BorderSide(color: AppColors.primary.withValues(alpha: 0.2), width: 2),
-                    left: BorderSide(color: AppColors.primary.withValues(alpha: 0.2), width: 2),
-                  ),
-                ),
-                lineTouchData: LineTouchData(
-                  touchTooltipData: LineTouchTooltipData(
-                    getTooltipItems: (touchedSpots) {
-                      return touchedSpots.map((spot) {
-                        final date = dates[spot.x.toInt()];
-                        return LineTooltipItem(
-                          '${DateFormat('MMM dd, yyyy').format(date)}\n${spot.y.toInt()} responses',
-                          GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                        );
-                      }).toList();
+                  ],
+                  minY: 0,
+                  maxY: maxY,
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: maxY / 5,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: AppColors.border,
+                        strokeWidth: 1,
+                        dashArray: [5, 5],
+                      );
                     },
+                  ),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        interval: dates.length > 10 ? (dates.length / 7).ceilToDouble() : 1,
+                        getTitlesWidget: (value, meta) {
+                          final idx = value.toInt();
+                          if (idx < 0 || idx >= dates.length) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              DateFormat('MMM dd').format(dates[idx]),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        interval: maxY / 5,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toInt().toString(),
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (touchedSpots) {
+                        return touchedSpots.map((spot) {
+                          final date = dates[spot.x.toInt()];
+                          return LineTooltipItem(
+                            '${DateFormat('MMM dd, yyyy').format(date)}\n${spot.y.toInt()} responses',
+                            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          );
+                        }).toList();
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -267,20 +264,45 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       children: [
         Expanded(
           child: Card(
-            elevation: 3,
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Top Services', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
+                  Text(
+                    'Top Services',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   ...topServices.take(5).map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Row(
                           children: [
-                            Expanded(child: Text(e.key, style: GoogleFonts.poppins(fontSize: 13))),
-                            Chip(label: Text(e.value.toString())),
+                            Expanded(
+                              child: Text(
+                                e.key,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.secondary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                e.value.toString(),
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.secondary,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       )),
@@ -292,20 +314,45 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
         const SizedBox(width: 16),
         Expanded(
           child: Card(
-            elevation: 3,
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Top Regions', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
+                  Text(
+                    'Top Regions',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   ...topRegions.take(5).map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Row(
                           children: [
-                            Expanded(child: Text(e.key, style: GoogleFonts.poppins(fontSize: 13))),
-                            Chip(label: Text(e.value.toString())),
+                            Expanded(
+                              child: Text(
+                                e.key,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.secondary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                e.value.toString(),
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.secondary,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       )),
@@ -476,26 +523,29 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
           children: [
             Text(
               'Admin Dashboard',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             Text(
               '${widget.currentUser.username} (${widget.currentUser.role.name})',
-              style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w400),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.white.withValues(alpha: 0.9),
+              ),
             ),
           ],
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.secondary, AppColors.primary],
-            ),
-          ),
-        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
           indicatorColor: Colors.white,
-          labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: tabs,
         ),
         actions: [
@@ -599,133 +649,130 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
         .toList()
       ..sort();
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary.withValues(alpha: 0.05), AppColors.secondary.withValues(alpha: 0.05)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.filter_list, color: AppColors.primary, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                'Filter Data',
-                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${_filteredResponses.length} results',
-                  style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: DropdownButtonFormField<String>(
-                  initialValue: _selectedRegion,
-                  decoration: InputDecoration(
-                    labelText: 'Region',
-                    prefixIcon: const Icon(Icons.location_on, size: 18),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.filter_list, color: AppColors.primary, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Filter Data',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
-                  items: [
-                    const DropdownMenuItem(value: null, child: Text('All Regions')),
-                    ...regions.map((r) => DropdownMenuItem(value: r, child: Text(r))),
-                  ],
-                  onChanged: (value) => setState(() => _selectedRegion = value),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 3,
-                child: DropdownButtonFormField<String>(
-                  initialValue: _selectedService,
-                  decoration: InputDecoration(
-                    labelText: 'Service',
-                    prefixIcon: const Icon(Icons.business_center, size: 18),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  items: [
-                    const DropdownMenuItem(value: null, child: Text('All Services')),
-                    ...services.map((s) => DropdownMenuItem(value: s, child: Text(s))),
-                  ],
-                  onChanged: (value) => setState(() => _selectedService = value),
+                  child: Text(
+                    '${_filteredResponses.length} results',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final picked = await showDateRangePicker(
-                    context: context,
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime.now(),
-                  );
-                  if (picked != null) {
-                    setState(() => _selectedDateRange = picked);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _selectedRegion,
+                    decoration: const InputDecoration(
+                      labelText: 'Region',
+                      prefixIcon: Icon(Icons.location_on, size: 18),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    items: [
+                      const DropdownMenuItem(value: null, child: Text('All Regions')),
+                      ...regions.map((r) => DropdownMenuItem(value: r, child: Text(r))),
+                    ],
+                    onChanged: (value) => setState(() => _selectedRegion = value),
+                  ),
                 ),
-                icon: const Icon(Icons.date_range, size: 18),
-                label: Text(
-                  _selectedDateRange == null
-                      ? 'Date Range'
-                      : '${DateFormat('MMM dd').format(_selectedDateRange!.start)} - ${DateFormat('MMM dd').format(_selectedDateRange!.end)}',
-                  style: GoogleFonts.poppins(fontSize: 13),
-                ),
-              ),
-              if (_selectedRegion != null || _selectedService != null || _selectedDateRange != null) ...[
                 const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _selectedRegion = null;
-                      _selectedService = null;
-                      _selectedDateRange = null;
-                    });
+                Expanded(
+                  flex: 3,
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _selectedService,
+                    decoration: const InputDecoration(
+                      labelText: 'Service',
+                      prefixIcon: Icon(Icons.business_center, size: 18),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    items: [
+                      const DropdownMenuItem(value: null, child: Text('All Services')),
+                      ...services.map((s) => DropdownMenuItem(value: s, child: Text(s))),
+                    ],
+                    onChanged: (value) => setState(() => _selectedService = value),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final picked = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      setState(() => _selectedDateRange = picked);
+                    }
                   },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.surface,
+                    foregroundColor: AppColors.primary,
+                    elevation: 0,
+                    side: BorderSide(color: AppColors.border),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  icon: const Icon(Icons.clear, size: 18),
-                  label: Text('Clear', style: GoogleFonts.poppins(fontSize: 13)),
+                  icon: const Icon(Icons.date_range, size: 18),
+                  label: Text(
+                    _selectedDateRange == null
+                        ? 'Date Range'
+                        : '${DateFormat('MMM dd').format(_selectedDateRange!.start)} - ${DateFormat('MMM dd').format(_selectedDateRange!.end)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
+                if (_selectedRegion != null || _selectedService != null || _selectedDateRange != null) ...[
+                  const SizedBox(width: 12),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedRegion = null;
+                        _selectedService = null;
+                        _selectedDateRange = null;
+                      });
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    icon: const Icon(Icons.clear, size: 18),
+                    label: const Text('Clear'),
+                  ),
+                ],
               ],
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -738,7 +785,13 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Export Reports', style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(
+            'Export Reports',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
           const SizedBox(height: 24),
           _buildExportCard('Excel Report', 'Save Excel-like report as JSON (preview)', Icons.table_chart, Colors.green, _exportExcelJSONSaveAs),
           const SizedBox(height: 16),
@@ -774,12 +827,23 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text(desc, style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey)),
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      desc,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+              const Icon(Icons.arrow_forward_ios, color: AppColors.textSecondary, size: 16),
             ],
           ),
         ),
@@ -938,76 +1002,38 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     IconData icon,
     Color color,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.05)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: color, size: 28),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.trending_up, color: Colors.green, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Live',
-                        style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.green),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              value,
-              style: GoogleFonts.poppins(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: color,
-                height: 1,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
+              child: Icon(icon, color: color, size: 24),
             ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    value,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -1015,6 +1041,7 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       ),
     );
   }
+
 
   Widget _buildSatisfactionChart() {
     final dist = _computeSatisfactionDistribution(_filteredResponses);

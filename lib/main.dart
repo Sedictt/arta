@@ -12,14 +12,16 @@ void main() {
 
 // Color Palette
 class AppColors {
-  static const primary = Color(0xFF7B3FF2); // Purple
-  static const secondary = Color(0xFF1E90FF); // Cyan Blue
-  static const accent = Color(0xFFB794F6); // Light Purple/Lavender
-  static const success = Color(0xFF2E7D32); // Green
+  static const primary = Color(0xFF1565C0); // Deep Blue - Professional & Trustworthy
+  static const primaryDark = Color(0xFF0D47A1);
+  static const secondary = Color(0xFF00B0FF); // Light Blue - Modern & Fresh
+  static const accent = Color(0xFFFFC107); // Amber - Highlights
+  static const success = Color(0xFF4CAF50); // Green
   static const background = Color(0xFFF5F7FA); // Light Gray Blue
-  static const cardBg = Colors.white;
-  static const textPrimary = Color(0xFF1A1A1A); // Near Black
-  static const textSecondary = Color(0xFF546E7A); // Blue Gray
+  static const surface = Colors.white;
+  static const textPrimary = Color(0xFF1E293B); // Slate 900
+  static const textSecondary = Color(0xFF64748B); // Slate 500
+  static const border = Color(0xFFE2E8F0); // Slate 200
 }
 
 class MyApp extends StatelessWidget {
@@ -35,15 +37,59 @@ class MyApp extends StatelessWidget {
           seedColor: AppColors.primary,
           primary: AppColors.primary,
           secondary: AppColors.secondary,
+          surface: AppColors.surface,
+          background: AppColors.background,
           brightness: Brightness.light,
         ),
-        textTheme: GoogleFonts.poppinsTextTheme(),
+        textTheme: GoogleFonts.interTextTheme(
+          Theme.of(context).textTheme,
+        ).apply(
+          bodyColor: AppColors.textPrimary,
+          displayColor: AppColors.textPrimary,
+        ),
         useMaterial3: true,
+        scaffoldBackgroundColor: AppColors.background,
         cardTheme: CardThemeData(
-          elevation: 2,
-          shadowColor: AppColors.primary.withValues(alpha: 0.1),
+          elevation: 0,
+          color: AppColors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: AppColors.border, width: 1),
+          ),
+          margin: EdgeInsets.zero,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.border),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.border),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          labelStyle: const TextStyle(color: AppColors.textSecondary),
+          floatingLabelStyle: const TextStyle(color: AppColors.primary),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
           ),
         ),
       ),
@@ -67,7 +113,7 @@ class WelcomePage extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.secondary,
+              AppColors.primaryDark,
               AppColors.primary,
             ],
           ),
@@ -95,27 +141,24 @@ class WelcomePage extends StatelessWidget {
                   children: [
                     Image.asset(
                       'Valenzuela_Seal.svg.png',
-                      width: 70,
-                      height: 70,
+                      width: 80,
+                      height: 80,
                     ),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 24),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'City Government of Valenzuela',
-                          style: GoogleFonts.poppins(
-                            fontSize: 24,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                         Text(
                           'Help Us Serve You Better',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withValues(alpha: 0.95),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
@@ -126,26 +169,32 @@ class WelcomePage extends StatelessWidget {
                 const SizedBox(height: 80),
                 
                 // ARTA Label
-                Text(
-                  'ARTA',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white.withValues(alpha: 0.8),
-                    letterSpacing: 2,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                  ),
+                  child: Text(
+                    'ARTA COMPLIANT',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 
                 // Main Title
                 Text(
-                  'Client Satisfaction\nSurvey',
-                  style: GoogleFonts.poppins(
-                    fontSize: 52,
+                  'Client Satisfaction\nMeasurement',
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    height: 1.2,
+                    height: 1.1,
                   ),
                 ),
                 
@@ -153,31 +202,20 @@ class WelcomePage extends StatelessWidget {
                 
                 // Description
                 Text(
-                  'This Client Satisfaction Measurement (CSM) tracks the customer experience of government offices. Your feedback on your recently concluded transaction will help this office provide a better service. Personal information shared will be kept confidential and you always have the option to not answer this form.',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
+                  'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices in compliance with the Anti-Red Tape Authority (ARTA).',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Colors.white.withValues(alpha: 0.9),
-                    height: 1.7,
+                    height: 1.6,
+                    fontSize: 18,
                   ),
                 ),
                 
-                const SizedBox(height: 40),
+                const SizedBox(height: 48),
                 
                 // Start Button
-                Container(
-                  width: 460,
+                SizedBox(
+                  width: 300,
                   height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.secondary,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
@@ -187,36 +225,27 @@ class WelcomePage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: AppColors.secondary,
                       foregroundColor: Colors.white,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
+                      elevation: 4,
+                      shadowColor: Colors.black.withValues(alpha: 0.3),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Start Survey',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Icon(Icons.arrow_forward_rounded, size: 24),
+                      children: const [
+                        Text('Start Survey'),
+                        SizedBox(width: 12),
+                        Icon(Icons.arrow_forward_rounded),
                       ],
                     ),
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 
                 Text(
                   'Estimated Time: 3 - 5 minutes',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white.withValues(alpha: 0.7),
                     fontStyle: FontStyle.italic,
                   ),
@@ -235,13 +264,10 @@ class WelcomePage extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.qr_code_2, color: Colors.white, size: 20),
-                      label: Text(
-                        'QR Code',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      icon: const Icon(Icons.qr_code_2, color: Colors.white),
+                      label: const Text(
+                        'Scan QR Code',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                     const SizedBox(width: 24),
@@ -253,13 +279,10 @@ class WelcomePage extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.admin_panel_settings, color: Colors.white, size: 20),
-                      label: Text(
-                        'Admin',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
+                      label: const Text(
+                        'Admin Access',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
@@ -273,42 +296,56 @@ class WelcomePage extends StatelessWidget {
         Expanded(
           flex: 4,
           child: Container(
-            color: Colors.white.withValues(alpha: 0.05),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(40),
+                bottomLeft: Radius.circular(40),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 40,
+                  offset: const Offset(-10, 0),
+                ),
+              ],
+            ),
             child: Center(
-              child: Container(
-                margin: const EdgeInsets.all(60),
-                padding: const EdgeInsets.all(40),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(40),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.poll_outlined,
-                      size: 180,
-                      color: AppColors.accent,
+                    child: Icon(
+                      Icons.assignment_turned_in_outlined,
+                      size: 120,
+                      color: AppColors.primary,
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Your Feedback Matters',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    'Your Voice Matters',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: 300,
+                    child: Text(
+                      'Help us build a better government by sharing your honest feedback.',
                       textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -328,28 +365,25 @@ class WelcomePage extends StatelessWidget {
             children: [
               Image.asset(
                 'Valenzuela_Seal.svg.png',
-                width: 50,
-                height: 50,
+                width: 60,
+                height: 60,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'City Government of Valenzuela',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     Text(
                       'Help Us Serve You Better',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withValues(alpha: 0.95),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -358,26 +392,32 @@ class WelcomePage extends StatelessWidget {
             ],
           ),
           
-          const SizedBox(height: 40),
+          const SizedBox(height: 48),
           
           // ARTA Label
-          Text(
-            'ARTA',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.white.withValues(alpha: 0.8),
-              letterSpacing: 2,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+            ),
+            child: Text(
+              'ARTA COMPLIANT',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Colors.white,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           
           // Main Title
           Text(
-            'Client Satisfaction\nSurvey',
-            style: GoogleFonts.poppins(
-              fontSize: 36,
+            'Client Satisfaction\nMeasurement',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.white,
               height: 1.2,
@@ -388,31 +428,19 @@ class WelcomePage extends StatelessWidget {
           
           // Description
           Text(
-            'This Client Satisfaction Measurement (CSM) tracks the customer experience of government offices. Your feedback on your recently concluded transaction will help this office provide a better service. Personal information shared will be kept confidential and you always have the option to not answer this form.',
-            style: GoogleFonts.poppins(
-              fontSize: 13,
+            'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.9),
-              height: 1.6,
+              height: 1.5,
             ),
           ),
           
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
           
           // Start Button
-          Container(
+          SizedBox(
             width: double.infinity,
-            height: 54,
-            decoration: BoxDecoration(
-              color: AppColors.secondary,
-              borderRadius: BorderRadius.circular(27),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
+            height: 56,
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
@@ -422,44 +450,35 @@ class WelcomePage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
+                backgroundColor: AppColors.secondary,
                 foregroundColor: Colors.white,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(27),
-                ),
+                elevation: 4,
+                shadowColor: Colors.black.withValues(alpha: 0.3),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Start Survey',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward_rounded),
+                children: const [
+                  Text('Start Survey'),
+                  SizedBox(width: 12),
+                  Icon(Icons.arrow_forward_rounded),
                 ],
               ),
             ),
           ),
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           
           Center(
             child: Text(
               'Estimated Time: 3 - 5 minutes',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Colors.white.withValues(alpha: 0.7),
                 fontStyle: FontStyle.italic,
               ),
             ),
           ),
           
-          const SizedBox(height: 40),
+          const SizedBox(height: 48),
           
           // Bottom buttons
           Row(
@@ -473,14 +492,10 @@ class WelcomePage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.qr_code_2, color: Colors.white, size: 18),
-                label: Text(
-                  'QR Code',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
-                  ),
+                icon: const Icon(Icons.qr_code_2, color: Colors.white, size: 20),
+                label: const Text(
+                  'Scan QR',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               const SizedBox(width: 16),
@@ -492,14 +507,10 @@ class WelcomePage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.admin_panel_settings, color: Colors.white, size: 18),
-                label: Text(
+                icon: const Icon(Icons.admin_panel_settings, color: Colors.white, size: 20),
+                label: const Text(
                   'Admin',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -1004,29 +1015,23 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.secondary, AppColors.primary],
+        color: AppColors.surface,
+        border: Border(
+          bottom: BorderSide(color: AppColors.border),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.assignment_outlined,
-              size: 28,
-              color: Colors.white,
+              size: 24,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(width: 16),
@@ -1036,17 +1041,15 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               children: [
                 Text(
                   'ARTA Client Satisfaction Survey',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   'City Government of Valenzuela',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: Colors.white.withValues(alpha: 0.9),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -1060,7 +1063,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   Widget _buildProgressIndicator() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      color: Colors.white,
+      color: AppColors.surface,
       child: Column(
         children: [
           Row(
@@ -1069,37 +1072,49 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               final isCurrent = index == _currentPage;
               return Expanded(
                 child: Container(
-                  height: 4,
+                  height: 6,
                   margin: EdgeInsets.only(right: index < 4 ? 8 : 0),
                   decoration: BoxDecoration(
-                    color: isCompleted || isCurrent
-                        ? AppColors.secondary
-                        : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+                    color: isCompleted
+                        ? AppColors.success
+                        : isCurrent
+                            ? AppColors.primary
+                            : AppColors.border,
+                    borderRadius: BorderRadius.circular(3),
                   ),
                 ),
               );
             }),
           ),
           const SizedBox(height: 12),
-          Text(
-            [
-              'Personal Information',
-              'Citizen\'s Charter Awareness',
-              'Service Quality',
-              'Suggestions'
-            ][_currentPage],
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Step ${_currentPage + 1} of 4',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                [
+                  'Personal Info',
+                  'Awareness',
+                  'Service Quality',
+                  'Suggestions'
+                ][_currentPage],
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildDemographicPage() {
     return SingleChildScrollView(
@@ -1111,9 +1126,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             title: 'Personal Information',
             icon: Icons.person_outline,
             children: [
-              const Text(
+              Text(
                 'This information helps us understand our clients better. All data will be kept confidential.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               _buildDateField(),
@@ -1148,9 +1165,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             title: 'Citizen\'s Charter Awareness',
             icon: Icons.info_outline,
             children: [
-              const Text(
+              Text(
                 'The Citizen\'s Charter (CC) is an official document that reflects the services of a government agency.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               _buildCCQuestion(
@@ -1209,9 +1228,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             title: 'Service Quality Dimensions',
             icon: Icons.star_outline,
             children: [
-              const Text(
+              Text(
                 'Please rate your experience with our service on the following aspects:',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               _buildSatisfactionScale(),
@@ -1234,33 +1255,18 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             title: 'Your Suggestions',
             icon: Icons.lightbulb_outline,
             children: [
-              const Text(
+              Text(
                 'We value your feedback! Please share any suggestions on how we can improve our service.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               TextFormField(
                 maxLines: 8,
                 decoration: InputDecoration(
                   hintText: 'Enter your suggestions here (optional)...',
-                  hintStyle: TextStyle(color: Colors.grey.shade400),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF1565C0),
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
+                  hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.5)),
                 ),
                 onSaved: (value) => _suggestions = value ?? '',
               ),
@@ -1268,20 +1274,20 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.privacy_tip_outlined, color: Colors.blue.shade700),
+                    Icon(Icons.privacy_tip_outlined, color: AppColors.primary),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Your feedback is confidential and will be used to improve our services.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.blue.shade900,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -1301,8 +1307,6 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     required List<Widget> children,
   }) {
     return Card(
-      elevation: 3,
-      shadowColor: AppColors.primary.withValues(alpha: 0.2),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -1313,19 +1317,16 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.secondary, AppColors.primary],
-                    ),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(icon, color: Colors.white, size: 22),
+                  child: Icon(icon, color: AppColors.primary, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
                     title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
@@ -1333,7 +1334,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             ...children,
           ],
         ),
