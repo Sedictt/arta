@@ -6,11 +6,7 @@ async function initializeDatabase() {
   try {
     // Connect to MongoDB
     await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/arta_survey',
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/arta_survey'
     );
     console.log('✅ Connected to MongoDB');
 

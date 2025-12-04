@@ -25,8 +25,21 @@ class SurveyService {
     return apiResult;
   }
 
-  // Get all survey responses
+  // Get all survey responses from backend (with local fallback)
   Future<List<SurveyResponse>> getAllSurveyResponses() async {
+    try {
+      // Try to fetch from backend first
+      final result = await _apiService.fetchSurveys(limit: 1000);
+      
+      if (result['success'] == true && result['data'] != null) {
+        final List<dynamic> surveysData = result['data'];
+        return surveysData.map((json) => SurveyResponse.fromBackendJson(json)).toList();
+      }
+    } catch (e) {
+      print('Error fetching from backend, using local storage: $e');
+    }
+    
+    // Fallback to local storage if backend fails
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_surveysKey);
     

@@ -65,6 +65,25 @@ class SurveyResponse {
     );
   }
 
+  // Factory for backend MongoDB response format
+  factory SurveyResponse.fromBackendJson(Map<String, dynamic> json) {
+    return SurveyResponse(
+      id: json['_id'] ?? json['id'] ?? '',
+      date: DateTime.parse(json['date']),
+      clientType: json['clientType'],
+      sex: json['sex'],
+      age: json['age'],
+      region: json['region'],
+      serviceAvailed: json['serviceAvailed'],
+      cc1Answer: json['cc1Answer'],
+      cc2Answer: json['cc2Answer'],
+      cc3Answer: json['cc3Answer'],
+      sqdAnswers: Map<String, int>.from(json['sqdAnswers'] ?? {}),
+      suggestions: json['suggestions'] ?? '',
+      submittedAt: DateTime.parse(json['submittedAt'] ?? json['createdAt'] ?? DateTime.now().toIso8601String()),
+    );
+  }
+
   double get averageSQDScore {
     if (sqdAnswers.isEmpty) return 0;
     final sum = sqdAnswers.values.reduce((a, b) => a + b);
