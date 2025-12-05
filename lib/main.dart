@@ -109,13 +109,13 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primaryDark,
-              AppColors.primary,
-            ],
+          image: DecorationImage(
+            image: AssetImage('assets/cityhall_facade.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              AppColors.primaryDark.withValues(alpha: 0.7),
+              BlendMode.darken,
+            ),
           ),
         ),
         child: SafeArea(
@@ -979,7 +979,18 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/cityhall_facade.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              AppColors.background.withValues(alpha: 0.5),
+              BlendMode.lighten,
+            ),
+          ),
+        ),
+        child: SafeArea(
         child: Column(
           children: [
             _buildHeader(),
@@ -1008,7 +1019,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           ],
         ),
       ),
+      ),
     );
+
   }
 
   Widget _buildHeader() {
@@ -1023,15 +1036,22 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.surface,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: Icon(
-              Icons.assignment_outlined,
-              size: 24,
-              color: AppColors.primary,
+            child: Image.asset(
+              'Valenzuela_Seal.svg.png',
+              width: 40,
+              height: 40,
             ),
           ),
           const SizedBox(width: 16),

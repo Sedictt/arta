@@ -229,7 +229,18 @@ class _AdminLoginState extends State<AdminLogin> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/484341387_1068810435281441_4497308072441766319_n.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              AppColors.background.withValues(alpha: 0.5),
+              BlendMode.lighten,
+            ),
+          ),
+        ),
+        child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32),
           child: ConstrainedBox(
@@ -402,6 +413,7 @@ class _AdminLoginState extends State<AdminLogin> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

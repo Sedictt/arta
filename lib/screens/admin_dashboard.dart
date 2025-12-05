@@ -518,6 +518,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset('Valenzuela_Seal.svg.png'),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -600,8 +604,19 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
+          : Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/breaker-valenzuela-museum-3-1670413988.jpg'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.background.withValues(alpha: 0.5),
+                    BlendMode.lighten,
+                  ),
+                ),
+              ),
+              child: TabBarView(
+                controller: _tabController,
               children: [
                 // Analytics Tab
                 SingleChildScrollView(
@@ -635,6 +650,7 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   UserManagementTab(currentUser: widget.currentUser),
               ],
             ),
+          ),
     );
   }
 
@@ -1441,7 +1457,8 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildRecentResponses() {
