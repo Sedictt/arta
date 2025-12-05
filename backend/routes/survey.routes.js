@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const Survey = require('../models/Survey.model');
+const { authenticateToken } = require('../middleware/auth');
 
 // Validation middleware
 const validateSurvey = [
@@ -52,8 +53,8 @@ router.post('/', validateSurvey, async (req, res) => {
 
 // @route   GET /api/surveys
 // @desc    Get all surveys (with pagination and filtering)
-// @access  Admin only (add auth middleware in production)
-router.get('/', async (req, res) => {
+// @access  Admin only
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const {
       page = 1,
@@ -105,7 +106,7 @@ router.get('/', async (req, res) => {
 // @route   GET /api/surveys/:id
 // @desc    Get single survey by ID
 // @access  Admin only
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
   try {
     const survey = await Survey.findById(req.params.id);
     
@@ -133,7 +134,7 @@ router.get('/:id', async (req, res) => {
 // @route   DELETE /api/surveys/:id
 // @desc    Delete a survey
 // @access  Admin only
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const survey = await Survey.findByIdAndDelete(req.params.id);
     

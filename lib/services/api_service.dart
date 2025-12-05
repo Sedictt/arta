@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/survey_response.dart';
 
 class ApiService {
@@ -12,6 +13,17 @@ class ApiService {
   // Production:              Your deployed backend URL
   
   static const String baseUrl = 'http://localhost:3000'; // ← CHANGE THIS IF NEEDED
+
+  // Get auth headers with token
+  Future<Map<String, String>> _getAuthHeaders() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+    
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
   
   // Submit survey to MongoDB via backend API
   Future<Map<String, dynamic>> submitSurvey(SurveyResponse response) async {
@@ -93,7 +105,8 @@ class ApiService {
         queryParameters: queryParams,
       );
       
-      final response = await http.get(url).timeout(
+      final headers = await _getAuthHeaders();
+      final response = await http.get(url, headers: headers).timeout(
         const Duration(seconds: 10),
       );
       
@@ -121,6 +134,102 @@ class ApiService {
       return response.statusCode == 200;
     } catch (e) {
       return false;
+    }
+  }
+
+  // Fetch analytics summary
+  Future<Map<String, dynamic>> fetchAnalyticsSummary() async {
+    try {
+      final url = Uri.parse('$baseUrl/api/analytics/summary');
+      final headers = await _getAuthHeaders();
+      
+      final response = await http.get(url, headers: headers).timeout(
+        const Duration(seconds: 10),
+      );
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to fetch analytics summary');
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error fetching analytics',
+        'error': e.toString(),
+      };
+    }
+  }
+
+  // Fetch satisfaction distribution
+  Future<Map<String, dynamic>> fetchSatisfactionDistribution() async {
+    try {
+      final url = Uri.parse('$baseUrl/api/analytics/satisfaction-distribution');
+      final headers = await _getAuthHeaders();
+      
+      final response = await http.get(url, headers: headers).timeout(
+        const Duration(seconds: 10),
+      );
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to fetch satisfaction distribution');
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error fetching distribution',
+        'error': e.toString(),
+      };
+    }
+  }
+
+  // Fetch analytics by client type
+  Future<Map<String, dynamic>> fetchByClientType() async {
+    try {
+      final url = Uri.parse('$baseUrl/api/analytics/by-client-type');
+      final headers = await _getAuthHeaders();
+      
+      final response = await http.get(url, headers: headers).timeout(
+        const Duration(seconds: 10),
+      );
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to fetch client type stats');
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error fetching client type stats',
+        'error': e.toString(),
+      };
+    }
+  }
+
+  // Delete survey
+  Future<Map<String, dynamic>> deleteSurvey(String surveyId) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/surveys/$surveyId');
+      final headers = await _getAuthHeaders();
+      
+      final response = await http.delete(url, headers: headers).timeout(
+        const Duration(seconds: 10),
+      );
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to delete survey');
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error deleting survey',
+        'error': e.toString(),
+      };
     }
   }
 }

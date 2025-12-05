@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Survey = require('../models/Survey.model');
+const { authenticateToken } = require('../middleware/auth');
 
 // @route   GET /api/analytics/summary
 // @desc    Get overall analytics summary
 // @access  Admin only
-router.get('/summary', async (req, res) => {
+router.get('/summary', authenticateToken, async (req, res) => {
   try {
     const totalResponses = await Survey.countDocuments();
     
@@ -54,7 +55,7 @@ router.get('/summary', async (req, res) => {
 // @route   GET /api/analytics/satisfaction-distribution
 // @desc    Get satisfaction level distribution
 // @access  Admin only
-router.get('/satisfaction-distribution', async (req, res) => {
+router.get('/satisfaction-distribution', authenticateToken, async (req, res) => {
   try {
     const surveys = await Survey.find().select('sqdAnswers');
     
@@ -96,7 +97,7 @@ router.get('/satisfaction-distribution', async (req, res) => {
 // @route   GET /api/analytics/sqd-averages
 // @desc    Get average scores for each SQD question
 // @access  Admin only
-router.get('/sqd-averages', async (req, res) => {
+router.get('/sqd-averages', authenticateToken, async (req, res) => {
   try {
     const result = await Survey.aggregate([
       {
@@ -144,7 +145,7 @@ router.get('/sqd-averages', async (req, res) => {
 // @route   GET /api/analytics/by-client-type
 // @desc    Get statistics by client type
 // @access  Admin only
-router.get('/by-client-type', async (req, res) => {
+router.get('/by-client-type', authenticateToken, async (req, res) => {
   try {
     const result = await Survey.aggregate([
       {
@@ -184,7 +185,7 @@ router.get('/by-client-type', async (req, res) => {
 // @route   GET /api/analytics/by-region
 // @desc    Get statistics by region
 // @access  Admin only
-router.get('/by-region', async (req, res) => {
+router.get('/by-region', authenticateToken, async (req, res) => {
   try {
     const result = await Survey.aggregate([
       {
@@ -224,7 +225,7 @@ router.get('/by-region', async (req, res) => {
 // @route   GET /api/analytics/trends
 // @desc    Get response trends over time
 // @access  Admin only
-router.get('/trends', async (req, res) => {
+router.get('/trends', authenticateToken, async (req, res) => {
   try {
     const { days = 30 } = req.query;
     const startDate = new Date();
@@ -275,7 +276,7 @@ router.get('/trends', async (req, res) => {
 // @route   GET /api/analytics/export
 // @desc    Export all survey data as JSON
 // @access  Admin only
-router.get('/export', async (req, res) => {
+router.get('/export', authenticateToken, async (req, res) => {
   try {
     const surveys = await Survey.find().sort({ submittedAt: -1 });
     
