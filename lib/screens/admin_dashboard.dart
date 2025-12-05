@@ -1066,188 +1066,184 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       'Very Dissatisfied': Icons.sentiment_very_dissatisfied,
     };
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green.withValues(alpha: 0.05), Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green.withValues(alpha: 0.1)),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.pie_chart, color: Colors.green[700], size: 20),
                 ),
-                child: Icon(Icons.pie_chart, color: Colors.green[700], size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Satisfaction Distribution',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                const SizedBox(width: 12),
+                Text(
+                  'Satisfaction Distribution',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-                child: Text(
-                  '$total responses',
-                  style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.green[700]),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$total responses',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green[700],
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: 240,
-                  child: PieChart(
-                    PieChartData(
-                      sectionsSpace: 3,
-                      centerSpaceRadius: 50,
-                      sections: dist.entries.map((entry) {
-                        final percentage = (entry.value / total * 100);
-                        
-                        return PieChartSectionData(
-                          value: entry.value.toDouble(),
-                          title: '${percentage.toStringAsFixed(1)}%',
-                          color: colors[entry.key],
-                          radius: 100,
-                          titleStyle: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 2,
-                              ),
-                            ],
-                          ),
-                          badgeWidget: entry.value > 0 ? Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 240,
+                    child: PieChart(
+                      PieChartData(
+                        sectionsSpace: 3,
+                        centerSpaceRadius: 50,
+                        sections: dist.entries.map((entry) {
+                          final percentage = (entry.value / total * 100);
+                          
+                          return PieChartSectionData(
+                            value: entry.value.toDouble(),
+                            title: '${percentage.toStringAsFixed(1)}%',
+                            color: colors[entry.key],
+                            radius: 100,
+                            titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
                               color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
-                                  blurRadius: 4,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 2,
                                 ),
                               ],
                             ),
-                            child: Icon(
-                              icons[entry.key],
-                              color: colors[entry.key],
-                              size: 16,
-                            ),
-                          ) : null,
-                          badgePositionPercentageOffset: 1.3,
-                        );
-                      }).toList(),
-                      pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, pieTouchResponse) {},
+                            badgeWidget: entry.value > 0 ? Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                icons[entry.key],
+                                color: colors[entry.key],
+                                size: 16,
+                              ),
+                            ) : null,
+                            badgePositionPercentageOffset: 1.3,
+                          );
+                        }).toList(),
+                        pieTouchData: PieTouchData(
+                          touchCallback: (FlTouchEvent event, pieTouchResponse) {},
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: dist.entries.map((entry) {
-                    final percentage = (entry.value / total * 100);
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: colors[entry.key]?.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: dist.entries.map((entry) {
+                      final percentage = (entry.value / total * 100);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: colors[entry.key]?.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                icons[entry.key],
+                                color: colors[entry.key],
+                                size: 20,
+                              ),
                             ),
-                            child: Icon(
-                              icons[entry.key],
-                              color: colors[entry.key],
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  entry.key,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    entry.key,
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        height: 6,
-                                        decoration: BoxDecoration(
-                                          color: colors[entry.key]?.withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        child: FractionallySizedBox(
-                                          alignment: Alignment.centerLeft,
-                                          widthFactor: percentage / 100,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: colors[entry.key],
-                                              borderRadius: BorderRadius.circular(3),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          height: 6,
+                                          decoration: BoxDecoration(
+                                            color: colors[entry.key]?.withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          child: FractionallySizedBox(
+                                            alignment: Alignment.centerLeft,
+                                            widthFactor: percentage / 100,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: colors[entry.key],
+                                                borderRadius: BorderRadius.circular(3),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      '${entry.value}',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: colors[entry.key],
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '${entry.value}',
+                                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: colors[entry.key],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1268,36 +1264,31 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       'Delivery',
     ];
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.secondary.withValues(alpha: 0.05), Colors.white],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.1)),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.bar_chart, color: AppColors.secondary, size: 20),
                 ),
-                child: Icon(Icons.bar_chart, color: AppColors.secondary, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Service Quality Dimensions',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-              ),
-              const Spacer(),
+                const SizedBox(width: 12),
+                Text(
+                  'Service Quality Dimensions',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(

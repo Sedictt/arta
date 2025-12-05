@@ -1,0 +1,1971 @@
+ARTA SURVEY SYSTEM - TEST CASE DESIGN DOCUMENT
+
+================================================================================
+
+PROJECT INFORMATION
+Project Name: ARTA Customer Satisfaction Survey System
+Version: 1.0.0
+Test Date: October 2025
+Prepared By: QA Team
+Platforms: Web, Desktop (Windows/Linux/macOS), Mobile (Android/iOS)
+
+================================================================================
+
+TABLE OF CONTENTS
+1. Frontend Modules
+2. Backend Modules
+3. Integration Tests
+4. Security Tests
+5. Performance Tests
+6. Compatibility Tests
+
+================================================================================
+
+FRONTEND MODULES
+
+================================================================================
+
+MODULE 1: SURVEY SUBMISSION MODULE
+
+MODULE NAME: Survey Submission Module
+LOCATION: lib/main.dart (SurveyHomePage)
+PREREQUISITES: 
+  - Flutter app running
+  - Internet connection (optional for offline mode)
+ENVIRONMENT INFORMATION: 
+  - OS: Windows/Linux/Mac/Android/iOS
+  - Browser: Chrome/Firefox/Edge (for web)
+
+--------------------------------------------------------------------------------
+
+TEST CASE 1.1: Valid Survey Submission - Complete Data
+
+TEST CASE ID: TC-SURVEY-001
+TEST CASE DESCRIPTION: Verify that a user can successfully submit a complete survey with all valid data.
+TEST SCENARIO: User completes all 5 pages of the survey with valid information and submits successfully.
+
+TEST STEPS:
+
+Step 1 (TC-SURVEY-001-01):
+  Action: Navigate to Welcome Page and click "Start Survey" button
+  Test Input: Click action
+  Expected Result: Survey Instructions page loads successfully
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SURVEY-001-02):
+  Action: Click "Next" button on Instructions page
+  Test Input: Click action
+  Expected Result: Personal Information page loads
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SURVEY-001-03):
+  Action: Fill Personal Information form
+    - Select Date: 2025-10-28
+    - Select Client Type: "Citizen"
+    - Select Sex: "Male"
+    - Enter Age: 30
+    - Select Region: "NCR"
+    - Click "Next" button
+  Test Input: Date: 2025-10-28, ClientType: Citizen, Sex: Male, Age: 30, Region: NCR
+  Expected Result: CC Awareness page loads, all data is saved in memory
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-SURVEY-001-04):
+  Action: Answer Citizen's Charter questions
+    - Select CC1 Answer: "I know what a CC is and I saw this office's CC"
+    - Select CC2 Answer: "Easy to see"
+    - Select CC3 Answer: "Helped very much"
+    - Click "Next" button
+  Test Input: CC1, CC2, CC3 answers selected
+  Expected Result: Service Quality Dimensions page loads
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-SURVEY-001-05):
+  Action: Rate Service Quality Dimensions
+    - Rate all 9 SQD questions (SQD0 through SQD8) with score 5 (Very Satisfied emoji)
+    - Click "Next" button
+  Test Input: SQD0-8: All rated 5
+  Expected Result: Suggestions page loads
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-SURVEY-001-06):
+  Action: Submit survey
+    - Enter suggestions in text field: "Excellent service!"
+    - Click "Submit" button
+  Test Input: Suggestions text: "Excellent service!"
+  Expected Result: Success dialog is shown, survey data is saved to local storage and synced to backend
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 1.2: Invalid Survey Submission - Missing Required Fields
+
+TEST CASE ID: TC-SURVEY-002
+TEST CASE DESCRIPTION: Verify that the system prevents submission when required fields are missing.
+TEST SCENARIO: User attempts to proceed without filling required fields.
+
+TEST STEPS:
+
+Step 1 (TC-SURVEY-002-01):
+  Action: Start Survey without filling Personal Information
+    - Start Survey from Welcome Page
+    - Skip reading Instructions
+    - Click "Next" without filling Personal Information
+  Test Input: No data entered
+  Expected Result: Error message is displayed, user cannot proceed to next page
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SURVEY-002-02):
+  Action: Fill partial Personal Information
+    - Fill only Client Type field with "Citizen"
+    - Leave Age, Sex, and Region fields empty
+    - Click "Next" button
+  Test Input: ClientType: Citizen only, other fields empty
+  Expected Result: Error message "Please fill all required fields" is shown
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SURVEY-002-03):
+  Action: Skip CC questions
+    - Fill Personal Information completely
+    - Skip all CC (Citizen's Charter) questions
+    - Try to proceed to next page
+  Test Input: Personal data only, CC questions unanswered
+  Expected Result: Cannot proceed or warning message is shown
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-SURVEY-002-04):
+  Action: Skip SQD ratings
+    - Fill Personal Information and CC questions
+    - Skip all SQD (Service Quality Dimensions) ratings
+    - Click "Submit" button
+  Test Input: Missing SQD ratings
+  Expected Result: Error message "Please rate all questions" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 1.3: Boundary Value Testing - Age Field
+
+TEST CASE ID: TC-SURVEY-003
+TEST CASE DESCRIPTION: Test age field with boundary values to verify input validation.
+TEST SCENARIO: Enter minimum, maximum, and out-of-range age values.
+
+TEST STEPS:
+
+Step 1 (TC-SURVEY-003-01):
+  Action: Enter age below minimum
+  Test Input: Age: 0
+  Expected Result: Validation error "Age must be between 1 and 150"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SURVEY-003-02):
+  Action: Enter minimum valid age
+  Test Input: Age: 1
+  Expected Result: Input is accepted without errors
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SURVEY-003-03):
+  Action: Enter typical age
+  Test Input: Age: 30
+  Expected Result: Input is accepted without errors
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-SURVEY-003-04):
+  Action: Enter maximum valid age
+  Test Input: Age: 150
+  Expected Result: Input is accepted without errors
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-SURVEY-003-05):
+  Action: Enter age above maximum
+  Test Input: Age: 151
+  Expected Result: Validation error "Age must be between 1 and 150"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-SURVEY-003-06):
+  Action: Enter negative age
+  Test Input: Age: -5
+  Expected Result: Error message shown or field blocks negative input
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 7 (TC-SURVEY-003-07):
+  Action: Enter non-numeric characters
+  Test Input: Age: "ABC"
+  Expected Result: Validation error "Please enter a valid number"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 1.4: Offline Mode Testing
+
+TEST CASE ID: TC-SURVEY-004
+TEST CASE DESCRIPTION: Verify survey submission works in offline mode.
+TEST SCENARIO: Submit survey without internet connection.
+
+TEST STEPS:
+
+Step 1 (TC-SURVEY-004-01):
+  Action: Submit survey offline
+    - Disconnect internet connection
+    - Fill complete survey with valid data
+    - Click Submit button
+  Test Input: Complete survey data
+  Expected Result: Survey is saved locally in SharedPreferences, success message is shown
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SURVEY-004-02):
+  Action: Verify local storage
+    - Check SharedPreferences data
+  Test Input: None
+  Expected Result: Survey is stored in local SharedPreferences
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SURVEY-004-03):
+  Action: Sync when online
+    - Reconnect internet connection
+    - Open app
+  Test Input: None
+  Expected Result: Survey automatically syncs to backend API and MongoDB
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 2: ADMIN LOGIN MODULE
+
+MODULE NAME: Admin Authentication Module
+LOCATION: lib/screens/admin_login.dart, lib/services/auth_service.dart
+PREREQUISITES: 
+  - Default admin initialized (username: admin, password: admin123)
+  - App running
+ENVIRONMENT INFORMATION: 
+  - OS: Windows/Linux/Mac/Android/iOS
+  - Browser: Chrome/Firefox/Edge (for web)
+
+--------------------------------------------------------------------------------
+
+TEST CASE 2.1: Valid Admin Login
+
+TEST CASE ID: TC-LOGIN-001
+TEST CASE DESCRIPTION: Verify successful admin login with correct credentials.
+TEST SCENARIO: Admin enters correct username and password to access dashboard.
+
+TEST STEPS:
+
+Step 1 (TC-LOGIN-001-01):
+  Action: Login with valid credentials
+    - Navigate to Admin page
+    - Enter username: admin
+    - Enter password: admin123
+    - Click Login button
+  Test Input: Username: admin, Password: admin123
+  Expected Result: Redirect to Admin Dashboard, session is created and stored
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-LOGIN-001-02):
+  Action: Verify session token
+    - Check SharedPreferences for session token
+  Test Input: None
+  Expected Result: Session token is stored and valid for 8 hours
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-LOGIN-001-03):
+  Action: Check last login timestamp
+    - Query admin user data
+  Test Input: None
+  Expected Result: Last login timestamp is updated to current time
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 2.2: Invalid Login Attempts
+
+TEST CASE ID: TC-LOGIN-002
+TEST CASE DESCRIPTION: Verify login fails with incorrect credentials.
+TEST SCENARIO: Test various invalid login scenarios.
+
+TEST STEPS:
+
+Step 1 (TC-LOGIN-002-01):
+  Action: Login with wrong password
+  Test Input: Username: admin, Password: wrong123
+  Expected Result: Error message "Invalid credentials" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-LOGIN-002-02):
+  Action: Login with wrong username
+  Test Input: Username: wronguser, Password: admin123
+  Expected Result: Error message "Invalid credentials" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-LOGIN-002-03):
+  Action: Login with both wrong
+  Test Input: Username: wrong, Password: wrong
+  Expected Result: Error message "Invalid credentials" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-LOGIN-002-04):
+  Action: Leave username empty
+  Test Input: Username: (empty), Password: admin123
+  Expected Result: Error message "Username required" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-LOGIN-002-05):
+  Action: Leave password empty
+  Test Input: Username: admin, Password: (empty)
+  Expected Result: Error message "Password required" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-LOGIN-002-06):
+  Action: Leave both fields empty
+  Test Input: Both fields empty
+  Expected Result: Error message "Please fill all fields" is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 2.3: Password Security
+
+TEST CASE ID: TC-LOGIN-003
+TEST CASE DESCRIPTION: Verify password is hashed and secure.
+TEST SCENARIO: Test password hashing and storage security.
+
+TEST STEPS:
+
+Step 1 (TC-LOGIN-003-01):
+  Action: Check stored password format
+    - Inspect SharedPreferences admin data
+  Test Input: None
+  Expected Result: Password is stored as SHA-256 hash, not plaintext
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-LOGIN-003-02):
+  Action: Verify password masking in UI
+    - Type password in password field
+  Test Input: Password input
+  Expected Result: Password field shows dots/asterisks instead of characters
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-LOGIN-003-03):
+  Action: Test password with special characters
+  Test Input: Password: p@ssw0rd!#$
+  Expected Result: Password is accepted and hashed correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 2.4: Session Management
+
+TEST CASE ID: TC-LOGIN-004
+TEST CASE DESCRIPTION: Verify session validity and expiration.
+TEST SCENARIO: Test session timeout after 8 hours.
+
+TEST STEPS:
+
+Step 1 (TC-LOGIN-004-01):
+  Action: Login and wait
+    - Login successfully
+    - Wait or keep session active
+  Test Input: Login session
+  Expected Result: Session remains valid for 7 hours 59 minutes
+  Actual Result: __________
+  Status: __________
+  Comments: Manual test - requires time simulation
+
+Step 2 (TC-LOGIN-004-02):
+  Action: Check session after 8+ hours
+    - Modify session timestamp to simulate 8+ hours
+    - Try to access dashboard
+  Test Input: Expired session timestamp
+  Expected Result: Session is expired, user is redirected to login page
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-LOGIN-004-03):
+  Action: Test logout function
+    - Click logout button
+  Test Input: Click action
+  Expected Result: Session is cleared, user is redirected to login page
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 3: ADMIN DASHBOARD MODULE
+
+MODULE NAME: Admin Dashboard and Analytics Module
+LOCATION: lib/screens/admin_dashboard.dart
+PREREQUISITES: 
+  - Admin logged in successfully
+  - Survey data exists in database
+ENVIRONMENT INFORMATION: 
+  - OS: Windows/Linux/Mac/Android/iOS
+  - Browser: Chrome/Firefox/Edge (for web)
+
+--------------------------------------------------------------------------------
+
+TEST CASE 3.1: Dashboard Data Display
+
+TEST CASE ID: TC-DASHBOARD-001
+TEST CASE DESCRIPTION: Verify dashboard displays correct analytics and statistics.
+TEST SCENARIO: View dashboard with existing survey data.
+
+TEST STEPS:
+
+Step 1 (TC-DASHBOARD-001-01):
+  Action: View total responses count
+  Test Input: None
+  Expected Result: Correct total count of survey responses is displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-DASHBOARD-001-02):
+  Action: View average satisfaction score
+  Test Input: None
+  Expected Result: Average satisfaction score is calculated correctly (1-5 scale)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-DASHBOARD-001-03):
+  Action: View satisfaction distribution chart
+  Test Input: None
+  Expected Result: Pie chart shows correct percentages for each satisfaction level
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-DASHBOARD-001-04):
+  Action: View SQD averages chart
+  Test Input: None
+  Expected Result: Bar chart displays all 9 SQD average scores correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-DASHBOARD-001-05):
+  Action: View recent responses list
+  Test Input: None
+  Expected Result: Latest 10 survey responses are shown in list
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 3.2: Data Filtering
+
+TEST CASE ID: TC-DASHBOARD-002
+TEST CASE DESCRIPTION: Test filtering functionality on dashboard.
+TEST SCENARIO: Filter survey data by various criteria.
+
+TEST STEPS:
+
+Step 1 (TC-DASHBOARD-002-01):
+  Action: Filter by client type
+  Test Input: ClientType: Citizen
+  Expected Result: Only citizen responses are shown in dashboard
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-DASHBOARD-002-02):
+  Action: Filter by region
+  Test Input: Region: NCR
+  Expected Result: Only NCR responses are shown in dashboard
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-DASHBOARD-002-03):
+  Action: Filter by date range
+  Test Input: Start Date: 2025-10-01, End Date: 2025-10-31
+  Expected Result: Only October 2025 responses are shown
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-DASHBOARD-002-04):
+  Action: Apply multiple filters
+  Test Input: Client: Business, Region: Region III
+  Expected Result: Combined filters are applied correctly, showing only Business from Region III
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-DASHBOARD-002-05):
+  Action: Clear all filters
+  Test Input: Click "Clear" or "Reset Filters" button
+  Expected Result: All data is shown again without filters
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 3.3: Data Export
+
+TEST CASE ID: TC-DASHBOARD-003
+TEST CASE DESCRIPTION: Test CSV export functionality.
+TEST SCENARIO: Export survey data to CSV file.
+
+TEST STEPS:
+
+Step 1 (TC-DASHBOARD-003-01):
+  Action: Export all data
+    - Click "Export CSV" or "Download CSV" button
+  Test Input: Export action
+  Expected Result: CSV file downloads with all survey records
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-DASHBOARD-003-02):
+  Action: Verify CSV file format
+    - Open downloaded CSV file in Excel or text editor
+  Test Input: CSV file
+  Expected Result: File has proper headers and data is formatted correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-DASHBOARD-003-03):
+  Action: Export filtered data
+    - Apply filters (e.g., Client Type: Citizen)
+    - Export to CSV
+  Test Input: Filtered data export
+  Expected Result: CSV contains only filtered records
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-DASHBOARD-003-04):
+  Action: Export with no data
+    - Clear all survey data or use empty database
+    - Attempt to export
+  Test Input: Empty dataset
+  Expected Result: CSV with headers only or appropriate message shown
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 3.4: Dashboard Performance
+
+TEST CASE ID: TC-DASHBOARD-004
+TEST CASE DESCRIPTION: Test dashboard performance with large datasets.
+TEST SCENARIO: Load dashboard with varying amounts of survey data.
+
+TEST STEPS:
+
+Step 1 (TC-DASHBOARD-004-01):
+  Action: Load dashboard with 10 surveys
+  Test Input: 10 survey records
+  Expected Result: Dashboard loads instantly (less than 1 second)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-DASHBOARD-004-02):
+  Action: Load dashboard with 100 surveys
+  Test Input: 100 survey records
+  Expected Result: Dashboard loads quickly (less than 2 seconds)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-DASHBOARD-004-03):
+  Action: Load dashboard with 1000 surveys
+  Test Input: 1000 survey records
+  Expected Result: Dashboard loads within 5 seconds
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-DASHBOARD-004-04):
+  Action: Load dashboard with 10000 surveys
+  Test Input: 10000 survey records
+  Expected Result: Pagination is implemented, dashboard loads with acceptable performance
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+BACKEND MODULES
+
+================================================================================
+
+MODULE 4: SURVEY API ENDPOINTS
+
+MODULE NAME: Survey REST API
+LOCATION: backend/routes/survey.routes.js
+PREREQUISITES: 
+  - MongoDB running on localhost:27017 or MongoDB Atlas connected
+  - Backend server started on port 3000
+  - Node.js environment configured
+TESTER NAME: __________
+ENVIRONMENT INFORMATION: 
+  - Backend URL: http://localhost:3000
+  - Database: MongoDB
+  - Node.js version: 16+
+
+--------------------------------------------------------------------------------
+
+TEST CASE 4.1: POST /api/surveys - Valid Survey Submission
+
+TEST CASE ID: TC-API-SURVEY-001
+TEST CASE DESCRIPTION: Test successful survey submission via API.
+TEST SCENARIO: Submit valid survey data to API endpoint.
+
+TEST STEPS:
+
+Step 1 (TC-API-SURVEY-001-01):
+  Action: POST request with valid complete survey data
+  Test Input: 
+    POST http://localhost:3000/api/surveys
+    Headers: Content-Type: application/json
+    Body:
+    {
+      "clientType": "Citizen",
+      "sex": "Male",
+      "age": 30,
+      "region": "NCR",
+      "cc1Answer": "I know what a CC is",
+      "cc2Answer": "Easy to see",
+      "cc3Answer": "Helped very much",
+      "sqdAnswers": {
+        "SQD0": 5, "SQD1": 4, "SQD2": 5, "SQD3": 4,
+        "SQD4": 5, "SQD5": 4, "SQD6": 5, "SQD7": 5, "SQD8": 4
+      },
+      "suggestions": "Great service!"
+    }
+  Expected Result: 
+    - Status Code: 201
+    - Response: {"success": true, "message": "Survey submitted successfully", "data": {...}}
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-SURVEY-001-02):
+  Action: Verify data in MongoDB
+    - Connect to MongoDB
+    - Query surveys collection for the submitted record
+  Test Input: Database query
+  Expected Result: Survey record exists with correct data in MongoDB
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-SURVEY-001-03):
+  Action: Verify response structure
+    - Check response JSON structure
+  Test Input: API response
+  Expected Result: Response includes survey ID, timestamp, and all submitted fields
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 4.2: POST /api/surveys - Invalid Data Validation
+
+TEST CASE ID: TC-API-SURVEY-002
+TEST CASE DESCRIPTION: Test API validation for invalid survey data.
+TEST SCENARIO: Submit invalid data to trigger validation errors.
+
+TEST STEPS:
+
+Step 1 (TC-API-SURVEY-002-01):
+  Action: Submit with invalid client type
+  Test Input: clientType: "InvalidType"
+  Expected Result: Status 400, Error: "Invalid client type"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-SURVEY-002-02):
+  Action: Submit with invalid sex value
+  Test Input: sex: "Unknown"
+  Expected Result: Status 400, Error: "Invalid sex"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-SURVEY-002-03):
+  Action: Submit with age below minimum
+  Test Input: age: 0
+  Expected Result: Status 400, Error: "Age must be between 1 and 150"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-SURVEY-002-04):
+  Action: Submit with age above maximum
+  Test Input: age: 151
+  Expected Result: Status 400, Error: "Age must be between 1 and 150"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-API-SURVEY-002-05):
+  Action: Submit without required region field
+  Test Input: region: (omitted from request body)
+  Expected Result: Status 400, Error: "Region is required"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-API-SURVEY-002-06):
+  Action: Submit with suggestions too long
+  Test Input: suggestions: (2001 characters string)
+  Expected Result: Status 400, Error: "Suggestions too long"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 7 (TC-API-SURVEY-002-07):
+  Action: Submit with malformed JSON
+  Test Input: Invalid JSON syntax
+  Expected Result: Status 400, Error: "Invalid JSON" or similar parsing error
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 4.3: GET /api/surveys - Retrieve Surveys with Pagination
+
+TEST CASE ID: TC-API-SURVEY-003
+TEST CASE DESCRIPTION: Test survey retrieval with pagination parameters.
+TEST SCENARIO: Fetch surveys with different pagination settings.
+
+TEST STEPS:
+
+Step 1 (TC-API-SURVEY-003-01):
+  Action: Get first page with default limit
+  Test Input: GET /api/surveys?page=1&limit=10
+  Expected Result: Status 200, Returns 10 records with pagination info (totalPages, currentPage, totalRecords)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-SURVEY-003-02):
+  Action: Get second page
+  Test Input: GET /api/surveys?page=2&limit=10
+  Expected Result: Status 200, Returns next 10 records
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-SURVEY-003-03):
+  Action: Get page with custom limit
+  Test Input: GET /api/surveys?page=1&limit=5
+  Expected Result: Status 200, Returns exactly 5 records
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-SURVEY-003-04):
+  Action: Request page beyond available data
+  Test Input: GET /api/surveys?page=999&limit=10
+  Expected Result: Status 200, Returns empty array
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-API-SURVEY-003-05):
+  Action: Request with invalid page number
+  Test Input: GET /api/surveys?page=-1&limit=10
+  Expected Result: Status 400 or defaults to page 1
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 4.4: GET /api/surveys - Filtering
+
+TEST CASE ID: TC-API-SURVEY-004
+TEST CASE DESCRIPTION: Test survey filtering by various parameters.
+TEST SCENARIO: Apply different filter combinations.
+
+TEST STEPS:
+
+Step 1 (TC-API-SURVEY-004-01):
+  Action: Filter by client type
+  Test Input: GET /api/surveys?clientType=Citizen
+  Expected Result: Only surveys with clientType "Citizen" are returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-SURVEY-004-02):
+  Action: Filter by region
+  Test Input: GET /api/surveys?region=NCR
+  Expected Result: Only surveys from NCR region are returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-SURVEY-004-03):
+  Action: Filter by date range
+  Test Input: GET /api/surveys?startDate=2025-10-01&endDate=2025-10-31
+  Expected Result: Only surveys submitted in October 2025 are returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-SURVEY-004-04):
+  Action: Apply multiple filters
+  Test Input: GET /api/surveys?clientType=Business&region=Region%20III
+  Expected Result: Only Business surveys from Region III are returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-API-SURVEY-004-05):
+  Action: Case-insensitive region search
+  Test Input: GET /api/surveys?region=ncr
+  Expected Result: Case-insensitive match works, NCR surveys returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 4.5: GET /api/surveys/:id - Get Single Survey
+
+TEST CASE ID: TC-API-SURVEY-005
+TEST CASE DESCRIPTION: Test retrieving a single survey by ID.
+TEST SCENARIO: Fetch specific survey records by MongoDB ObjectId.
+
+TEST STEPS:
+
+Step 1 (TC-API-SURVEY-005-01):
+  Action: Get survey with valid ID
+  Test Input: GET /api/surveys/{valid_mongodb_id}
+  Expected Result: Status 200, Survey data returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-SURVEY-005-02):
+  Action: Get survey with non-existent ID
+  Test Input: GET /api/surveys/507f1f77bcf86cd799439011
+  Expected Result: Status 404, Error: "Survey not found"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-SURVEY-005-03):
+  Action: Get survey with invalid ID format
+  Test Input: GET /api/surveys/invalid-id-format
+  Expected Result: Status 500 or 400, Error message about invalid ID
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 4.6: DELETE /api/surveys/:id - Delete Survey
+
+TEST CASE ID: TC-API-SURVEY-006
+TEST CASE DESCRIPTION: Test survey deletion via API.
+TEST SCENARIO: Delete survey records from database.
+
+TEST STEPS:
+
+Step 1 (TC-API-SURVEY-006-01):
+  Action: Delete existing survey
+  Test Input: DELETE /api/surveys/{valid_id}
+  Expected Result: Status 200, Success message, Record removed from database
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-SURVEY-006-02):
+  Action: Delete non-existent survey
+  Test Input: DELETE /api/surveys/{invalid_id}
+  Expected Result: Status 404, Error: "Survey not found"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-SURVEY-006-03):
+  Action: Delete same survey twice
+  Test Input: DELETE same ID twice consecutively
+  Expected Result: First request: 200, Second request: 404
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 5: ADMIN API ENDPOINTS
+
+MODULE NAME: Admin Authentication API
+LOCATION: backend/routes/admin.routes.js
+PREREQUISITES: 
+  - MongoDB running
+  - Backend server started
+  - Default admin account created (username: admin, password: admin123)
+TESTER NAME: __________
+ENVIRONMENT INFORMATION: 
+  - Backend URL: http://localhost:3000
+  - JWT Secret configured in .env
+
+--------------------------------------------------------------------------------
+
+TEST CASE 5.1: POST /api/admin/login - Valid Login
+
+TEST CASE ID: TC-API-ADMIN-001
+TEST CASE DESCRIPTION: Test successful admin login via API.
+TEST SCENARIO: Login with correct credentials and receive JWT token.
+
+TEST STEPS:
+
+Step 1 (TC-API-ADMIN-001-01):
+  Action: POST login request with valid credentials
+  Test Input:
+    POST http://localhost:3000/api/admin/login
+    Body: {"username": "admin", "password": "admin123"}
+  Expected Result:
+    - Status 200
+    - JWT token returned in response
+    - Admin info (id, username, role) returned
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ADMIN-001-02):
+  Action: Verify JWT token validity
+    - Decode JWT token using jwt.io or similar
+  Test Input: JWT token from login response
+  Expected Result: Token contains admin ID and role, expires in 24 hours
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-ADMIN-001-03):
+  Action: Verify token expiry time
+  Test Input: Decoded token payload
+  Expected Result: Token expiration is set to 24 hours from issue time
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-ADMIN-001-04):
+  Action: Verify last login updated in database
+    - Query MongoDB for admin record
+  Test Input: Database query
+  Expected Result: lastLogin timestamp is updated to current time
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 5.2: POST /api/admin/login - Invalid Login
+
+TEST CASE ID: TC-API-ADMIN-002
+TEST CASE DESCRIPTION: Test login failures with invalid credentials.
+TEST SCENARIO: Various invalid login attempts.
+
+TEST STEPS:
+
+Step 1 (TC-API-ADMIN-002-01):
+  Action: Login with wrong password
+  Test Input: username: "admin", password: "wrongpassword"
+  Expected Result: Status 401, Error: "Invalid credentials"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ADMIN-002-02):
+  Action: Login with wrong username
+  Test Input: username: "wronguser", password: "admin123"
+  Expected Result: Status 401, Error: "Invalid credentials"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-ADMIN-002-03):
+  Action: Login with empty username
+  Test Input: username: "", password: "admin123"
+  Expected Result: Status 400, Error: "Username and password are required"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-ADMIN-002-04):
+  Action: Login with empty password
+  Test Input: username: "admin", password: ""
+  Expected Result: Status 400, Error: "Username and password are required"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-API-ADMIN-002-05):
+  Action: Login with missing request body
+  Test Input: No request body sent
+  Expected Result: Status 400, Error message about missing fields
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-API-ADMIN-002-06):
+  Action: Login with inactive admin account
+  Test Input: Admin account with isActive: false
+  Expected Result: Status 401, Error: "Invalid credentials"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 5.3: POST /api/admin/register - User Registration
+
+TEST CASE ID: TC-API-ADMIN-003
+TEST CASE DESCRIPTION: Test admin user registration.
+TEST SCENARIO: Register new admin users with various inputs.
+
+TEST STEPS:
+
+Step 1 (TC-API-ADMIN-003-01):
+  Action: Register new admin with valid data
+  Test Input:
+    POST /api/admin/register
+    Body: {"username": "newadmin", "password": "password123", "role": "admin"}
+  Expected Result: Status 201, User created successfully
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ADMIN-003-02):
+  Action: Register with duplicate username
+  Test Input: username: "admin" (already exists)
+  Expected Result: Status 400, Error: "Username already exists"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-ADMIN-003-03):
+  Action: Register with password too short
+  Test Input: password: "12345" (5 characters)
+  Expected Result: Status 400, Error: "Password must be at least 6 characters"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-ADMIN-003-04):
+  Action: Register with minimum valid password
+  Test Input: password: "123456" (exactly 6 characters)
+  Expected Result: Status 201, User created successfully
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-API-ADMIN-003-05):
+  Action: Register without username
+  Test Input: username field omitted
+  Expected Result: Status 400, Error: "Username and password are required"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-API-ADMIN-003-06):
+  Action: Register without password
+  Test Input: password field omitted
+  Expected Result: Status 400, Error: "Username and password are required"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 5.4: POST /api/admin/change-password - Password Change
+
+TEST CASE ID: TC-API-ADMIN-004
+TEST CASE DESCRIPTION: Test password change functionality.
+TEST SCENARIO: Change admin password with various scenarios.
+
+TEST STEPS:
+
+Step 1 (TC-API-ADMIN-004-01):
+  Action: Change password with valid inputs
+  Test Input:
+    POST /api/admin/change-password
+    Body: {"username": "admin", "currentPassword": "admin123", "newPassword": "newpass123"}
+  Expected Result: Status 200, Message: "Password changed successfully"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ADMIN-004-02):
+  Action: Verify new password works
+    - Login with new password
+  Test Input: username: "admin", password: "newpass123"
+  Expected Result: Login successful with new password
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-ADMIN-004-03):
+  Action: Change password with wrong current password
+  Test Input: currentPassword: "wrongpassword"
+  Expected Result: Status 401, Error: "Current password is incorrect"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-API-ADMIN-004-04):
+  Action: Change password with new password too short
+  Test Input: newPassword: "12345" (5 characters)
+  Expected Result: Status 400, Error: "New password must be at least 6 characters"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-API-ADMIN-004-05):
+  Action: Change password with missing fields
+  Test Input: Incomplete request (missing currentPassword)
+  Expected Result: Status 400, Error: "All fields are required"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-API-ADMIN-004-06):
+  Action: Change password for non-existent username
+  Test Input: username: "nonexistentuser"
+  Expected Result: Status 404, Error: "Admin not found"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 6: ANALYTICS API ENDPOINTS
+
+MODULE NAME: Analytics and Reporting API
+LOCATION: backend/routes/analytics.routes.js
+PREREQUISITES: 
+  - Survey data exists in MongoDB
+  - Backend server running
+TESTER NAME: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 6.1: GET /api/analytics/summary - Overall Summary
+
+TEST CASE ID: TC-API-ANALYTICS-001
+TEST CASE DESCRIPTION: Test analytics summary endpoint.
+TEST SCENARIO: Retrieve overall statistics from survey data.
+
+TEST STEPS:
+
+Step 1 (TC-API-ANALYTICS-001-01):
+  Action: Get summary statistics
+  Test Input: GET /api/analytics/summary
+  Expected Result:
+    - Status 200
+    - Returns totalSurveys, avgSatisfaction, and other aggregate metrics
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ANALYTICS-001-02):
+  Action: Verify calculation accuracy
+    - Manually calculate averages
+    - Compare with API response
+  Test Input: Database records
+  Expected Result: Averages calculated correctly match manual calculation
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-ANALYTICS-001-03):
+  Action: Get summary with empty database
+    - Clear all surveys from database
+    - Request summary
+  Test Input: Empty database
+  Expected Result: Returns zeros or appropriate default values
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 6.2: GET /api/analytics/satisfaction-distribution
+
+TEST CASE ID: TC-API-ANALYTICS-002
+TEST CASE DESCRIPTION: Test satisfaction distribution endpoint.
+TEST SCENARIO: Get breakdown of satisfaction levels.
+
+TEST STEPS:
+
+Step 1 (TC-API-ANALYTICS-002-01):
+  Action: Get satisfaction distribution
+  Test Input: GET /api/analytics/satisfaction-distribution
+  Expected Result:
+    - Status 200
+    - Returns counts for each satisfaction level (Very Satisfied, Satisfied, Neutral, etc.)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ANALYTICS-002-02):
+  Action: Verify percentage calculations
+    - Calculate percentages manually
+    - Verify they sum to 100%
+  Test Input: Distribution data
+  Expected Result: All percentages sum to 100%
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 6.3: GET /api/analytics/export - Data Export
+
+TEST CASE ID: TC-API-ANALYTICS-003
+TEST CASE DESCRIPTION: Test data export functionality via API.
+TEST SCENARIO: Export all survey data in JSON format.
+
+TEST STEPS:
+
+Step 1 (TC-API-ANALYTICS-003-01):
+  Action: Export all data
+  Test Input: GET /api/analytics/export
+  Expected Result:
+    - Status 200
+    - Returns JSON array of all surveys with complete data
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-API-ANALYTICS-003-02):
+  Action: Verify data completeness
+    - Check that all fields are included for each survey
+  Test Input: Export response
+  Expected Result: All survey fields present in export (date, clientType, sex, age, region, SQD, etc.)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-API-ANALYTICS-003-03):
+  Action: Export large dataset
+    - Insert 1000+ surveys
+    - Request export
+  Test Input: 1000+ survey records
+  Expected Result: Response completes within acceptable time (less than 10 seconds)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+INTEGRATION TESTS
+
+================================================================================
+
+MODULE 7: END-TO-END WORKFLOW
+
+MODULE NAME: Complete User Journey Integration
+PREREQUISITES: 
+  - Full system running (Frontend + Backend + Database)
+  - Clean test environment
+TESTER NAME: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 7.1: Complete Survey Flow (Online)
+
+TEST CASE ID: TC-E2E-001
+TEST CASE DESCRIPTION: Test complete survey submission flow with backend integration.
+TEST SCENARIO: User submits survey, admin views it in dashboard.
+
+TEST STEPS:
+
+Step 1 (TC-E2E-001-01):
+  Action: User completes and submits survey
+    - Open Flutter app
+    - Complete all survey pages
+    - Submit survey
+  Test Input: Complete survey data
+  Expected Result: Survey is submitted to backend API successfully
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-E2E-001-02):
+  Action: Verify survey in MongoDB
+    - Connect to MongoDB
+    - Query surveys collection
+  Test Input: Database query
+  Expected Result: Survey record exists in MongoDB with correct data
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-E2E-001-03):
+  Action: Admin logs into dashboard
+    - Navigate to admin login
+    - Enter credentials
+    - Login
+  Test Input: Username: admin, Password: admin123
+  Expected Result: Admin dashboard loads successfully
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-E2E-001-04):
+  Action: Admin views submitted survey
+    - Check recent responses list in dashboard
+  Test Input: Dashboard view
+  Expected Result: Newly submitted survey appears in recent responses list
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-E2E-001-05):
+  Action: Verify analytics updated
+    - Check total response count
+    - Check average satisfaction score
+  Test Input: Dashboard analytics
+  Expected Result: Total count increased by 1, averages recalculated with new data
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 7.2: Offline to Online Sync
+
+TEST CASE ID: TC-E2E-002
+TEST CASE DESCRIPTION: Test offline submission and online synchronization.
+TEST SCENARIO: Submit survey offline, then sync when connection is restored.
+
+TEST STEPS:
+
+Step 1 (TC-E2E-002-01):
+  Action: Disconnect network
+    - Turn off WiFi/disable network
+    - Verify app still functions
+  Test Input: Network disconnection
+  Expected Result: App remains functional in offline mode
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-E2E-002-02):
+  Action: Submit survey while offline
+    - Complete survey
+    - Submit
+  Test Input: Complete survey data
+  Expected Result: Survey saved locally in SharedPreferences, success message shown
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-E2E-002-03):
+  Action: Verify local storage
+    - Check SharedPreferences
+  Test Input: Local storage inspection
+  Expected Result: Survey data stored locally
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-E2E-002-04):
+  Action: Verify NOT in MongoDB yet
+    - Query MongoDB surveys collection
+  Test Input: Database query
+  Expected Result: Survey does not exist in backend yet
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 5 (TC-E2E-002-05):
+  Action: Reconnect network
+    - Turn WiFi back on
+  Test Input: Network reconnection
+  Expected Result: Network connection restored
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 6 (TC-E2E-002-06):
+  Action: Trigger synchronization
+    - Open app or wait for auto-sync
+  Test Input: App restart or background sync
+  Expected Result: Survey automatically syncs to backend API
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 7 (TC-E2E-002-07):
+  Action: Verify survey in MongoDB after sync
+    - Query MongoDB
+  Test Input: Database query
+  Expected Result: Survey now exists in MongoDB with correct data
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 7.3: Multi-Platform Consistency
+
+TEST CASE ID: TC-E2E-003
+TEST CASE DESCRIPTION: Test data consistency across different platforms.
+TEST SCENARIO: Submit survey from web, view from mobile admin app.
+
+TEST STEPS:
+
+Step 1 (TC-E2E-003-01):
+  Action: Submit survey from web browser
+    - Open web version in Chrome
+    - Complete and submit survey
+  Test Input: Web browser submission
+  Expected Result: Survey submitted successfully from web
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-E2E-003-02):
+  Action: Open mobile admin app
+    - Launch mobile app (Android or iOS)
+    - Login as admin
+  Test Input: Mobile device
+  Expected Result: Login successful, dashboard loads
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-E2E-003-03):
+  Action: View same survey on mobile
+    - Check recent responses
+    - Find survey submitted from web
+  Test Input: Dashboard view on mobile
+  Expected Result: Survey is visible on mobile dashboard
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-E2E-003-04):
+  Action: Verify data integrity
+    - Compare all fields between web submission and mobile view
+  Test Input: Survey data comparison
+  Expected Result: All fields match exactly between platforms
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 8: SECURITY TESTING
+
+MODULE NAME: Security and Vulnerability Testing
+PREREQUISITES: Full system running
+TESTER NAME: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 8.1: SQL/NoSQL Injection Attempts
+
+TEST CASE ID: TC-SEC-001
+TEST CASE DESCRIPTION: Test for injection vulnerabilities.
+TEST SCENARIO: Attempt various injection attacks.
+
+TEST STEPS:
+
+Step 1 (TC-SEC-001-01):
+  Action: SQL injection in survey suggestions
+  Test Input: suggestions: "'; DROP TABLE surveys--"
+  Expected Result: Input is sanitized, no code execution, error or safe storage
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SEC-001-02):
+  Action: NoSQL injection in login
+  Test Input: username: {"$gt": ""}, password: {"$gt": ""}
+  Expected Result: Request is blocked or sanitized, login fails
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SEC-001-03):
+  Action: XSS script injection
+  Test Input: suggestions: "<script>alert('XSS')</script>"
+  Expected Result: Script tags are escaped, not executed when displayed
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 8.2: Rate Limiting
+
+TEST CASE ID: TC-SEC-002
+TEST CASE DESCRIPTION: Test API rate limiting functionality.
+TEST SCENARIO: Exceed configured rate limits.
+
+TEST STEPS:
+
+Step 1 (TC-SEC-002-01):
+  Action: Send requests within limit
+    - Send 100 requests in 1 minute
+  Test Input: Automated script sending 100 requests
+  Expected Result: All requests are accepted (within configured limit)
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SEC-002-02):
+  Action: Exceed rate limit
+    - Send 101st request immediately
+  Test Input: One additional request
+  Expected Result: Status 429, Error: "Too many requests from this IP"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SEC-002-03):
+  Action: Wait for rate limit reset
+    - Wait 15 minutes (configured window)
+    - Send new request
+  Test Input: Request after waiting period
+  Expected Result: Rate limit resets, requests work again
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 8.3: Authentication Security
+
+TEST CASE ID: TC-SEC-003
+TEST CASE DESCRIPTION: Test authentication security measures.
+TEST SCENARIO: Various authentication attack scenarios.
+
+TEST STEPS:
+
+Step 1 (TC-SEC-003-01):
+  Action: Access admin dashboard without login
+    - Enter dashboard URL directly
+  Test Input: Direct URL access without authentication
+  Expected Result: Redirect to login page, access denied
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-SEC-003-02):
+  Action: Use expired JWT token
+    - Obtain token, wait 24+ hours
+    - Use expired token for API request
+  Test Input: Expired JWT token
+  Expected Result: Status 401, Error: "Token expired"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-SEC-003-03):
+  Action: Tamper with JWT token
+    - Modify token payload
+    - Use modified token
+  Test Input: Tampered JWT token
+  Expected Result: Status 401, Error: "Invalid token" or "Token verification failed"
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-SEC-003-04):
+  Action: Brute force login attempt
+    - Send 100 failed login attempts rapidly
+  Test Input: Automated failed login attempts
+  Expected Result: Rate limiting is applied, possible account lockout mechanism
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 9: PERFORMANCE TESTING
+
+MODULE NAME: Load and Performance Testing
+PREREQUISITES: Full system with test data generator
+TESTER NAME: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 9.1: Concurrent User Load
+
+TEST CASE ID: TC-PERF-001
+TEST CASE DESCRIPTION: Test system under concurrent user load.
+TEST SCENARIO: Multiple simultaneous survey submissions.
+
+TEST STEPS:
+
+Step 1 (TC-PERF-001-01):
+  Action: 10 concurrent survey submissions
+  Test Input: 10 simultaneous POST requests to /api/surveys
+  Expected Result: All 10 surveys submitted successfully
+  Actual Result: __________
+  Status: __________
+  Comments: Use Apache JMeter or k6 for load testing
+
+Step 2 (TC-PERF-001-02):
+  Action: 50 concurrent submissions
+  Test Input: 50 simultaneous requests
+  Expected Result: All processed successfully within 10 seconds
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-PERF-001-03):
+  Action: 100 concurrent submissions
+  Test Input: 100 simultaneous requests
+  Expected Result: Acceptable performance, all processed within 30 seconds
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-PERF-001-04):
+  Action: Monitor server resources during load
+  Test Input: Check CPU, Memory, Network usage
+  Expected Result: CPU usage less than 80%, Memory usage less than 80%
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 9.2: Database Query Performance
+
+TEST CASE ID: TC-PERF-002
+TEST CASE DESCRIPTION: Test database query performance with large datasets.
+TEST SCENARIO: Query surveys with varying dataset sizes.
+
+TEST STEPS:
+
+Step 1 (TC-PERF-002-01):
+  Action: Query 1000 surveys
+  Test Input: GET /api/surveys with 1000 records in database
+  Expected Result: Response time less than 2 seconds
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-PERF-002-02):
+  Action: Query 10000 surveys
+  Test Input: GET /api/surveys with 10000 records
+  Expected Result: Response time less than 5 seconds
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-PERF-002-03):
+  Action: Complex analytics aggregation
+  Test Input: GET /api/analytics/summary with large dataset
+  Expected Result: Response time less than 10 seconds
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-PERF-002-04):
+  Action: Verify database indexes
+  Test Input: Check MongoDB indexes
+  Expected Result: Indexes exist on submittedAt, clientType, region fields
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+MODULE 10: COMPATIBILITY TESTING
+
+MODULE NAME: Cross-Platform and Browser Compatibility
+PREREQUISITES: App built for multiple platforms
+TESTER NAME: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 10.1: Browser Compatibility (Web)
+
+TEST CASE ID: TC-COMPAT-001
+TEST CASE DESCRIPTION: Test web app across different browsers.
+TEST SCENARIO: Run application on major browsers.
+
+TEST STEPS:
+
+Step 1 (TC-COMPAT-001-01):
+  Action: Test on Google Chrome
+  Test Input: Chrome browser (latest version)
+  Expected Result: All features work correctly, UI renders properly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-COMPAT-001-02):
+  Action: Test on Mozilla Firefox
+  Test Input: Firefox browser (latest version)
+  Expected Result: All features work correctly, UI renders properly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-COMPAT-001-03):
+  Action: Test on Microsoft Edge
+  Test Input: Edge browser (latest version)
+  Expected Result: All features work correctly, UI renders properly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 4 (TC-COMPAT-001-04):
+  Action: Test on Safari
+  Test Input: Safari browser (latest version on macOS)
+  Expected Result: All features work correctly, UI renders properly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 10.2: Mobile Platform Testing
+
+TEST CASE ID: TC-COMPAT-002
+TEST CASE DESCRIPTION: Test mobile applications.
+TEST SCENARIO: Test on Android and iOS devices.
+
+TEST STEPS:
+
+Step 1 (TC-COMPAT-002-01):
+  Action: Test on Android device
+  Test Input: Android phone (Android 10+)
+  Expected Result: App installs, launches, and functions correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-COMPAT-002-02):
+  Action: Test on iOS device
+  Test Input: iPhone (iOS 14+)
+  Expected Result: App installs, launches, and functions correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-COMPAT-002-03):
+  Action: Test on tablet
+  Test Input: iPad or Android tablet
+  Expected Result: Responsive layout works, all features functional
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+--------------------------------------------------------------------------------
+
+TEST CASE 10.3: Desktop Platform Testing
+
+TEST CASE ID: TC-COMPAT-003
+TEST CASE DESCRIPTION: Test desktop applications.
+TEST SCENARIO: Test on Windows, macOS, and Linux.
+
+TEST STEPS:
+
+Step 1 (TC-COMPAT-003-01):
+  Action: Test on Windows
+  Test Input: Windows 10 or Windows 11
+  Expected Result: App installs and runs correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 2 (TC-COMPAT-003-02):
+  Action: Test on macOS
+  Test Input: macOS (latest version)
+  Expected Result: App installs and runs correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+Step 3 (TC-COMPAT-003-03):
+  Action: Test on Linux
+  Test Input: Ubuntu or Debian Linux
+  Expected Result: App installs and runs correctly
+  Actual Result: __________
+  Status: __________
+  Comments: __________
+
+================================================================================
+
+TEST EXECUTION SUMMARY
+
+Total Test Cases: 154
+
+Module Breakdown:
+- Survey Submission Module: 20 test cases
+- Admin Login Module: 16 test cases
+- Admin Dashboard Module: 18 test cases
+- Survey API Endpoints: 25 test cases
+- Admin API Endpoints: 22 test cases
+- Analytics API Endpoints: 8 test cases
+- End-to-End Workflow: 15 test cases
+- Security Testing: 12 test cases
+- Performance Testing: 8 test cases
+- Compatibility Testing: 10 test cases
+
+Test Execution Tracking:
+- Total Test Cases: 154
+- Passed: __________
+- Failed: __________
+- Blocked: __________
+- Not Executed: __________
+- Pass Rate: __________%
+
+================================================================================
+
+DEFECT TRACKING TEMPLATE
+
+Defect ID: __________
+Module: __________
+Test Case ID: __________
+Severity: (Critical / High / Medium / Low)
+Description: __________
+Steps to Reproduce: __________
+Expected Result: __________
+Actual Result: __________
+Status: (Open / In Progress / Resolved / Closed)
+Assigned To: __________
+Date Reported: __________
+Date Resolved: __________
+Comments: __________
+
+================================================================================
+
+NOTES FOR TESTERS
+
+Setup Instructions:
+1. Backend Setup:
+   - Navigate to backend folder
+   - Run: npm install
+   - Configure .env file with MongoDB URI and settings
+   - Run: node scripts/init-db.js
+   - Start server: npm run dev
+   - Backend will run on http://localhost:3000
+
+2. Frontend Setup:
+   - Install Flutter dependencies: flutter pub get
+   - Run on web: flutter run -d chrome
+   - Run on desktop: flutter run -d windows (or macos, linux)
+   - Run on mobile: flutter run -d <device-id>
+
+3. Database Setup:
+   - Ensure MongoDB is running on localhost:27017 or configure MongoDB Atlas URI
+   - Use MongoDB Compass to inspect database
+
+4. Test Data:
+   - Use backend/scripts/init-db.js to initialize test data
+   - Use lib/utils/test_data_generator.dart for generating sample surveys
+
+Test Tools Recommended:
+- API Testing: Postman, Thunder Client, curl, Insomnia
+- Load Testing: Apache JMeter, k6, Artillery
+- Browser Testing: Selenium WebDriver, Playwright, Cypress
+- Mobile Testing: Flutter DevTools, Xcode Instruments, Android Studio Profiler
+- Database: MongoDB Compass, Studio 3T
+- JWT Debugging: jwt.io
+
+Critical Test Paths (Must Test):
+1. Complete survey submission flow (TC-E2E-001)
+2. Admin login and dashboard access (TC-LOGIN-001, TC-DASHBOARD-001)
+3. Data persistence and synchronization (TC-E2E-002)
+4. Security measures (TC-SEC-001, TC-SEC-003)
+5. API endpoints functionality (TC-API-SURVEY-001, TC-API-ADMIN-001)
+
+Known Limitations:
+- Offline sync is manual, not automatic background sync
+- Rate limiting is per IP, not per user account
+- No email verification for admin registration
+- Default admin password should be changed in production
+
+================================================================================
+
+Document Version: 1.0
+Last Updated: October 2025
+Status: Ready for Test Execution
+Prepared By: QA Team
+
+================================================================================
+END OF TEST CASE DOCUMENT
+================================================================================
