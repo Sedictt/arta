@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../main.dart';
 
@@ -70,10 +69,7 @@ class QRCodeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: 1,
-                      ),
+                      border: Border.all(color: AppColors.border, width: 1),
                     ),
                     child: QrImageView(
                       data: surveyUrl,
@@ -99,9 +95,7 @@ class QRCodeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.background,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.border,
-                      ),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: Row(
                       children: [
@@ -114,10 +108,11 @@ class QRCodeScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             surveyUrl,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontFamily: 'monospace',
-                              color: AppColors.textPrimary,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  fontFamily: 'monospace',
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
                         ),
                       ],
@@ -132,7 +127,9 @@ class QRCodeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,10 +144,11 @@ class QRCodeScreen extends StatelessWidget {
                             const SizedBox(width: 8),
                             Text(
                               'How to Use',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
                             ),
                           ],
                         ),
@@ -160,10 +158,11 @@ class QRCodeScreen extends StatelessWidget {
                           '2. Point at the QR code\n'
                           '3. Tap the notification to open survey\n'
                           '4. Complete the survey offline or online',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textPrimary,
-                            height: 1.6,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: AppColors.textPrimary,
+                                height: 1.6,
+                              ),
                         ),
                       ],
                     ),
@@ -179,7 +178,9 @@ class QRCodeScreen extends StatelessWidget {
                         // In production, this would enable kiosk mode
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Kiosk mode would be enabled here'),
+                            content: const Text(
+                              'Kiosk mode would be enabled here',
+                            ),
                             backgroundColor: AppColors.primary,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -190,7 +191,10 @@ class QRCodeScreen extends StatelessWidget {
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: AppColors.primary, width: 1),
+                        side: const BorderSide(
+                          color: AppColors.primary,
+                          width: 1,
+                        ),
                         foregroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

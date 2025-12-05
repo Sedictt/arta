@@ -18,28 +18,29 @@ import 'package:file_selector/file_selector.dart';
 
 class AdminDashboard extends StatefulWidget {
   final AdminUser currentUser;
-  
+
   const AdminDashboard({super.key, required this.currentUser});
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProviderStateMixin {
+class _AdminDashboardState extends State<AdminDashboard>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final SurveyService _surveyService = SurveyService();
   final AuthService _authService = AuthService();
   final ExportService _exportService = ExportService();
-  
+
   List<SurveyResponse> _recentResponses = [];
   List<SurveyResponse> _allResponses = [];
   bool _isLoading = true;
-  
+
   // Filters
   String? _selectedRegion;
   String? _selectedService;
   DateTimeRange? _selectedDateRange;
-  
+
   @override
   void initState() {
     super.initState();
@@ -47,23 +48,24 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     int tabCount = 2; // Analytics, Export
     if (widget.currentUser.hasPermission('edit_survey')) tabCount++;
     if (widget.currentUser.hasPermission('manage_users')) tabCount++;
-    
+
     _tabController = TabController(length: tabCount, vsync: this);
     _loadDashboardData();
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   List<SurveyResponse> get _filteredResponses {
     return _allResponses.where((response) {
       if (_selectedRegion != null && response.region != _selectedRegion) {
         return false;
       }
-      if (_selectedService != null && response.serviceAvailed != _selectedService) {
+      if (_selectedService != null &&
+          response.serviceAvailed != _selectedService) {
         return false;
       }
       if (_selectedDateRange != null) {
@@ -80,7 +82,11 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
   Widget _buildTrendChart() {
     final Map<DateTime, int> daily = {};
     for (final r in _filteredResponses) {
-      final d = DateTime(r.submittedAt.year, r.submittedAt.month, r.submittedAt.day);
+      final d = DateTime(
+        r.submittedAt.year,
+        r.submittedAt.month,
+        r.submittedAt.day,
+      );
       daily[d] = (daily[d] ?? 0) + 1;
     }
     final dates = daily.keys.toList()..sort();
@@ -91,7 +97,9 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       spots.add(FlSpot(i.toDouble(), (daily[dates[i]] ?? 0).toDouble()));
     }
 
-    final maxY = spots.isEmpty ? 10.0 : spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) * 1.2;
+    final maxY = spots.isEmpty
+        ? 10.0
+        : spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) * 1.2;
 
     return Card(
       child: Padding(
@@ -107,7 +115,11 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.show_chart, color: AppColors.primary, size: 20),
+                  child: Icon(
+                    Icons.show_chart,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -119,7 +131,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -190,17 +205,19 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 32,
-                        interval: dates.length > 10 ? (dates.length / 7).ceilToDouble() : 1,
+                        interval: dates.length > 10
+                            ? (dates.length / 7).ceilToDouble()
+                            : 1,
                         getTitlesWidget: (value, meta) {
                           final idx = value.toInt();
-                          if (idx < 0 || idx >= dates.length) return const SizedBox.shrink();
+                          if (idx < 0 || idx >= dates.length)
+                            return const SizedBox.shrink();
                           return Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               DateFormat('MMM dd').format(dates[idx]),
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(color: AppColors.textSecondary),
                             ),
                           );
                         },
@@ -214,15 +231,18 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toInt().toString(),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(color: AppColors.textSecondary),
                           );
                         },
                       ),
                     ),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   borderData: FlBorderData(show: false),
                   lineTouchData: LineTouchData(
@@ -232,7 +252,11 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                           final date = dates[spot.x.toInt()];
                           return LineTooltipItem(
                             '${DateFormat('MMM dd, yyyy').format(date)}\n${spot.y.toInt()} responses',
-                            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                            const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           );
                         }).toList();
                       },
@@ -252,116 +276,132 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     final serviceCount = <String, int>{};
     final regionCount = <String, int>{};
     for (final r in _filteredResponses) {
-      serviceCount[r.serviceAvailed ?? 'Unknown'] = (serviceCount[r.serviceAvailed ?? 'Unknown'] ?? 0) + 1;
+      serviceCount[r.serviceAvailed ?? 'Unknown'] =
+          (serviceCount[r.serviceAvailed ?? 'Unknown'] ?? 0) + 1;
       regionCount[r.region] = (regionCount[r.region] ?? 0) + 1;
     }
 
-    final topServices = serviceCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    final topRegions = regionCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final topServices = serviceCount.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final topRegions = regionCount.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Top Services',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ...topServices.take(5).map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                e.key,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.secondary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                e.value.toString(),
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.secondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 900;
+
+        if (isWide) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildBreakdownCard(
+                  'Top Services',
+                  topServices,
+                  AppColors.secondary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildBreakdownCard(
+                  'Top Regions',
+                  topRegions,
+                  AppColors.secondary,
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Column(
+            children: [
+              _buildBreakdownCard(
+                'Top Services',
+                topServices,
+                AppColors.secondary,
+              ),
+              const SizedBox(height: 16),
+              _buildBreakdownCard(
+                'Top Regions',
+                topRegions,
+                AppColors.secondary,
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildBreakdownCard(
+    String title,
+    List<MapEntry<String, int>> data,
+    Color color,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Top Regions',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+            const SizedBox(height: 16),
+            if (data.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  'No data available',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              )
+            else
+              ...data
+                  .take(5)
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              e.key,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: AppColors.textPrimary),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              e.value.toString(),
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: color,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ...topRegions.take(5).map((e) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                e.key,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.secondary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                e.value.toString(),
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.secondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                ],
-              ),
-            ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -398,30 +438,44 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
 
   double _computeSatisfactionRate(List<SurveyResponse> list) {
     if (list.isEmpty) return 0.0;
-    final satisfied = list.where((r) => r.satisfactionLevel == 'Very Satisfied' || r.satisfactionLevel == 'Satisfied').length;
+    final satisfied = list
+        .where(
+          (r) =>
+              r.satisfactionLevel == 'Very Satisfied' ||
+              r.satisfactionLevel == 'Satisfied',
+        )
+        .length;
     return satisfied / list.length * 100;
   }
 
   double _computeAwarenessRate(List<SurveyResponse> list) {
     if (list.isEmpty) return 0.0;
-    final aware = list.where((r) => r.cc1Answer != null && r.cc1Answer!.contains('know what a CC is')).length;
+    final aware = list
+        .where(
+          (r) =>
+              r.cc1Answer != null && r.cc1Answer!.contains('know what a CC is'),
+        )
+        .length;
     return aware / list.length * 100;
   }
 
   Future<void> _loadDashboardData() async {
     setState(() => _isLoading = true);
-    
+
     _allResponses = await _surveyService.getAllSurveyResponses();
     _recentResponses = _allResponses.reversed.take(10).toList();
-    
+
     setState(() => _isLoading = false);
   }
-  
+
   Future<void> _generateTestData() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Generate Test Data', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Generate Test Data',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: Text(
           'This will generate 50 random survey responses for testing. Continue?',
           style: GoogleFonts.poppins(),
@@ -433,35 +487,46 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-            child: Text('Generate', style: GoogleFonts.poppins(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+            ),
+            child: Text(
+              'Generate',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       setState(() => _isLoading = true);
-      
+
       await TestDataGenerator.generateBalancedTestData(totalResponses: 50);
       await _loadDashboardData();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('50 test responses generated!', style: GoogleFonts.poppins()),
+            content: Text(
+              '50 test responses generated!',
+              style: GoogleFonts.poppins(),
+            ),
             backgroundColor: Colors.green,
           ),
         );
       }
     }
   }
-  
+
   Future<void> _clearAllData() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Clear All Data', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Clear All Data',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: Text(
           'This will permanently delete all survey responses. This action cannot be undone!',
           style: GoogleFonts.poppins(),
@@ -474,18 +539,21 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('Delete All', style: GoogleFonts.poppins(color: Colors.white)),
+            child: Text(
+              'Delete All',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       setState(() => _isLoading = true);
-      
+
       await TestDataGenerator.clearAllData();
       await _loadDashboardData();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -506,15 +574,17 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       const Tab(icon: Icon(Icons.dashboard, size: 20), text: 'Analytics'),
       const Tab(icon: Icon(Icons.download, size: 20), text: 'Export'),
     ];
-    
+
     if (widget.currentUser.hasPermission('edit_survey')) {
-      tabs.add(const Tab(icon: Icon(Icons.edit, size: 20), text: 'Survey Editor'));
+      tabs.add(
+        const Tab(icon: Icon(Icons.edit, size: 20), text: 'Survey Editor'),
+      );
     }
-    
+
     if (widget.currentUser.hasPermission('manage_users')) {
       tabs.add(const Tab(icon: Icon(Icons.people, size: 20), text: 'Users'));
     }
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -592,7 +662,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   ),
                 ),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: AppColors.textSecondary,
+                  ),
                   onSelected: (value) async {
                     if (value == 'logout') {
                       await _authService.logout();
@@ -610,9 +683,18 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                       value: 'logout',
                       child: Row(
                         children: [
-                          Icon(Icons.logout, size: 18, color: Colors.red.shade400),
+                          Icon(
+                            Icons.logout,
+                            size: 18,
+                            color: Colors.red.shade400,
+                          ),
                           const SizedBox(width: 8),
-                          Text('Logout', style: GoogleFonts.poppins(color: Colors.red.shade400)),
+                          Text(
+                            'Logout',
+                            style: GoogleFonts.poppins(
+                              color: Colors.red.shade400,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -623,7 +705,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                         children: [
                           const Icon(Icons.add_chart, size: 18),
                           const SizedBox(width: 8),
-                          Text('Generate Test Data', style: GoogleFonts.poppins()),
+                          Text(
+                            'Generate Test Data',
+                            style: GoogleFonts.poppins(),
+                          ),
                         ],
                       ),
                     ),
@@ -662,7 +747,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primary.withOpacity(0.8),
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -698,19 +786,19 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                         ),
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // Filters (Moved to Top)
                       _buildFilterControls(),
                       const SizedBox(height: 24),
-                      
+
                       // Key Metrics
                       _buildStatsCards(),
                       const SizedBox(height: 24),
-                      
+
                       // Primary Trend Chart (Full Width)
                       _buildTrendChart(),
                       const SizedBox(height: 24),
-                      
+
                       // Secondary Charts (Side by Side)
                       LayoutBuilder(
                         builder: (context, constraints) {
@@ -734,12 +822,12 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                           }
                         },
                       ),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Breakdowns
                       _buildTopBreakdowns(),
-                      
+
                       const SizedBox(height: 24),
                       _buildRecentResponses(),
                     ],
@@ -761,13 +849,14 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
   // Integrated filter controls with improved UI
   Widget _buildFilterControls() {
     final regions = _allResponses.map((r) => r.region).toSet().toList()..sort();
-    final services = _allResponses
-        .map((r) => r.serviceAvailed)
-        .where((s) => s != null)
-        .cast<String>()
-        .toSet()
-        .toList()
-      ..sort();
+    final services =
+        _allResponses
+            .map((r) => r.serviceAvailed)
+            .where((s) => s != null)
+            .cast<String>()
+            .toSet()
+            .toList()
+          ..sort();
 
     return Card(
       child: Padding(
@@ -788,7 +877,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.secondary,
                     borderRadius: BorderRadius.circular(20),
@@ -804,43 +896,54 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
               ],
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _selectedRegion,
-                    decoration: const InputDecoration(
-                      labelText: 'Region',
-                      prefixIcon: Icon(Icons.location_on, size: 18),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final regionDropdown = DropdownButtonFormField<String>(
+                  initialValue: _selectedRegion,
+                  decoration: const InputDecoration(
+                    labelText: 'Region',
+                    prefixIcon: Icon(Icons.location_on, size: 18),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    items: [
-                      const DropdownMenuItem(value: null, child: Text('All Regions')),
-                      ...regions.map((r) => DropdownMenuItem(value: r, child: Text(r))),
-                    ],
-                    onChanged: (value) => setState(() => _selectedRegion = value),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 3,
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _selectedService,
-                    decoration: const InputDecoration(
-                      labelText: 'Service',
-                      prefixIcon: Icon(Icons.business_center, size: 18),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  items: [
+                    const DropdownMenuItem(
+                      value: null,
+                      child: Text('All Regions'),
                     ),
-                    items: [
-                      const DropdownMenuItem(value: null, child: Text('All Services')),
-                      ...services.map((s) => DropdownMenuItem(value: s, child: Text(s))),
-                    ],
-                    onChanged: (value) => setState(() => _selectedService = value),
+                    ...regions.map(
+                      (r) => DropdownMenuItem(value: r, child: Text(r)),
+                    ),
+                  ],
+                  onChanged: (value) => setState(() => _selectedRegion = value),
+                );
+
+                final serviceDropdown = DropdownButtonFormField<String>(
+                  initialValue: _selectedService,
+                  decoration: const InputDecoration(
+                    labelText: 'Service',
+                    prefixIcon: Icon(Icons.business_center, size: 18),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton.icon(
+                  items: [
+                    const DropdownMenuItem(
+                      value: null,
+                      child: Text('All Services'),
+                    ),
+                    ...services.map(
+                      (s) => DropdownMenuItem(value: s, child: Text(s)),
+                    ),
+                  ],
+                  onChanged: (value) =>
+                      setState(() => _selectedService = value),
+                );
+
+                final dateButton = ElevatedButton.icon(
                   onPressed: () async {
                     final picked = await showDateRangePicker(
                       context: context,
@@ -856,49 +959,99 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                     foregroundColor: AppColors.primary,
                     elevation: 0,
                     side: BorderSide(color: AppColors.border),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   icon: const Icon(Icons.date_range, size: 18),
                   label: Text(
                     _selectedDateRange == null
                         ? 'Date Range'
                         : '${DateFormat('MMM dd').format(_selectedDateRange!.start)} - ${DateFormat('MMM dd').format(_selectedDateRange!.end)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primary,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: AppColors.primary),
                   ),
-                ),
-                if (_selectedRegion != null || _selectedService != null || _selectedDateRange != null) ...[
-                  const SizedBox(width: 12),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _selectedRegion = null;
-                        _selectedService = null;
-                        _selectedDateRange = null;
-                      });
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    icon: const Icon(Icons.clear, size: 18),
-                    label: const Text('Clear'),
-                  ),
-                ],
-              ],
+                );
+
+                final clearButton =
+                    (_selectedRegion != null ||
+                        _selectedService != null ||
+                        _selectedDateRange != null)
+                    ? OutlinedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _selectedRegion = null;
+                            _selectedService = null;
+                            _selectedDateRange = null;
+                          });
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.clear, size: 18),
+                        label: const Text('Clear'),
+                      )
+                    : null;
+
+                if (constraints.maxWidth > 700) {
+                  return Row(
+                    children: [
+                      Expanded(flex: 2, child: regionDropdown),
+                      const SizedBox(width: 12),
+                      Expanded(flex: 3, child: serviceDropdown),
+                      const SizedBox(width: 12),
+                      dateButton,
+                      if (clearButton != null) ...[
+                        const SizedBox(width: 12),
+                        clearButton,
+                      ],
+                    ],
+                  );
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: regionDropdown),
+                          const SizedBox(width: 12),
+                          Expanded(child: serviceDropdown),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(child: dateButton),
+                          if (clearButton != null) ...[
+                            const SizedBox(width: 12),
+                            Expanded(child: clearButton),
+                          ],
+                        ],
+                      ),
+                    ],
+                  );
+                }
+              },
             ),
           ],
         ),
       ),
     );
   }
-  
-  
-  
+
   Widget _buildExportTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -912,20 +1065,57 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
               color: AppColors.textPrimary,
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Export survey data in various formats for reporting and analysis',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
           const SizedBox(height: 24),
-          _buildExportCard('Excel Report', 'Save Excel-like report as JSON (preview)', Icons.table_chart, Colors.green, _exportExcelJSONSaveAs),
+          _buildExportCard(
+            'PDF Report',
+            'Generate a comprehensive PDF report with executive summary, charts analysis, and recommendations',
+            Icons.picture_as_pdf,
+            Colors.red,
+            _exportPDFSaveAs,
+          ),
           const SizedBox(height: 16),
-          _buildExportCard('PDF Report', 'Save PDF-like report as JSON (preview)', Icons.picture_as_pdf, Colors.red, _exportPDFJSONSaveAs),
+          _buildExportCard(
+            'Excel Report',
+            'Export detailed CSV with summary statistics, SQD breakdown, and all raw data (Excel compatible)',
+            Icons.table_chart,
+            Colors.green,
+            _exportExcelSaveAs,
+          ),
           const SizedBox(height: 16),
-          _buildExportCard('ARTA Report', 'Save ARTA-compliant report as JSON (preview)', Icons.verified, Colors.blue, _exportARTAJSONSaveAs),
+          _buildExportCard(
+            'ARTA Compliance Report',
+            'Generate ARTA-compliant JSON report for government compliance reporting',
+            Icons.verified,
+            Colors.blue,
+            _exportARTAJSONSaveAs,
+          ),
           const SizedBox(height: 16),
-          _buildExportCard('CSV Format', 'Export raw data in CSV (Save As...)', Icons.description, Colors.orange, _exportCSVSaveAs),
+          _buildExportCard(
+            'Raw CSV Data',
+            'Export raw survey response data in CSV format for custom analysis',
+            Icons.description,
+            Colors.orange,
+            _exportCSVSaveAs,
+          ),
         ],
       ),
     );
   }
-  
-  Widget _buildExportCard(String title, String desc, IconData icon, Color color, VoidCallback onTap) {
+
+  Widget _buildExportCard(
+    String title,
+    String desc,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -963,15 +1153,17 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, color: AppColors.textSecondary, size: 16),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: AppColors.textSecondary,
+                size: 16,
+              ),
             ],
           ),
         ),
       ),
     );
   }
-  
-  
 
   Future<void> _exportCSVSaveAs() async {
     final config = ExportConfig(
@@ -982,25 +1174,46 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       serviceType: _selectedService,
     );
     final csv = await _exportService.exportToCSV(_allResponses, config);
-    
-    final suggestedName = 'survey_export_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
+
+    final suggestedName =
+        'survey_export_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
     final saveLocation = await getSaveLocation(
       suggestedName: suggestedName,
-      acceptedTypeGroups: [XTypeGroup(label: 'CSV', extensions: ['csv'])],
+      acceptedTypeGroups: [
+        XTypeGroup(label: 'CSV', extensions: ['csv']),
+      ],
     );
     if (saveLocation == null) return;
 
     final data = Uint8List.fromList(utf8.encode(csv));
-    final xfile = XFile.fromData(data, mimeType: 'text/csv', name: suggestedName);
+    final xfile = XFile.fromData(
+      data,
+      mimeType: 'text/csv',
+      name: suggestedName,
+    );
     await xfile.saveTo(saveLocation.path);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('CSV saved', style: GoogleFonts.poppins()), backgroundColor: AppColors.success),
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 12),
+            Text(
+              'CSV data exported successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     );
   }
 
-  Future<void> _exportExcelJSONSaveAs() async {
+  Future<void> _exportExcelSaveAs() async {
     final config = ExportConfig(
       format: ExportFormat.excel,
       startDate: _selectedDateRange?.start,
@@ -1009,11 +1222,48 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       serviceType: _selectedService,
       includeCharts: true,
     );
-    final data = await _exportService.exportToExcel(_allResponses, config);
-    await _saveJsonData(data, suggestedName: 'excel_report_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.json');
+
+    final excelCsv = await _exportService.exportToExcel(_allResponses, config);
+    final suggestedName =
+        'survey_report_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.csv';
+
+    final saveLocation = await getSaveLocation(
+      suggestedName: suggestedName,
+      acceptedTypeGroups: [
+        XTypeGroup(label: 'CSV (Excel)', extensions: ['csv']),
+      ],
+    );
+    if (saveLocation == null) return;
+
+    final data = Uint8List.fromList(utf8.encode(excelCsv));
+    final xfile = XFile.fromData(
+      data,
+      mimeType: 'text/csv',
+      name: suggestedName,
+    );
+    await xfile.saveTo(saveLocation.path);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 12),
+            Text(
+              'Excel report saved successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 
-  Future<void> _exportPDFJSONSaveAs() async {
+  Future<void> _exportPDFSaveAs() async {
     final config = ExportConfig(
       format: ExportFormat.pdf,
       startDate: _selectedDateRange?.start,
@@ -1022,8 +1272,44 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       serviceType: _selectedService,
       includeCharts: true,
     );
-    final data = await _exportService.exportToPDF(_allResponses, config);
-    await _saveJsonData(data, suggestedName: 'pdf_report_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.json');
+
+    final pdfBytes = await _exportService.exportToPDF(_allResponses, config);
+    final suggestedName =
+        'survey_report_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.pdf';
+
+    final saveLocation = await getSaveLocation(
+      suggestedName: suggestedName,
+      acceptedTypeGroups: [
+        XTypeGroup(label: 'PDF', extensions: ['pdf']),
+      ],
+    );
+    if (saveLocation == null) return;
+
+    final xfile = XFile.fromData(
+      pdfBytes,
+      mimeType: 'application/pdf',
+      name: suggestedName,
+    );
+    await xfile.saveTo(saveLocation.path);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 12),
+            Text(
+              'PDF report saved successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 
   Future<void> _exportARTAJSONSaveAs() async {
@@ -1035,24 +1321,48 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
       serviceType: _selectedService,
     );
     final data = await _exportService.exportToARTA(_allResponses, config);
-    await _saveJsonData(data, suggestedName: 'arta_report_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.json');
+    await _saveJsonData(
+      data,
+      suggestedName:
+          'arta_report_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.json',
+    );
   }
 
-  Future<void> _saveJsonData(Map<String, dynamic> data, {required String suggestedName}) async {
+  Future<void> _saveJsonData(
+    Map<String, dynamic> data, {
+    required String suggestedName,
+  }) async {
     final saveLocation = await getSaveLocation(
       suggestedName: suggestedName,
-      acceptedTypeGroups: [XTypeGroup(label: 'JSON', extensions: ['json'])],
+      acceptedTypeGroups: [
+        XTypeGroup(label: 'JSON', extensions: ['json']),
+      ],
     );
     if (saveLocation == null) return;
 
     final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
     final bytes = Uint8List.fromList(utf8.encode(jsonStr));
-    final xfile = XFile.fromData(bytes, mimeType: 'application/json', name: suggestedName);
+    final xfile = XFile.fromData(
+      bytes,
+      mimeType: 'application/json',
+      name: suggestedName,
+    );
     await xfile.saveTo(saveLocation.path);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Saved', style: GoogleFonts.poppins()), backgroundColor: AppColors.success),
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 12),
+            Text('ARTA compliance report saved!', style: GoogleFonts.poppins()),
+          ],
+        ),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
     );
   }
 
@@ -1061,16 +1371,16 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     final avgScore = _filteredResponses.isEmpty
         ? 0.0
         : _filteredResponses
-                .map((r) => r.averageSQDScore)
-                .reduce((a, b) => a + b) /
-            _filteredResponses.length;
+                  .map((r) => r.averageSQDScore)
+                  .reduce((a, b) => a + b) /
+              _filteredResponses.length;
     final satisfactionRate = _computeSatisfactionRate(_filteredResponses);
     final awarenessRate = _computeAwarenessRate(_filteredResponses);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 800;
-        
+
         final cards = [
           _buildStatCard(
             'Total Responses',
@@ -1104,12 +1414,31 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
 
         if (isWide) {
           return Row(
-            children: cards.map((c) => Expanded(child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: c,
-            ))).toList(),
+            children: cards
+                .map(
+                  (c) => Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: c,
+                    ),
+                  ),
+                )
+                .toList(),
           );
         } else {
+          // Check if we need to stack vertically for very small screens
+          if (constraints.maxWidth < 500) {
+            return Column(
+              children: cards
+                  .map(
+                    (c) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: c,
+                    ),
+                  )
+                  .toList(),
+            );
+          }
           return Column(
             children: [
               Row(
@@ -1195,7 +1524,6 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     );
   }
 
-
   Widget _buildSatisfactionChart() {
     final dist = _computeSatisfactionDistribution(_filteredResponses);
     if (dist.values.every((v) => v == 0)) {
@@ -1233,7 +1561,11 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                     color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.pie_chart, color: Colors.green[700], size: 20),
+                  child: Icon(
+                    Icons.pie_chart,
+                    color: Colors.green[700],
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -1245,7 +1577,10 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -1261,139 +1596,167 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
               ],
             ),
             const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: 240,
-                    child: PieChart(
-                      PieChartData(
-                        sectionsSpace: 3,
-                        centerSpaceRadius: 50,
-                        sections: dist.entries.map((entry) {
-                          final percentage = (entry.value / total * 100);
-                          
-                          return PieChartSectionData(
-                            value: entry.value.toDouble(),
-                            title: '${percentage.toStringAsFixed(1)}%',
-                            color: colors[entry.key],
-                            radius: 100,
-                            titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  blurRadius: 2,
-                                ),
-                              ],
-                            ),
-                            badgeWidget: entry.value > 0 ? Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide =
+                    constraints.maxWidth >
+                    400; // Breakpoint for chart vs legend
+
+                final pieChart = SizedBox(
+                  height: 240,
+                  child: PieChart(
+                    PieChartData(
+                      sectionsSpace: 3,
+                      centerSpaceRadius: 50,
+                      sections: dist.entries.map((entry) {
+                        final percentage = (entry.value / total * 100);
+
+                        return PieChartSectionData(
+                          value: entry.value.toDouble(),
+                          title: '${percentage.toStringAsFixed(1)}%',
+                          color: colors[entry.key],
+                          radius: 100,
+                          titleStyle: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
                                 color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
-                                    blurRadius: 4,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    blurRadius: 2,
                                   ),
                                 ],
                               ),
-                              child: Icon(
-                                icons[entry.key],
-                                color: colors[entry.key],
-                                size: 16,
-                              ),
-                            ) : null,
-                            badgePositionPercentageOffset: 1.3,
-                          );
-                        }).toList(),
-                        pieTouchData: PieTouchData(
-                          touchCallback: (FlTouchEvent event, pieTouchResponse) {},
-                        ),
+                          badgeWidget: entry.value > 0
+                              ? Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    icons[entry.key],
+                                    color: colors[entry.key],
+                                    size: 16,
+                                  ),
+                                )
+                              : null,
+                          badgePositionPercentageOffset: 1.3,
+                        );
+                      }).toList(),
+                      pieTouchData: PieTouchData(
+                        touchCallback:
+                            (FlTouchEvent event, pieTouchResponse) {},
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: dist.entries.map((entry) {
-                      final percentage = (entry.value / total * 100);
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: colors[entry.key]?.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                icons[entry.key],
-                                color: colors[entry.key],
-                                size: 20,
-                              ),
+                );
+
+                final legend = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: dist.entries.map((entry) {
+                    final percentage = (entry.value / total * 100);
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: colors[entry.key]?.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          height: 6,
-                                          decoration: BoxDecoration(
-                                            color: colors[entry.key]?.withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(3),
+                            child: Icon(
+                              icons[entry.key],
+                              color: colors[entry.key],
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  entry.key,
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                ),
+                                const SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: colors[entry.key]?.withValues(
+                                            alpha: 0.2,
                                           ),
-                                          child: FractionallySizedBox(
-                                            alignment: Alignment.centerLeft,
-                                            widthFactor: percentage / 100,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: colors[entry.key],
-                                                borderRadius: BorderRadius.circular(3),
-                                              ),
+                                          borderRadius: BorderRadius.circular(
+                                            3,
+                                          ),
+                                        ),
+                                        child: FractionallySizedBox(
+                                          alignment: Alignment.centerLeft,
+                                          widthFactor: percentage / 100,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: colors[entry.key],
+                                              borderRadius:
+                                                  BorderRadius.circular(3),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '${entry.value}',
-                                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: colors[entry.key],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${entry.value}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: colors[entry.key],
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                );
+
+                if (isWide) {
+                  return Row(
+                    children: [
+                      Expanded(flex: 2, child: pieChart),
+                      const SizedBox(width: 24),
+                      Expanded(child: legend),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [pieChart, const SizedBox(height: 24), legend],
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -1431,7 +1794,11 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                     color: AppColors.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.bar_chart, color: AppColors.secondary, size: 20),
+                  child: Icon(
+                    Icons.bar_chart,
+                    color: AppColors.secondary,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -1442,167 +1809,189 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   ),
                 ),
                 const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.amber.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.star, color: Colors.amber[700], size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Out of 5.0',
-                      style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.amber[700]),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 350,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: 5,
-                minY: 0,
-                barGroups: avgScores.entries.map((entry) {
-                  final index = int.parse(entry.key.replaceAll('SQD', ''));
-                  final score = entry.value;
-                  Color barColor;
-                  if (score >= 4.5) {
-                    barColor = Colors.green;
-                  } else if (score >= 4.0) {
-                    barColor = Colors.lightGreen;
-                  } else if (score >= 3.5) {
-                    barColor = Colors.amber;
-                  } else if (score >= 3.0) {
-                    barColor = Colors.orange;
-                  } else {
-                    barColor = Colors.red;
-                  }
-
-                  return BarChartGroupData(
-                    x: index,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value,
-                        gradient: LinearGradient(
-                          colors: [barColor, barColor.withValues(alpha: 0.7)],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                        width: 28,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(8),
-                        ),
-                        backDrawRodData: BackgroundBarChartRodData(
-                          show: true,
-                          toY: 5,
-                          color: AppColors.secondary.withValues(alpha: 0.05),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: Colors.amber[700], size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Out of 5.0',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.amber[700],
                         ),
                       ),
                     ],
-                    showingTooltipIndicators: [],
-                  );
-                }).toList(),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      interval: 1,
-                      getTitlesWidget: (value, meta) {
-                        return Text(
-                          value.toInt().toString(),
-                          style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textSecondary),
-                        );
-                      },
-                    ),
                   ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 60,
-                      getTitlesWidget: (value, meta) {
-                        final idx = value.toInt();
-                        if (idx < 0 || idx >= sqdLabels.length) return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'SQD$idx',
-                                style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.secondary),
-                              ),
-                              Text(
-                                sqdLabels[idx],
-                                style: GoogleFonts.poppins(fontSize: 8, color: AppColors.textSecondary),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 350,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: 5,
+                  minY: 0,
+                  barGroups: avgScores.entries.map((entry) {
+                    final index = int.parse(entry.key.replaceAll('SQD', ''));
+                    final score = entry.value;
+                    Color barColor;
+                    if (score >= 4.5) {
+                      barColor = Colors.green;
+                    } else if (score >= 4.0) {
+                      barColor = Colors.lightGreen;
+                    } else if (score >= 3.5) {
+                      barColor = Colors.amber;
+                    } else if (score >= 3.0) {
+                      barColor = Colors.orange;
+                    } else {
+                      barColor = Colors.red;
+                    }
+
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          toY: entry.value,
+                          gradient: LinearGradient(
+                            colors: [barColor, barColor.withValues(alpha: 0.7)],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: 1,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: AppColors.border,
-                      strokeWidth: 1,
-                      dashArray: [5, 5],
-                    );
-                  },
-                ),
-                borderData: FlBorderData(show: false),
-                barTouchData: BarTouchData(
-                  enabled: true,
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (group) => Colors.blueGrey.shade800,
-                    tooltipPadding: const EdgeInsets.all(8),
-                    tooltipMargin: 8,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      final label = sqdLabels[group.x.toInt()];
-                      return BarTooltipItem(
-                        '$label\n',
-                        const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          width: 28,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(8),
+                          ),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: 5,
+                            color: AppColors.secondary.withValues(alpha: 0.05),
+                          ),
                         ),
-                        children: [
-                          TextSpan(
-                            text: '${rod.toY.toStringAsFixed(2)} / 5.0',
-                            style: const TextStyle(
-                              color: Colors.amber,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
+                      ],
+                      showingTooltipIndicators: [],
+                    );
+                  }).toList(),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                        interval: 1,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toInt().toString(),
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: AppColors.textSecondary,
                             ),
-                          ),
-                        ],
+                          );
+                        },
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 60,
+                        getTitlesWidget: (value, meta) {
+                          final idx = value.toInt();
+                          if (idx < 0 || idx >= sqdLabels.length)
+                            return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'SQD$idx',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.secondary,
+                                  ),
+                                ),
+                                Text(
+                                  sqdLabels[idx],
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 8,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: 1,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: AppColors.border,
+                        strokeWidth: 1,
+                        dashArray: [5, 5],
                       );
                     },
+                  ),
+                  borderData: FlBorderData(show: false),
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipColor: (group) => Colors.blueGrey.shade800,
+                      tooltipPadding: const EdgeInsets.all(8),
+                      tooltipMargin: 8,
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        final label = sqdLabels[group.x.toInt()];
+                        return BarTooltipItem(
+                          '$label\n',
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${rod.toY.toStringAsFixed(2)} / 5.0',
+                              style: const TextStyle(
+                                color: Colors.amber,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   Widget _buildRecentResponses() {
@@ -1662,8 +2051,9 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                     style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(
-                    DateFormat('MMM dd, yyyy hh:mm a')
-                        .format(response.submittedAt.toLocal()),
+                    DateFormat(
+                      'MMM dd, yyyy hh:mm a',
+                    ).format(response.submittedAt.toLocal()),
                     style: GoogleFonts.poppins(fontSize: 12),
                   ),
                   trailing: Container(
