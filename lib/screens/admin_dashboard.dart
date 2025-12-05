@@ -516,8 +516,11 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     }
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleSpacing: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Image.asset('Valenzuela_Seal.svg.png'),
@@ -526,97 +529,126 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Admin Dashboard',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              'Admin Portal',
+              style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: AppColors.textPrimary,
+                fontSize: 18,
               ),
             ),
             Text(
-              '${widget.currentUser.username} (${widget.currentUser.role.name})',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
+              'City Government of Valenzuela',
+              style: GoogleFonts.poppins(
+                color: AppColors.textSecondary,
+                fontSize: 12,
               ),
             ),
           ],
         ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs: tabs,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              labelColor: AppColors.primary,
+              unselectedLabelColor: AppColors.textSecondary,
+              indicatorColor: AppColors.primary,
+              indicatorWeight: 3,
+              labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+              tabs: tabs,
+            ),
+          ),
         ),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) async {
-              if (value == 'generate_test') {
-                await _generateTestData();
-              } else if (value == 'clear_data') {
-                await _clearAllData();
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'generate_test',
-                child: Row(
-                  children: [
-                    Icon(Icons.add_chart, size: 20),
-                    SizedBox(width: 8),
-                    Text('Generate Test Data (50)'),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 12),
+                CircleAvatar(
+                  radius: 14,
+                  backgroundColor: AppColors.primary,
+                  child: Text(
+                    widget.currentUser.username[0].toUpperCase(),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  widget.currentUser.username,
+                  style: GoogleFonts.poppins(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                  onSelected: (value) async {
+                    if (value == 'logout') {
+                      await _authService.logout();
+                      if (context.mounted) {
+                        Navigator.of(context).pushReplacementNamed('/');
+                      }
+                    } else if (value == 'generate_test') {
+                      await _generateTestData();
+                    } else if (value == 'clear_data') {
+                      await _clearAllData();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'logout',
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout, size: 18, color: Colors.red.shade400),
+                          const SizedBox(width: 8),
+                          Text('Logout', style: GoogleFonts.poppins(color: Colors.red.shade400)),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'generate_test',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.add_chart, size: 18),
+                          const SizedBox(width: 8),
+                          Text('Generate Test Data', style: GoogleFonts.poppins()),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'clear_data',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delete_sweep, size: 18),
+                          const SizedBox(width: 8),
+                          Text('Clear Data', style: GoogleFonts.poppins()),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              const PopupMenuItem(
-                value: 'clear_data',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_sweep, size: 20, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Clear All Data', style: TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadDashboardData,
-            tooltip: 'Refresh',
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await _authService.logout();
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/');
-              }
-            },
-            tooltip: 'Logout',
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/breaker-valenzuela-museum-3-1670413988.jpg'),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.background.withValues(alpha: 0.5),
-                    BlendMode.lighten,
-                  ),
-                ),
-              ),
-              child: TabBarView(
-                controller: _tabController,
+          : TabBarView(
+              controller: _tabController,
               children: [
                 // Analytics Tab
                 SingleChildScrollView(
@@ -624,17 +656,90 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Welcome Banner
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome back, ${widget.currentUser.username}!',
+                              style: GoogleFonts.poppins(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Here\'s what\'s happening with your survey data today.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      // Filters (Moved to Top)
                       _buildFilterControls(),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
+                      
+                      // Key Metrics
                       _buildStatsCards(),
                       const SizedBox(height: 24),
+                      
+                      // Primary Trend Chart (Full Width)
                       _buildTrendChart(),
                       const SizedBox(height: 24),
-                      _buildSatisfactionChart(),
+                      
+                      // Secondary Charts (Side by Side)
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          if (constraints.maxWidth > 900) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: _buildSatisfactionChart()),
+                                const SizedBox(width: 24),
+                                Expanded(child: _buildAverageScoresChart()),
+                              ],
+                            );
+                          } else {
+                            return Column(
+                              children: [
+                                _buildSatisfactionChart(),
+                                const SizedBox(height: 24),
+                                _buildAverageScoresChart(),
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                      
                       const SizedBox(height: 24),
-                      _buildAverageScoresChart(),
-                      const SizedBox(height: 24),
+                      
+                      // Breakdowns
                       _buildTopBreakdowns(),
+                      
                       const SizedBox(height: 24),
                       _buildRecentResponses(),
                     ],
@@ -650,7 +755,6 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   UserManagementTab(currentUser: widget.currentUser),
               ],
             ),
-          ),
     );
   }
 
@@ -963,52 +1067,70 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     final satisfactionRate = _computeSatisfactionRate(_filteredResponses);
     final awarenessRate = _computeAwarenessRate(_filteredResponses);
 
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                'Total Responses',
-                total.toString(),
-                Icons.people,
-                AppColors.primary,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 800;
+        
+        final cards = [
+          _buildStatCard(
+            'Total Responses',
+            total.toString(),
+            Icons.people_outline,
+            Colors.blue,
+            Colors.blue.shade50,
+          ),
+          _buildStatCard(
+            'Average Score',
+            avgScore.toStringAsFixed(2),
+            Icons.star_outline,
+            Colors.amber.shade700,
+            Colors.amber.shade50,
+          ),
+          _buildStatCard(
+            'Satisfaction Rate',
+            '${satisfactionRate.toStringAsFixed(1)}%',
+            Icons.sentiment_satisfied_alt,
+            Colors.green,
+            Colors.green.shade50,
+          ),
+          _buildStatCard(
+            "CC Awareness",
+            '${awarenessRate.toStringAsFixed(1)}%',
+            Icons.info_outline,
+            Colors.indigo,
+            Colors.indigo.shade50,
+          ),
+        ];
+
+        if (isWide) {
+          return Row(
+            children: cards.map((c) => Expanded(child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: c,
+            ))).toList(),
+          );
+        } else {
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(child: cards[0]),
+                  const SizedBox(width: 16),
+                  Expanded(child: cards[1]),
+                ],
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                'Avg Score',
-                avgScore.toStringAsFixed(2),
-                Icons.star_rate,
-                AppColors.secondary,
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(child: cards[2]),
+                  const SizedBox(width: 16),
+                  Expanded(child: cards[3]),
+                ],
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                'Satisfaction Rate',
-                '${satisfactionRate.toStringAsFixed(1)}%',
-                Icons.sentiment_satisfied_alt,
-                Colors.teal,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                "CC Awareness",
-                '${awarenessRate.toStringAsFixed(1)}%',
-                Icons.info_outline,
-                Colors.indigo,
-              ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          );
+        }
+      },
     );
   }
 
@@ -1017,43 +1139,58 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
     String value,
     IconData icon,
     Color color,
+    Color bgColor,
   ) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 24),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1370,19 +1507,19 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                         ),
                       ),
                     ],
-                    showingTooltipIndicators: [0],
+                    showingTooltipIndicators: [],
                   );
                 }).toList(),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 40,
+                      reservedSize: 30,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
                         return Text(
-                          value.toStringAsFixed(1),
-                          style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                          value.toInt().toString(),
+                          style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textSecondary),
                         );
                       },
                     ),
@@ -1403,7 +1540,6 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                                 'SQD$idx',
                                 style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.secondary),
                               ),
-                              const SizedBox(height: 2),
                               Text(
                                 sqdLabels[idx],
                                 style: GoogleFonts.poppins(fontSize: 8, color: AppColors.textSecondary),
@@ -1415,12 +1551,8 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                       },
                     ),
                   ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 gridData: FlGridData(
                   show: true,
@@ -1428,26 +1560,38 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
                   horizontalInterval: 1,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: AppColors.secondary.withValues(alpha: 0.1),
+                      color: AppColors.border,
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
                   },
                 ),
-                borderData: FlBorderData(
-                  show: true,
-                  border: Border(
-                    bottom: BorderSide(color: AppColors.secondary.withValues(alpha: 0.2), width: 2),
-                    left: BorderSide(color: AppColors.secondary.withValues(alpha: 0.2), width: 2),
-                  ),
-                ),
+                borderData: FlBorderData(show: false),
                 barTouchData: BarTouchData(
+                  enabled: true,
                   touchTooltipData: BarTouchTooltipData(
+                    getTooltipColor: (group) => Colors.blueGrey.shade800,
+                    tooltipPadding: const EdgeInsets.all(8),
+                    tooltipMargin: 8,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final label = sqdLabels[group.x.toInt()];
                       return BarTooltipItem(
-                        '$label\n${rod.toY.toStringAsFixed(2)} / 5.0',
-                        GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                        '$label\n',
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '${rod.toY.toStringAsFixed(2)} / 5.0',
+                            style: const TextStyle(
+                              color: Colors.amber,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),

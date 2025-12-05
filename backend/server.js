@@ -16,7 +16,7 @@ const analyticsRoutes = require('./routes/analytics.routes');
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || '*',
+  origin: true, // Allow any origin for development
   credentials: true
 }));
 app.use(express.json());
