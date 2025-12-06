@@ -571,6 +571,170 @@ class _AdminDashboardState extends State<AdminDashboard>
 
   // Removed old _exportToCSV in favor of Save As implementations
 
+  Widget _buildUserMenu() {
+    return PopupMenuButton<String>(
+      offset: const Offset(0, 50),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      onSelected: (value) async {
+        if (value == 'logout') {
+          await _authService.logout();
+          if (context.mounted) {
+            Navigator.of(context).pushReplacementNamed('/');
+          }
+        } else if (value == 'generate_test') {
+          await _generateTestData();
+        } else if (value == 'clear_data') {
+          await _clearAllData();
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          enabled: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.currentUser.username,
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              Text(
+                widget.currentUser.role
+                    .toString()
+                    .split('.')
+                    .last
+                    .toUpperCase(),
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'generate_test',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.add_chart,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Generate Test Data',
+                style: GoogleFonts.poppins(fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'clear_data',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.delete_sweep,
+                  size: 16,
+                  color: Colors.orange.shade700,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text('Clear All Data', style: GoogleFonts.poppins(fontSize: 13)),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 'logout',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.logout_rounded,
+                  size: 16,
+                  color: Colors.red.shade600,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Logout',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: Colors.red.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 14,
+              backgroundColor: AppColors.primary,
+              child: Text(
+                widget.currentUser.username[0].toUpperCase(),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            if (MediaQuery.of(context).size.width >= 400) ...[
+              const SizedBox(width: 10),
+              Text(
+                widget.currentUser.username,
+                style: GoogleFonts.poppins(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+            const SizedBox(width: 6),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: AppColors.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build tabs list based on permissions
@@ -589,16 +753,102 @@ class _AdminDashboardState extends State<AdminDashboard>
       tabs.add(const Tab(icon: Icon(Icons.people, size: 20), text: 'Users'));
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      drawer: isSmallScreen
+          ? Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  UserAccountsDrawerHeader(
+                    decoration: BoxDecoration(color: AppColors.primary),
+                    accountName: Text(
+                      widget.currentUser.username,
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                    accountEmail: Text(
+                      widget.currentUser.email,
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                    currentAccountPicture: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Text(
+                        widget.currentUser.username[0].toUpperCase(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.dashboard),
+                    title: Text('Analytics', style: GoogleFonts.poppins()),
+                    selected: _tabController.index == 0,
+                    selectedColor: AppColors.primary,
+                    onTap: () {
+                      _tabController.animateTo(0);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.download),
+                    title: Text('Export', style: GoogleFonts.poppins()),
+                    selected: _tabController.index == 1,
+                    selectedColor: AppColors.primary,
+                    onTap: () {
+                      _tabController.animateTo(1);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  if (widget.currentUser.hasPermission('edit_survey'))
+                    ListTile(
+                      leading: const Icon(Icons.edit),
+                      title: Text(
+                        'Survey Editor',
+                        style: GoogleFonts.poppins(),
+                      ),
+                      selected: _tabController.index == 2,
+                      selectedColor: AppColors.primary,
+                      onTap: () {
+                        _tabController.animateTo(2);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  if (widget.currentUser.hasPermission('manage_users'))
+                    ListTile(
+                      leading: const Icon(Icons.people),
+                      title: Text('Users', style: GoogleFonts.poppins()),
+                      selected: _tabController.index == (tabs.length - 1),
+                      selectedColor: AppColors.primary,
+                      onTap: () {
+                        _tabController.animateTo(tabs.length - 1);
+                        Navigator.pop(context);
+                      },
+                    ),
+                ],
+              ),
+            )
+          : null,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset('Valenzuela_Seal.svg.png'),
-        ),
+        leading: isSmallScreen
+            ? Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset('Valenzuela_Seal.svg.png'),
+              ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -610,226 +860,54 @@ class _AdminDashboardState extends State<AdminDashboard>
                 fontSize: 18,
               ),
             ),
-            Text(
-              'City Government of Valenzuela',
-              style: GoogleFonts.poppins(
-                color: AppColors.textSecondary,
-                fontSize: 12,
+            if (!isSmallScreen)
+              Text(
+                'City Government of Valenzuela',
+                style: GoogleFonts.poppins(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
               ),
-            ),
           ],
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-            ),
-            child: Row(
-              children: [
-                // Tabs on the left
-                Expanded(
-                  child: TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    labelColor: AppColors.primary,
-                    unselectedLabelColor: AppColors.textSecondary,
-                    indicatorColor: AppColors.primary,
-                    indicatorWeight: 3,
-                    labelStyle: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: _buildUserMenu(),
+          ),
+        ],
+        bottom: isSmallScreen
+            ? null
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(60),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade200),
                     ),
-                    tabs: tabs,
                   ),
-                ),
-                // Admin button on the right
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: PopupMenuButton<String>(
-                    offset: const Offset(0, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    onSelected: (value) async {
-                      if (value == 'logout') {
-                        await _authService.logout();
-                        if (context.mounted) {
-                          Navigator.of(context).pushReplacementNamed('/');
-                        }
-                      } else if (value == 'generate_test') {
-                        await _generateTestData();
-                      } else if (value == 'clear_data') {
-                        await _clearAllData();
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        enabled: false,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.currentUser.username,
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            Text(
-                              widget.currentUser.role
-                                  .toString()
-                                  .split('.')
-                                  .last
-                                  .toUpperCase(),
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuDivider(),
-                      PopupMenuItem(
-                        value: 'generate_test',
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                Icons.add_chart,
-                                size: 16,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Generate Test Data',
-                              style: GoogleFonts.poppins(fontSize: 13),
-                            ),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'clear_data',
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                Icons.delete_sweep,
-                                size: 16,
-                                color: Colors.orange.shade700,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Clear All Data',
-                              style: GoogleFonts.poppins(fontSize: 13),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuDivider(),
-                      PopupMenuItem(
-                        value: 'logout',
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.red.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                Icons.logout_rounded,
-                                size: 16,
-                                color: Colors.red.shade600,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Logout',
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: Colors.red.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                  child: Row(
+                    children: [
+                      // Tabs on the left
+                      Expanded(
+                        child: TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          labelColor: AppColors.primary,
+                          unselectedLabelColor: AppColors.textSecondary,
+                          indicatorColor: AppColors.primary,
+                          indicatorWeight: 3,
+                          labelStyle: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          tabs: tabs,
                         ),
                       ),
                     ],
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: AppColors.primary,
-                            child: Text(
-                              widget.currentUser.username[0].toUpperCase(),
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            widget.currentUser.username,
-                            style: GoogleFonts.poppins(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          if (MediaQuery.of(context).size.width >= 400) ...[
-                            // Hide username text on small screens
-                            const SizedBox(width: 10),
-                            Text(
-                              widget.currentUser.username,
-                              style: GoogleFonts.poppins(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                          const SizedBox(width: 6),
-                          Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            color: AppColors.textSecondary,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

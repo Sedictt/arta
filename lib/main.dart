@@ -523,15 +523,21 @@ class WelcomePage extends StatelessWidget {
   Widget _buildMobileLayout(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
-    final horizontalPadding = isSmallScreen ? 16.0 : 24.0;
+    final horizontalPadding = isSmallScreen
+        ? 20.0
+        : 24.0; // Increased padding slightly for better framing
 
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
-          padding: EdgeInsets.all(horizontalPadding),
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 24,
+          ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: constraints.maxHeight - (horizontalPadding * 2),
+              minHeight:
+                  constraints.maxHeight - 48, // Account for vertical padding
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -544,8 +550,10 @@ class WelcomePage extends StatelessWidget {
                       children: [
                         Image.asset(
                           'Valenzuela_Seal.svg.png',
-                          width: isSmallScreen ? 48 : 60,
-                          height: isSmallScreen ? 48 : 60,
+                          width: isSmallScreen
+                              ? 40
+                              : 56, // Slightly smaller logo
+                          height: isSmallScreen ? 40 : 56,
                         ),
                         SizedBox(width: isSmallScreen ? 12 : 16),
                         Expanded(
@@ -558,9 +566,13 @@ class WelcomePage extends StatelessWidget {
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
-                                      fontSize: isSmallScreen ? 14 : 16,
+                                      fontSize: isSmallScreen
+                                          ? 13
+                                          : 16, // Reduced font size
+                                      height: 1.2,
                                     ),
                               ),
+                              const SizedBox(height: 2),
                               Text(
                                 'Help Us Serve You Better',
                                 style: Theme.of(context).textTheme.bodySmall
@@ -577,8 +589,9 @@ class WelcomePage extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(height: isSmallScreen ? 32 : 48),
-
+                    SizedBox(
+                      height: isSmallScreen ? 24 : 48,
+                    ), // Reduced spacing
                     // ARTA Label
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -603,8 +616,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
-
+                    const SizedBox(height: 12), // Reduced spacing
                     // Main Title
                     Text(
                       'Client Satisfaction\nMeasurement',
@@ -612,29 +624,33 @@ class WelcomePage extends StatelessWidget {
                           ?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            height: 1.2,
-                            fontSize: isSmallScreen ? 24 : 32,
+                            height: 1.1, // Tighter line height
+                            fontSize: isSmallScreen
+                                ? 26
+                                : 32, // More appropriate size for mobile
                           ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
                     // Description
                     Text(
                       'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.white.withValues(alpha: 0.9),
-                        height: 1.5,
+                        height: 1.4,
                         fontSize: isSmallScreen ? 13 : 14,
                       ),
                     ),
 
-                    SizedBox(height: isSmallScreen ? 32 : 40),
+                    SizedBox(height: isSmallScreen ? 24 : 40),
 
                     // Start Button
                     SizedBox(
                       width: double.infinity,
-                      height: isSmallScreen ? 48 : 56,
+                      height: isSmallScreen
+                          ? 44
+                          : 56, // Slightly smaller button height
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
@@ -647,20 +663,35 @@ class WelcomePage extends StatelessWidget {
                           backgroundColor: AppColors.secondary,
                           foregroundColor: Colors.white,
                           elevation: 4,
+                          padding: EdgeInsets.zero,
                           shadowColor: Colors.black.withValues(alpha: 0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              isSmallScreen ? 12 : 16,
+                            ),
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text('Start Survey'),
-                            SizedBox(width: 12),
-                            Icon(Icons.arrow_forward_rounded),
+                          children: [
+                            Text(
+                              'Start Survey',
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 14 : 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              size: isSmallScreen ? 18 : 24,
+                            ),
                           ],
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     Center(
                       child: Text(
@@ -673,58 +704,67 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: isSmallScreen ? 24 : 32),
+                    SizedBox(height: isSmallScreen ? 16 : 32),
                   ],
                 ),
 
                 // Bottom buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const QRCodeScreen(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.qr_code_2,
-                        color: Colors.white,
-                        size: isSmallScreen ? 18 : 20,
-                      ),
-                      label: Text(
-                        'Scan QR',
-                        style: TextStyle(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const QRCodeScreen(),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.qr_code_2,
                           color: Colors.white,
-                          fontSize: isSmallScreen ? 13 : 14,
+                          size: isSmallScreen ? 18 : 20,
+                        ),
+                        label: Text(
+                          'Scan QR',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: isSmallScreen ? 12 : 14,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    TextButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const AdminLogin(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.admin_panel_settings,
-                        color: Colors.white,
-                        size: isSmallScreen ? 18 : 20,
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 1,
+                        height: 16,
+                        color: Colors.white.withValues(alpha: 0.3),
                       ),
-                      label: Text(
-                        'Admin',
-                        style: TextStyle(
+                      const SizedBox(width: 8),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const AdminLogin(),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.admin_panel_settings,
                           color: Colors.white,
-                          fontSize: isSmallScreen ? 13 : 14,
+                          size: isSmallScreen ? 18 : 20,
+                        ),
+                        label: Text(
+                          'Admin',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: isSmallScreen ? 12 : 14,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -799,6 +839,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isSmallScreen = screenWidth < 360;
+        final padding = isSmallScreen ? 20.0 : 32.0;
+
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
@@ -806,7 +850,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
             child: Padding(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(padding),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -939,7 +983,6 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       Expanded(
                         flex: 2,
                         child: Container(
-                          height: 48,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [AppColors.secondary, AppColors.primary],
@@ -952,6 +995,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                               backgroundColor: Colors.transparent,
                               foregroundColor: Colors.white,
                               shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

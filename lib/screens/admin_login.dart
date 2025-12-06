@@ -231,7 +231,7 @@ class _AdminLoginState extends State<AdminLogin> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
     final outerPadding = isSmallScreen ? 16.0 : 24.0;
-    final innerPadding = isSmallScreen ? 24.0 : 40.0;
+    final innerPadding = isSmallScreen ? 20.0 : 40.0;
 
     return Scaffold(
       body: Stack(
@@ -258,9 +258,11 @@ class _AdminLoginState extends State<AdminLogin> {
           Positioned(
             top: 40,
             left: 20,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+            child: SafeArea(
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
           ),
 
@@ -268,238 +270,254 @@ class _AdminLoginState extends State<AdminLogin> {
           Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.all(outerPadding),
-              child: ConstrainedBox(
+              child: Container(
+                width: double.infinity,
                 constraints: const BoxConstraints(maxWidth: 420),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(innerPadding),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Seal
-                          Container(
-                            height: 100,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Image.asset(
-                              'Valenzuela_Seal.svg.png',
-                              errorBuilder: (c, o, s) => const Icon(
-                                Icons.admin_panel_settings,
-                                size: 60,
-                                color: AppColors.primary,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(innerPadding),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Seal
+                        Container(
+                          height: isSmallScreen ? 80 : 100,
+                          width: isSmallScreen ? 80 : 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
                               ),
+                            ],
+                          ),
+                          child: Image.asset(
+                            'Valenzuela_Seal.svg.png',
+                            errorBuilder: (c, o, s) => Icon(
+                              Icons.admin_panel_settings,
+                              size: isSmallScreen ? 50 : 60,
+                              color: AppColors.primary,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                        ),
+                        const SizedBox(height: 24),
 
-                          // Title
-                          Text(
-                            'Admin Portal',
-                            style: GoogleFonts.poppins(
-                              fontSize: isSmallScreen ? 24 : 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
+                        // Title
+                        Text(
+                          'Admin Portal',
+                          style: GoogleFonts.poppins(
+                            fontSize: isSmallScreen ? 22 : 28,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
                           ),
-                          Text(
-                            'City Government of Valenzuela',
-                            style: GoogleFonts.poppins(
-                              fontSize: isSmallScreen ? 12 : 14,
+                        ),
+                        Text(
+                          'City Government of Valenzuela',
+                          style: GoogleFonts.poppins(
+                            fontSize: isSmallScreen ? 12 : 14,
+                            color: AppColors.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+
+                        SizedBox(height: isSmallScreen ? 24 : 40),
+
+                        // Email/Username Field
+                        TextFormField(
+                          controller: _usernameController,
+                          style: GoogleFonts.poppins(),
+                          decoration: InputDecoration(
+                            labelText: 'Username or Email',
+                            labelStyle: GoogleFonts.poppins(
                               color: AppColors.textSecondary,
+                              fontSize: isSmallScreen ? 13 : 16,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-
-                          const SizedBox(height: 40),
-
-                          // Email/Username Field
-                          TextFormField(
-                            controller: _usernameController,
-                            style: GoogleFonts.poppins(),
-                            decoration: InputDecoration(
-                              labelText: 'Username or Email',
-                              labelStyle: GoogleFonts.poppins(
-                                color: AppColors.textSecondary,
+                            prefixIcon: Icon(
+                              Icons.person_outline,
+                              color: AppColors.primary,
+                              size: isSmallScreen ? 20 : 24,
+                            ),
+                            contentPadding: isSmallScreen
+                                ? const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  )
+                                : null,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColors.border,
                               ),
-                              prefixIcon: const Icon(
-                                Icons.person_outline,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColors.border,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
                                 color: AppColors.primary,
+                                width: 2,
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.border,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.border,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.primary,
-                                  width: 2,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter username';
-                              }
-                              return null;
-                            },
-                            textInputAction: TextInputAction.next,
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter username';
+                            }
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                        ),
 
-                          const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
-                          // Password Field
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            style: GoogleFonts.poppins(),
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              labelStyle: GoogleFonts.poppins(
+                        // Password Field
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          style: GoogleFonts.poppins(),
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: GoogleFonts.poppins(
+                              color: AppColors.textSecondary,
+                              fontSize: isSmallScreen ? 13 : 16,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: AppColors.primary,
+                              size: isSmallScreen ? 20 : 24,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
                                 color: AppColors.textSecondary,
+                                size: isSmallScreen ? 20 : 24,
                               ),
-                              prefixIcon: const Icon(
-                                Icons.lock_outline,
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
+                            contentPadding: isSmallScreen
+                                ? const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  )
+                                : null,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColors.border,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColors.border,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
                                 color: AppColors.primary,
+                                width: 2,
                               ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                  color: AppColors.textSecondary,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.border,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.border,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColors.primary,
-                                  width: 2,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter password';
-                              }
-                              return null;
-                            },
-                            onFieldSubmitted: (_) => _login(),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _login(),
+                        ),
 
-                          const SizedBox(height: 12),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: _forgotPassword,
-                              child: Text(
-                                'Forgot password?',
-                                style: GoogleFonts.poppins(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _forgotPassword,
+                            child: Text(
+                              'Forgot password?',
+                              style: GoogleFonts.poppins(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: isSmallScreen ? 12 : 14,
                               ),
                             ),
                           ),
+                        ),
 
-                          const SizedBox(height: 32),
+                        SizedBox(height: isSmallScreen ? 24 : 32),
 
-                          // Login Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
-                                elevation: 4,
-                                shadowColor: AppColors.primary.withValues(
-                                  alpha: 0.4,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
+                        // Login Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 4,
+                              shadowColor: AppColors.primary.withValues(
+                                alpha: 0.4,
                               ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Sign In',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        const Icon(Icons.arrow_forward_rounded),
-                                      ],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
                                     ),
-                            ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Sign In',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Icon(Icons.arrow_forward_rounded),
+                                    ],
+                                  ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
