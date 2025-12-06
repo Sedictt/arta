@@ -23,13 +23,13 @@ class AppColors {
   static const textPrimary = Color(0xFF1E293B); // Slate 900
   static const textSecondary = Color(0xFF64748B); // Slate 500
   static const border = Color(0xFFE2E8F0); // Slate 200
-  
+
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [Color(0xFF1565C0), Color(0xFF42A5F5)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
+
   static const LinearGradient surfaceGradient = LinearGradient(
     colors: [Colors.white, Color(0xFFF8F9FD)],
     begin: Alignment.topCenter,
@@ -54,12 +54,11 @@ class MyApp extends StatelessWidget {
 
           brightness: Brightness.light,
         ),
-        textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
-        ).apply(
-          bodyColor: AppColors.textPrimary,
-          displayColor: AppColors.textPrimary,
-        ),
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+            .apply(
+              bodyColor: AppColors.textPrimary,
+              displayColor: AppColors.textPrimary,
+            ),
         useMaterial3: true,
         scaffoldBackgroundColor: AppColors.background,
         cardTheme: CardThemeData(
@@ -90,9 +89,15 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: Colors.redAccent, width: 1),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
           labelStyle: const TextStyle(color: AppColors.textSecondary),
-          floatingLabelStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+          floatingLabelStyle: const TextStyle(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
           prefixIconColor: AppColors.textSecondary,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -165,10 +170,12 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Content
           SafeArea(
-            child: isDesktop ? _buildDesktopLayout(context) : _buildMobileLayout(context),
+            child: isDesktop
+                ? _buildDesktopLayout(context)
+                : _buildMobileLayout(context),
           ),
         ],
       ),
@@ -191,11 +198,16 @@ class WelcomePage extends StatelessWidget {
                 children: [
                   // Logo and Title
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -211,32 +223,40 @@ class WelcomePage extends StatelessWidget {
                           children: [
                             Text(
                               'City Government of Valenzuela',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5,
+                                  ),
                             ),
                             Text(
                               'Help Us Serve You Better',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.9),
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                  ),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 60),
-                  
+
                   // ARTA Label
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [AppColors.accent, AppColors.accent.withValues(alpha: 0.8)],
+                        colors: [
+                          AppColors.accent,
+                          AppColors.accent.withValues(alpha: 0.8),
+                        ],
                       ),
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
@@ -256,9 +276,9 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Main Title
                   Text(
                     'Client Satisfaction\nMeasurement',
@@ -275,9 +295,9 @@ class WelcomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Description
                   Text(
                     'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices in compliance with the Anti-Red Tape Authority (ARTA).',
@@ -288,9 +308,9 @@ class WelcomePage extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 60),
-                  
+
                   // Start Button
                   SizedBox(
                     width: 300,
@@ -322,9 +342,9 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   Text(
                     'Estimated Time: 3 - 5 minutes',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -332,9 +352,9 @@ class WelcomePage extends StatelessWidget {
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 60),
-                  
+
                   // Bottom buttons
                   Row(
                     children: [
@@ -348,9 +368,14 @@ class WelcomePage extends StatelessWidget {
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
                           backgroundColor: Colors.white.withValues(alpha: 0.1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         icon: const Icon(Icons.qr_code_2, color: Colors.white),
                         label: const Text('Scan QR Code'),
@@ -366,11 +391,19 @@ class WelcomePage extends StatelessWidget {
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
                           backgroundColor: Colors.white.withValues(alpha: 0.1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
+                        icon: const Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.white,
+                        ),
                         label: const Text('Admin Access'),
                       ),
                     ],
@@ -378,7 +411,7 @@ class WelcomePage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Right side - Illustration
             Expanded(
               flex: 4,
@@ -389,7 +422,9 @@ class WelcomePage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(40),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.2),
@@ -412,7 +447,9 @@ class WelcomePage extends StatelessWidget {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.2),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   blurRadius: 30,
                                   offset: const Offset(0, 10),
                                 ),
@@ -427,10 +464,11 @@ class WelcomePage extends StatelessWidget {
                           const SizedBox(height: 40),
                           Text(
                             'Your Voice Matters',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const SizedBox(height: 20),
                           Padding(
@@ -438,10 +476,11 @@ class WelcomePage extends StatelessWidget {
                             child: Text(
                               'Help us build a better government by sharing your honest feedback.',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.9),
-                                height: 1.5,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    height: 1.5,
+                                  ),
                             ),
                           ),
                         ],
@@ -466,11 +505,7 @@ class WelcomePage extends StatelessWidget {
           // Logo and Title
           Row(
             children: [
-              Image.asset(
-                'Valenzuela_Seal.svg.png',
-                width: 60,
-                height: 60,
-              ),
+              Image.asset('Valenzuela_Seal.svg.png', width: 60, height: 60),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -494,9 +529,9 @@ class WelcomePage extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 48),
-          
+
           // ARTA Label
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -514,9 +549,9 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Main Title
           Text(
             'Client Satisfaction\nMeasurement',
@@ -526,9 +561,9 @@ class WelcomePage extends StatelessWidget {
               height: 1.2,
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Description
           Text(
             'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices.',
@@ -537,9 +572,9 @@ class WelcomePage extends StatelessWidget {
               height: 1.5,
             ),
           ),
-          
+
           const SizedBox(height: 40),
-          
+
           // Start Button
           SizedBox(
             width: double.infinity,
@@ -568,9 +603,9 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Center(
             child: Text(
               'Estimated Time: 3 - 5 minutes',
@@ -580,9 +615,9 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 48),
-          
+
           // Bottom buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -595,7 +630,11 @@ class WelcomePage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.qr_code_2, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.qr_code_2,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 label: const Text(
                   'Scan QR',
                   style: TextStyle(color: Colors.white),
@@ -605,12 +644,14 @@ class WelcomePage extends StatelessWidget {
               TextButton.icon(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const AdminLogin(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const AdminLogin()),
                   );
                 },
-                icon: const Icon(Icons.admin_panel_settings, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 label: const Text(
                   'Admin',
                   style: TextStyle(color: Colors.white),
@@ -714,9 +755,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       size: 32,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Title
                   Text(
                     'Data Privacy & Consent',
@@ -727,9 +768,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Content
                   Flexible(
                     child: SingleChildScrollView(
@@ -739,30 +780,33 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                           _buildModalInfoSection(
                             icon: Icons.info_outline,
                             title: 'Why We Collect Data',
-                            description: 'Your feedback helps us improve services.',
+                            description:
+                                'Your feedback helps us improve services.',
                             color: AppColors.primary,
                           ),
-                          
+
                           const SizedBox(height: 16),
-                          
+
                           _buildModalInfoSection(
                             icon: Icons.assignment_outlined,
                             title: 'What We Collect',
-                            description: 'Demographics, service experience, and ratings.',
+                            description:
+                                'Demographics, service experience, and ratings.',
                             color: AppColors.secondary,
                           ),
-                          
+
                           const SizedBox(height: 16),
-                          
+
                           _buildModalInfoSection(
                             icon: Icons.verified_user_outlined,
                             title: 'Your Rights',
-                            description: 'Voluntary participation. All data is confidential.',
+                            description:
+                                'Voluntary participation. All data is confidential.',
                             color: AppColors.accent,
                           ),
-                          
+
                           const SizedBox(height: 20),
-                          
+
                           // Consent Statement
                           Container(
                             padding: const EdgeInsets.all(16),
@@ -775,7 +819,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                               ),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: AppColors.secondary.withValues(alpha: 0.3),
+                                color: AppColors.secondary.withValues(
+                                  alpha: 0.3,
+                                ),
                                 width: 2,
                               ),
                             ),
@@ -794,9 +840,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Buttons
                   Row(
                     children: [
@@ -868,9 +914,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       // User declined, go back to welcome page
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const WelcomePage(),
-          ),
+          MaterialPageRoute(builder: (context) => const WelcomePage()),
         );
       }
     }
@@ -891,11 +935,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 18,
-          ),
+          child: Icon(icon, color: color, size: 18),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -931,7 +971,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     if (!_validateCurrentPage()) {
       return;
     }
-    
+
     if (_currentPage < 3) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -942,14 +982,15 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   bool _validateCurrentPage() {
     final missingFields = <String>[];
-    
+
     switch (_currentPage) {
       case 0: // Personal Information
         if (_clientType == null) missingFields.add('Client Type');
         if (_sex == null) missingFields.add('Sex');
         if (_age == null) missingFields.add('Age');
         if (_region == null || _region!.isEmpty) missingFields.add('Region');
-        if (_serviceAvailed == null || _serviceAvailed!.isEmpty) missingFields.add('Service Availed');
+        if (_serviceAvailed == null || _serviceAvailed!.isEmpty)
+          missingFields.add('Service Availed');
         if (_date == null) missingFields.add('Date');
         break;
       case 1: // CC Awareness
@@ -965,7 +1006,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         }
         break;
     }
-    
+
     if (missingFields.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1010,7 +1051,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     if (_sex == null) missingFields.add('Sex');
     if (_age == null) missingFields.add('Age');
     if (_region == null || _region!.isEmpty) missingFields.add('Region');
-    
+
     if (missingFields.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1039,10 +1080,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       setState(() => _currentPage = 1);
       return;
     }
-    
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       // Create survey response object
       final response = SurveyResponse(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -1061,18 +1102,16 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         suggestions: _suggestions,
         submittedAt: DateTime.now(),
       );
-      
+
       // Save response locally
       await _surveyService.saveSurveyResponse(response);
-      
+
       debugPrint('Survey submitted and saved: ${response.id}');
-      
+
       // Navigate to thank you page
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const ThankYouPage(),
-          ),
+          MaterialPageRoute(builder: (context) => const ThankYouPage()),
         );
       }
     }
@@ -1109,7 +1148,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               ),
             ),
           ),
-          
+
           // Content
           SafeArea(
             child: Column(
@@ -1172,7 +1211,6 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         ],
       ),
     );
-
   }
 
   Widget _buildHeader() {
@@ -1213,7 +1251,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.accent,
                         borderRadius: BorderRadius.circular(4),
@@ -1273,7 +1314,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     title: Row(
                       children: [
                         Icon(Icons.help_outline, color: AppColors.primary),
@@ -1293,7 +1336,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   ),
                 );
               },
-              icon: const Icon(Icons.help_outline, color: Colors.white, size: 22),
+              icon: const Icon(
+                Icons.help_outline,
+                color: Colors.white,
+                size: 22,
+              ),
               tooltip: 'Help',
             ),
           ),
@@ -1310,7 +1357,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       Icons.star_outline,
       Icons.lightbulb_outline,
     ];
-    
+
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
       decoration: BoxDecoration(
@@ -1327,7 +1374,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               final isCompleted = index < _currentPage;
               final isCurrent = index == _currentPage;
               final isLast = index == 3;
-              
+
               return Expanded(
                 child: Row(
                   children: [
@@ -1343,46 +1390,66 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                             gradient: isCompleted || isCurrent
                                 ? LinearGradient(
                                     colors: isCompleted
-                                        ? [AppColors.success, AppColors.success.withValues(alpha: 0.8)]
-                                        : [AppColors.primary, AppColors.secondary],
+                                        ? [
+                                            AppColors.success,
+                                            AppColors.success.withValues(
+                                              alpha: 0.8,
+                                            ),
+                                          ]
+                                        : [
+                                            AppColors.primary,
+                                            AppColors.secondary,
+                                          ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   )
                                 : null,
-                            color: isCompleted || isCurrent ? null : AppColors.background,
+                            color: isCompleted || isCurrent
+                                ? null
+                                : AppColors.background,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isCompleted
                                   ? AppColors.success
                                   : isCurrent
-                                      ? AppColors.primary
-                                      : AppColors.border,
+                                  ? AppColors.primary
+                                  : AppColors.border,
                               width: isCurrent ? 0 : 2,
                             ),
                             boxShadow: isCurrent
                                 ? [
                                     BoxShadow(
-                                      color: AppColors.primary.withValues(alpha: 0.4),
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       blurRadius: 12,
                                       offset: const Offset(0, 4),
                                     ),
                                   ]
                                 : isCompleted
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.success.withValues(alpha: 0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ]
-                                    : null,
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.success.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : null,
                           ),
                           child: Center(
                             child: isCompleted
-                                ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
+                                ? const Icon(
+                                    Icons.check_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  )
                                 : Icon(
                                     stepIcons[index],
-                                    color: isCurrent ? Colors.white : AppColors.textSecondary,
+                                    color: isCurrent
+                                        ? Colors.white
+                                        : AppColors.textSecondary,
                                     size: isCurrent ? 22 : 18,
                                   ),
                           ),
@@ -1392,17 +1459,19 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                           stepLabels[index],
                           style: GoogleFonts.poppins(
                             fontSize: 11,
-                            fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w500,
+                            fontWeight: isCurrent
+                                ? FontWeight.w600
+                                : FontWeight.w500,
                             color: isCurrent
                                 ? AppColors.primary
                                 : isCompleted
-                                    ? AppColors.success
-                                    : AppColors.textSecondary,
+                                ? AppColors.success
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
-                    
+
                     // Connecting Line
                     if (!isLast)
                       Expanded(
@@ -1412,24 +1481,41 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                             children: [
                               Container(
                                 height: 3,
-                                margin: const EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.border.withValues(alpha: 0.5),
-                                  borderRadius: BorderRadius.circular(2),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 8,
                                 ),
-                              ),
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 400),
-                                curve: Curves.easeInOut,
-                                height: 3,
-                                margin: const EdgeInsets.symmetric(horizontal: 8),
-                                width: isCompleted ? double.infinity : 0,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [AppColors.success, AppColors.success.withValues(alpha: 0.7)],
+                                  color: AppColors.border.withValues(
+                                    alpha: 0.5,
                                   ),
                                   borderRadius: BorderRadius.circular(2),
                                 ),
+                              ),
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return AnimatedContainer(
+                                    duration: const Duration(milliseconds: 400),
+                                    curve: Curves.easeInOut,
+                                    height: 3,
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                    ),
+                                    width: isCompleted
+                                        ? constraints.maxWidth - 16
+                                        : 0,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          AppColors.success,
+                                          AppColors.success.withValues(
+                                            alpha: 0.7,
+                                          ),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -1457,9 +1543,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             children: [
               Text(
                 'This information helps us understand our clients better. All data will be kept confidential.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 24),
               _buildDateField(),
@@ -1496,9 +1582,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             children: [
               Text(
                 'The Citizen\'s Charter (CC) is an official document that reflects the services of a government agency.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 24),
               _buildCCQuestion(
@@ -1566,7 +1652,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.secondary.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: AppColors.secondary.withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               children: [
@@ -1587,7 +1675,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.star_rounded, color: Colors.white, size: 28),
+                  child: const Icon(
+                    Icons.star_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -1637,16 +1729,18 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             children: [
               Text(
                 'We value your feedback! Please share any suggestions on how we can improve our service.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 24),
               TextFormField(
                 maxLines: 8,
                 decoration: InputDecoration(
                   hintText: 'Enter your suggestions here (optional)...',
-                  hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.5)),
+                  hintStyle: TextStyle(
+                    color: AppColors.textSecondary.withValues(alpha: 0.5),
+                  ),
                 ),
                 onSaved: (value) => _suggestions = value ?? '',
               ),
@@ -1656,7 +1750,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -1695,7 +1791,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.primary.withValues(alpha: 0.1), AppColors.secondary.withValues(alpha: 0.1)],
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.1),
+                    AppColors.secondary.withValues(alpha: 0.1),
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -1736,9 +1835,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   surface: Colors.white,
                   onSurface: AppColors.textPrimary,
                 ),
-                dialogTheme: DialogThemeData(
-                  backgroundColor: Colors.white,
-                ),
+                dialogTheme: DialogThemeData(backgroundColor: Colors.white),
               ),
               child: child!,
             );
@@ -1752,7 +1849,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       child: IgnorePointer(
         child: TextFormField(
           key: ValueKey(_date),
-          initialValue: _date != null ? DateFormat('MMM dd, yyyy').format(_date!) : null,
+          initialValue: _date != null
+              ? DateFormat('MMM dd, yyyy').format(_date!)
+              : null,
           decoration: InputDecoration(
             labelText: 'Date of Visit',
             hintText: 'Select date',
@@ -1855,7 +1954,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           return regions;
         }
         return regions.where((String option) {
-          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          return option.toLowerCase().contains(
+            textEditingValue.text.toLowerCase(),
+          );
         });
       },
       onSelected: (String selection) {
@@ -1907,13 +2008,17 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     ];
 
     return Autocomplete<String>(
-      initialValue: _serviceAvailed != null ? TextEditingValue(text: _serviceAvailed!) : null,
+      initialValue: _serviceAvailed != null
+          ? TextEditingValue(text: _serviceAvailed!)
+          : null,
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text.isEmpty) {
           return services;
         }
         return services.where((String option) {
-          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          return option.toLowerCase().contains(
+            textEditingValue.text.toLowerCase(),
+          );
         });
       },
       onSelected: (String selection) {
@@ -1938,8 +2043,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
               _serviceAvailed = value;
             });
           },
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Please enter service availed' : null,
+          validator: (value) => value == null || value.isEmpty
+              ? 'Please enter service availed'
+              : null,
         );
       },
     );
@@ -1966,7 +2072,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(8),
@@ -2002,76 +2111,82 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           ),
         ),
         const SizedBox(height: 16),
-        ...options.map((option) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: InkWell(
-                onTap: () => onChanged(option),
-                borderRadius: BorderRadius.circular(16),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
+        ...options.map(
+          (option) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: InkWell(
+              onTap: () => onChanged(option),
+              borderRadius: BorderRadius.circular(16),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: selectedValue == option
+                      ? AppColors.primary.withValues(alpha: 0.05)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
                     color: selectedValue == option
-                        ? AppColors.primary.withValues(alpha: 0.05)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: selectedValue == option
-                          ? AppColors.primary
-                          : AppColors.border,
-                      width: selectedValue == option ? 2 : 1,
-                    ),
-                    boxShadow: selectedValue == option
-                        ? [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ]
-                        : [],
+                        ? AppColors.primary
+                        : AppColors.border,
+                    width: selectedValue == option ? 2 : 1,
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: selectedValue == option
-                                ? AppColors.primary
-                                : Colors.grey.shade400,
-                            width: 2,
+                  boxShadow: selectedValue == option
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
+                        ]
+                      : [],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
                           color: selectedValue == option
                               ? AppColors.primary
-                              : Colors.transparent,
+                              : Colors.grey.shade400,
+                          width: 2,
                         ),
-                        child: selectedValue == option
-                            ? const Icon(Icons.check, size: 16, color: Colors.white)
-                            : null,
+                        color: selectedValue == option
+                            ? AppColors.primary
+                            : Colors.transparent,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: selectedValue == option
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary,
-                            fontWeight: selectedValue == option
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                          ),
+                      child: selectedValue == option
+                          ? const Icon(
+                              Icons.check,
+                              size: 16,
+                              color: Colors.white,
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        option,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: selectedValue == option
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                          fontWeight: selectedValue == option
+                              ? FontWeight.w600
+                              : FontWeight.normal,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            )),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -2081,10 +2196,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.white,
-            AppColors.background,
-          ],
+          colors: [Colors.white, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -2108,7 +2220,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+                child: Icon(
+                  Icons.info_outline,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -2130,16 +2246,28 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.5),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildScaleItem('😠', 'Strongly\nDisagree', 1, const Color(0xFFE53935)),
+                _buildScaleItem(
+                  '😠',
+                  'Strongly\nDisagree',
+                  1,
+                  const Color(0xFFE53935),
+                ),
                 _buildScaleItem('😕', 'Disagree', 2, const Color(0xFFFF7043)),
                 _buildScaleItem('😐', 'Neither', 3, const Color(0xFFFFA726)),
                 _buildScaleItem('🙂', 'Agree', 4, const Color(0xFF66BB6A)),
-                _buildScaleItem('😄', 'Strongly\nAgree', 5, const Color(0xFF4CAF50)),
+                _buildScaleItem(
+                  '😄',
+                  'Strongly\nAgree',
+                  5,
+                  const Color(0xFF4CAF50),
+                ),
               ],
             ),
           ),
@@ -2204,7 +2332,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     return List.generate(questions.length, (index) {
       final key = 'SQD$index';
       final hasAnswer = _sqdAnswers[key] != null;
-      
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: Container(
@@ -2212,7 +2340,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: hasAnswer 
+              color: hasAnswer
                   ? AppColors.primary.withValues(alpha: 0.3)
                   : AppColors.border,
               width: hasAnswer ? 2 : 1,
@@ -2259,16 +2387,23 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       decoration: BoxDecoration(
                         gradient: hasAnswer
                             ? LinearGradient(
-                                colors: [AppColors.secondary, AppColors.primary],
+                                colors: [
+                                  AppColors.secondary,
+                                  AppColors.primary,
+                                ],
                               )
                             : null,
-                        color: hasAnswer ? null : AppColors.border.withValues(alpha: 0.3),
+                        color: hasAnswer
+                            ? null
+                            : AppColors.border.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
                         child: Icon(
                           questionIcons[index],
-                          color: hasAnswer ? Colors.white : AppColors.textSecondary,
+                          color: hasAnswer
+                              ? Colors.white
+                              : AppColors.textSecondary,
                           size: 20,
                         ),
                       ),
@@ -2318,7 +2453,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   ],
                 ),
               ),
-              
+
               // Emoji rating buttons
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -2346,7 +2481,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                           const Color(0xFF66BB6A), // Light Green - Agree
                           const Color(0xFF4CAF50), // Green - Strongly Agree
                         ];
-                        
+
                         return Tooltip(
                           message: tooltips[rating],
                           textStyle: GoogleFonts.poppins(
@@ -2359,7 +2494,8 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: InkWell(
-                            onTap: () => setState(() => _sqdAnswers[key] = value),
+                            onTap: () =>
+                                setState(() => _sqdAnswers[key] = value),
                             borderRadius: BorderRadius.circular(30),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 250),
@@ -2372,7 +2508,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                     ? LinearGradient(
                                         colors: [
                                           selectedColors[rating],
-                                          selectedColors[rating].withValues(alpha: 0.85),
+                                          selectedColors[rating].withValues(
+                                            alpha: 0.85,
+                                          ),
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -2382,7 +2520,8 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: selectedColors[rating].withValues(alpha: 0.4),
+                                          color: selectedColors[rating]
+                                              .withValues(alpha: 0.4),
                                           blurRadius: 12,
                                           offset: const Offset(0, 4),
                                           spreadRadius: 1,
@@ -2390,7 +2529,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                       ]
                                     : [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.05),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
@@ -2404,7 +2545,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                   ),
                                   child: Opacity(
                                     opacity: isSelected ? 1.0 : 0.4,
-                                    child: Text(['😠', '😕', '😐', '🙂', '😄'][rating]),
+                                    child: Text(
+                                      ['😠', '😕', '😐', '🙂', '😄'][rating],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -2414,7 +2557,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       } else {
                         // Not Applicable button
                         final isSelected = _sqdAnswers[key] == 0;
-                        
+
                         return Tooltip(
                           message: 'Not Applicable',
                           textStyle: GoogleFonts.poppins(
@@ -2436,11 +2579,15 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                               height: isSelected ? 56 : 48,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isSelected ? Colors.grey.shade500 : Colors.grey.shade200,
+                                color: isSelected
+                                    ? Colors.grey.shade500
+                                    : Colors.grey.shade200,
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: Colors.grey.withValues(alpha: 0.4),
+                                          color: Colors.grey.withValues(
+                                            alpha: 0.4,
+                                          ),
                                           blurRadius: 12,
                                           offset: const Offset(0, 4),
                                           spreadRadius: 1,
@@ -2448,7 +2595,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                       ]
                                     : [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.05),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
@@ -2459,7 +2608,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     AnimatedDefaultTextStyle(
-                                      duration: const Duration(milliseconds: 250),
+                                      duration: const Duration(
+                                        milliseconds: 250,
+                                      ),
                                       style: TextStyle(
                                         fontSize: isSelected ? 24 : 20,
                                       ),
@@ -2502,7 +2653,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   Widget _buildNavigationButtons() {
     final isLastPage = _currentPage == 3;
     final isFirstPage = _currentPage == 0;
-    
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
@@ -2538,7 +2689,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.arrow_back_rounded, size: 20, color: AppColors.textSecondary),
+                        Icon(
+                          Icons.arrow_back_rounded,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Back',
@@ -2554,7 +2709,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 ),
               ),
             if (!isFirstPage) const SizedBox(width: 12),
-            
+
             // Next/Submit button
             Expanded(
               flex: isFirstPage ? 1 : 2,
@@ -2563,7 +2718,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 decoration: BoxDecoration(
                   gradient: isLastPage
                       ? LinearGradient(
-                          colors: [AppColors.success, AppColors.success.withValues(alpha: 0.85)],
+                          colors: [
+                            AppColors.success,
+                            AppColors.success.withValues(alpha: 0.85),
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         )
@@ -2571,7 +2729,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: (isLastPage ? AppColors.success : AppColors.primary).withValues(alpha: 0.35),
+                      color:
+                          (isLastPage ? AppColors.success : AppColors.primary)
+                              .withValues(alpha: 0.35),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     ),
@@ -2590,7 +2750,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (isLastPage)
-                        const Icon(Icons.check_circle_outline, size: 22, color: Colors.white)
+                        const Icon(
+                          Icons.check_circle_outline,
+                          size: 22,
+                          color: Colors.white,
+                        )
                       else
                         Text(
                           'Continue',
@@ -2611,7 +2775,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                           ),
                         )
                       else
-                        const Icon(Icons.arrow_forward_rounded, size: 22, color: Colors.white),
+                        const Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 22,
+                          color: Colors.white,
+                        ),
                     ],
                   ),
                 ),
@@ -2638,10 +2806,7 @@ class ThankYouPage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.secondary,
-              AppColors.primary,
-            ],
+            colors: [AppColors.secondary, AppColors.primary],
           ),
         ),
         child: SafeArea(
@@ -2672,9 +2837,9 @@ class ThankYouPage extends StatelessWidget {
                       color: AppColors.success,
                     ),
                   ),
-                  
+
                   SizedBox(height: isDesktop ? 48 : 32),
-                  
+
                   // Thank You Title
                   Text(
                     'Thank You!',
@@ -2685,9 +2850,9 @@ class ThankYouPage extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Subtitle
                   Text(
                     'Your feedback has been submitted successfully',
@@ -2698,12 +2863,14 @@ class ThankYouPage extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Message Card
                   Container(
-                    constraints: BoxConstraints(maxWidth: isDesktop ? 600 : double.infinity),
+                    constraints: BoxConstraints(
+                      maxWidth: isDesktop ? 600 : double.infinity,
+                    ),
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.15),
@@ -2733,12 +2900,14 @@ class ThankYouPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   SizedBox(height: isDesktop ? 48 : 32),
-                  
+
                   // Return Button
                   Container(
-                    constraints: BoxConstraints(maxWidth: isDesktop ? 400 : double.infinity),
+                    constraints: BoxConstraints(
+                      maxWidth: isDesktop ? 400 : double.infinity,
+                    ),
                     height: 56,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -2786,9 +2955,9 @@ class ThankYouPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Footer
                   Text(
                     'City Government of Valenzuela',

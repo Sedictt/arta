@@ -737,7 +737,10 @@ class _AdminDashboardState extends State<AdminDashboard>
               children: [
                 // Analytics Tab
                 SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 32,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1054,7 +1057,7 @@ class _AdminDashboardState extends State<AdminDashboard>
 
   Widget _buildExportTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

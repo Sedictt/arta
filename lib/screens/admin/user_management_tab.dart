@@ -7,7 +7,7 @@ import '../../main.dart';
 
 class UserManagementTab extends StatefulWidget {
   final AdminUser currentUser;
-  
+
   const UserManagementTab({super.key, required this.currentUser});
 
   @override
@@ -38,7 +38,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -60,7 +60,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.secondary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ],
@@ -72,62 +75,117 @@ class _UserManagementTabState extends State<UserManagementTab> {
               scrollDirection: Axis.horizontal,
               child: DataTable(
                 columns: [
-                  DataColumn(label: Text('Username', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Email', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Role', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Created', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Last Login', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Status', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text('Actions', style: GoogleFonts.poppins(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                    label: Text(
+                      'Username',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Email',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Role',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Created',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Last Login',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Status',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Actions',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ],
                 rows: _users.map((user) {
                   return DataRow(
                     cells: [
-                      DataCell(Text(user.username, style: GoogleFonts.poppins())),
+                      DataCell(
+                        Text(user.username, style: GoogleFonts.poppins()),
+                      ),
                       DataCell(Text(user.email, style: GoogleFonts.poppins())),
                       DataCell(_buildRoleBadge(user.role)),
-                      DataCell(Text(
-                        DateFormat('MMM dd, yyyy').format(user.createdAt),
-                        style: GoogleFonts.poppins(fontSize: 12),
-                      )),
-                      DataCell(Text(
-                        user.lastLogin != null
-                            ? DateFormat('MMM dd, HH:mm').format(user.lastLogin!)
-                            : 'Never',
-                        style: GoogleFonts.poppins(fontSize: 12),
-                      )),
+                      DataCell(
+                        Text(
+                          DateFormat('MMM dd, yyyy').format(user.createdAt),
+                          style: GoogleFonts.poppins(fontSize: 12),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          user.lastLogin != null
+                              ? DateFormat(
+                                  'MMM dd, HH:mm',
+                                ).format(user.lastLogin!)
+                              : 'Never',
+                          style: GoogleFonts.poppins(fontSize: 12),
+                        ),
+                      ),
                       DataCell(_buildStatusBadge(user.isActive)),
-                      DataCell(Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, size: 20),
-                            onPressed: () => _showEditUserDialog(user),
-                            tooltip: 'Edit User',
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.lock_reset, size: 20),
-                            onPressed: () => _showChangePasswordDialog(user),
-                            tooltip: 'Change Password',
-                          ),
-                          if (user.id != widget.currentUser.id)
+                      DataCell(
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
                             IconButton(
-                              icon: Icon(
-                                user.isActive ? Icons.block : Icons.check_circle,
-                                size: 20,
-                                color: user.isActive ? Colors.red : Colors.green,
+                              icon: const Icon(Icons.edit, size: 20),
+                              onPressed: () => _showEditUserDialog(user),
+                              tooltip: 'Edit User',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.lock_reset, size: 20),
+                              onPressed: () => _showChangePasswordDialog(user),
+                              tooltip: 'Change Password',
+                            ),
+                            if (user.id != widget.currentUser.id)
+                              IconButton(
+                                icon: Icon(
+                                  user.isActive
+                                      ? Icons.block
+                                      : Icons.check_circle,
+                                  size: 20,
+                                  color: user.isActive
+                                      ? Colors.red
+                                      : Colors.green,
+                                ),
+                                onPressed: () => _toggleUserStatus(user),
+                                tooltip: user.isActive
+                                    ? 'Deactivate'
+                                    : 'Activate',
                               ),
-                              onPressed: () => _toggleUserStatus(user),
-                              tooltip: user.isActive ? 'Deactivate' : 'Activate',
-                            ),
-                          if (user.id != widget.currentUser.id)
-                            IconButton(
-                              icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                              onPressed: () => _deleteUser(user),
-                              tooltip: 'Delete User',
-                            ),
-                        ],
-                      )),
+                            if (user.id != widget.currentUser.id)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  size: 20,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => _deleteUser(user),
+                                tooltip: 'Delete User',
+                              ),
+                          ],
+                        ),
+                      ),
                     ],
                   );
                 }).toList(),
@@ -168,7 +226,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: isActive ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+        color: isActive
+            ? Colors.green.withValues(alpha: 0.1)
+            : Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: isActive ? Colors.green : Colors.red),
       ),
@@ -193,7 +253,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text('Add New User', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+          title: Text(
+            'Add New User',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -202,7 +265,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   controller: usernameController,
                   decoration: InputDecoration(
                     labelText: 'Username',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -210,7 +275,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -219,7 +286,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -227,7 +296,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   initialValue: selectedRole,
                   decoration: InputDecoration(
                     labelText: 'Role',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   items: UserRole.values.map((role) {
                     return DropdownMenuItem(
@@ -255,7 +326,12 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     emailController.text.isEmpty ||
                     passwordController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('All fields are required', style: GoogleFonts.poppins())),
+                    SnackBar(
+                      content: Text(
+                        'All fields are required',
+                        style: GoogleFonts.poppins(),
+                      ),
+                    ),
                   );
                   return;
                 }
@@ -264,7 +340,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   username: usernameController.text,
                   email: emailController.text,
-                  passwordHash: _authService.hashPassword(passwordController.text),
+                  passwordHash: _authService.hashPassword(
+                    passwordController.text,
+                  ),
                   role: selectedRole,
                   createdAt: DateTime.now(),
                 );
@@ -275,21 +353,32 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   _loadUsers();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('User created successfully', style: GoogleFonts.poppins()),
+                      content: Text(
+                        'User created successfully',
+                        style: GoogleFonts.poppins(),
+                      ),
                       backgroundColor: Colors.green,
                     ),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Username or email already exists', style: GoogleFonts.poppins()),
+                      content: Text(
+                        'Username or email already exists',
+                        style: GoogleFonts.poppins(),
+                      ),
                       backgroundColor: Colors.red,
                     ),
                   );
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-              child: Text('Create', style: GoogleFonts.poppins(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+              ),
+              child: Text(
+                'Create',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -306,7 +395,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text('Edit User', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+          title: Text(
+            'Edit User',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -314,7 +406,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 controller: usernameController,
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -322,7 +416,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -330,7 +426,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 initialValue: selectedRole,
                 decoration: InputDecoration(
                   labelText: 'Role',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 items: UserRole.values.map((role) {
                   return DropdownMenuItem(
@@ -364,13 +462,21 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 _loadUsers();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('User updated successfully', style: GoogleFonts.poppins()),
+                    content: Text(
+                      'User updated successfully',
+                      style: GoogleFonts.poppins(),
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-              child: Text('Update', style: GoogleFonts.poppins(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+              ),
+              child: Text(
+                'Update',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -385,7 +491,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Change Password', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Change Password',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -399,7 +508,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'New Password',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -408,7 +519,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -423,7 +536,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
               if (passwordController.text != confirmController.text) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Passwords do not match', style: GoogleFonts.poppins()),
+                    content: Text(
+                      'Passwords do not match',
+                      style: GoogleFonts.poppins(),
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -433,24 +549,38 @@ class _UserManagementTabState extends State<UserManagementTab> {
               if (passwordController.text.length < 6) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Password must be at least 6 characters', style: GoogleFonts.poppins()),
+                    content: Text(
+                      'Password must be at least 6 characters',
+                      style: GoogleFonts.poppins(),
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
                 return;
               }
 
-              await _authService.changePassword(user.id, passwordController.text);
+              await _authService.changePassword(
+                user.id,
+                passwordController.text,
+              );
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Password changed successfully', style: GoogleFonts.poppins()),
+                  content: Text(
+                    'Password changed successfully',
+                    style: GoogleFonts.poppins(),
+                  ),
                   backgroundColor: Colors.green,
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-            child: Text('Change', style: GoogleFonts.poppins(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+            ),
+            child: Text(
+              'Change',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -476,7 +606,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete User', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Delete User',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: Text(
           'Are you sure you want to delete ${user.username}? This action cannot be undone.',
           style: GoogleFonts.poppins(),
@@ -489,7 +622,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('Delete', style: GoogleFonts.poppins(color: Colors.white)),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -500,7 +636,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
       _loadUsers();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('User deleted successfully', style: GoogleFonts.poppins()),
+          content: Text(
+            'User deleted successfully',
+            style: GoogleFonts.poppins(),
+          ),
           backgroundColor: Colors.green,
         ),
       );
