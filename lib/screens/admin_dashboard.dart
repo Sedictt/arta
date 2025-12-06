@@ -103,7 +103,9 @@ class _AdminDashboardState extends State<AdminDashboard>
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 360 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -339,7 +341,9 @@ class _AdminDashboardState extends State<AdminDashboard>
   ) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 360 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -799,6 +803,18 @@ class _AdminDashboardState extends State<AdminDashboard>
                               fontSize: 14,
                             ),
                           ),
+                          if (MediaQuery.of(context).size.width >= 400) ...[
+                            // Hide username text on small screens
+                            const SizedBox(width: 10),
+                            Text(
+                              widget.currentUser.username,
+                              style: GoogleFonts.poppins(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                           const SizedBox(width: 6),
                           Icon(
                             Icons.keyboard_arrow_down_rounded,
@@ -822,9 +838,8 @@ class _AdminDashboardState extends State<AdminDashboard>
               children: [
                 // Analytics Tab
                 SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 32,
+                  padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width < 360 ? 16 : 32,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -832,7 +847,9 @@ class _AdminDashboardState extends State<AdminDashboard>
                       // Welcome Banner
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(
+                          MediaQuery.of(context).size.width < 360 ? 16 : 24,
+                        ),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -1104,6 +1121,22 @@ class _AdminDashboardState extends State<AdminDashboard>
                       dateButton,
                       if (clearButton != null) ...[
                         const SizedBox(width: 12),
+                        clearButton,
+                      ],
+                    ],
+                  );
+                } else if (constraints.maxWidth < 400) {
+                  // Very small screens (mobile)
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      regionDropdown,
+                      const SizedBox(height: 12),
+                      serviceDropdown,
+                      const SizedBox(height: 12),
+                      dateButton,
+                      if (clearButton != null) ...[
+                        const SizedBox(height: 12),
                         clearButton,
                       ],
                     ],
@@ -1637,7 +1670,9 @@ class _AdminDashboardState extends State<AdminDashboard>
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 360 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1870,7 +1905,9 @@ class _AdminDashboardState extends State<AdminDashboard>
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 360 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2086,7 +2123,9 @@ class _AdminDashboardState extends State<AdminDashboard>
     if (_recentResponses.isEmpty) {
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(
+            MediaQuery.of(context).size.width < 360 ? 16 : 24,
+          ),
           child: Center(
             child: Text(
               'No responses yet',
@@ -2103,7 +2142,9 @@ class _AdminDashboardState extends State<AdminDashboard>
     return Card(
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width < 360 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

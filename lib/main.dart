@@ -146,6 +146,7 @@ class WelcomePage extends StatelessWidget {
 
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
           // Background Image
           Positioned.fill(
@@ -184,483 +185,552 @@ class WelcomePage extends StatelessWidget {
 
   Widget _buildDesktopLayout(BuildContext context) {
     return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 1200),
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Row(
-          children: [
-            // Left side - Content
-            Expanded(
-              flex: 5,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Logo and Title
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
+      child: SingleChildScrollView(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Row(
+            children: [
+              // Left side - Content
+              Expanded(
+                flex: 5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Logo and Title
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
                       ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'Valenzuela_Seal.svg.png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        const SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'City Government of Valenzuela',
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    letterSpacing: 0.5,
-                                  ),
-                            ),
-                            Text(
-                              'Help Us Serve You Better',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 60),
-
-                  // ARTA Label
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.accent,
-                          AppColors.accent.withValues(alpha: 0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.accent.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      'ARTA COMPLIANT',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Colors.black87,
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Main Title
-                  Text(
-                    'Client Satisfaction\nMeasurement',
-                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      height: 1.1,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          offset: const Offset(0, 4),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Description
-                  Text(
-                    'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices in compliance with the Anti-Red Tape Authority (ARTA).',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      height: 1.6,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-
-                  const SizedBox(height: 60),
-
-                  // Start Button
-                  SizedBox(
-                    width: 300,
-                    height: 64,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const SurveyHomePage(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                        foregroundColor: Colors.white,
-                        elevation: 8,
-                        shadowColor: AppColors.secondary.withValues(alpha: 0.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text('Start Survey', style: TextStyle(fontSize: 20)),
-                          SizedBox(width: 16),
-                          Icon(Icons.arrow_forward_rounded, size: 28),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  Text(
-                    'Estimated Time: 3 - 5 minutes',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-
-                  const SizedBox(height: 60),
-
-                  // Bottom buttons
-                  Row(
-                    children: [
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const QRCodeScreen(),
-                            ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          backgroundColor: Colors.white.withValues(alpha: 0.1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        icon: const Icon(Icons.qr_code_2, color: Colors.white),
-                        label: const Text('Scan QR Code'),
-                      ),
-                      const SizedBox(width: 24),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const AdminLogin(),
-                            ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          backgroundColor: Colors.white.withValues(alpha: 0.1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.white,
-                        ),
-                        label: const Text('Admin Access'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Right side - Illustration
-            Expanded(
-              flex: 4,
-              child: Center(
-                child: Container(
-                  width: 500,
-                  height: 600,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 40,
-                        offset: const Offset(0, 20),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(40),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(40),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  blurRadius: 30,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.assignment_turned_in_rounded,
-                              size: 120,
-                              color: AppColors.primary,
-                            ),
+                          Image.asset(
+                            'Valenzuela_Seal.svg.png',
+                            width: 60,
+                            height: 60,
                           ),
-                          const SizedBox(height: 40),
-                          Text(
-                            'Your Voice Matters',
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 40),
-                            child: Text(
-                              'Help us build a better government by sharing your honest feedback.',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                    height: 1.5,
-                                  ),
-                            ),
+                          const SizedBox(width: 20),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'City Government of Valenzuela',
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      letterSpacing: 0.5,
+                                    ),
+                              ),
+                              Text(
+                                'Help Us Serve You Better',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
+                                    ),
+                              ),
+                            ],
                           ),
                         ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 60),
+
+                    // ARTA Label
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.accent,
+                            AppColors.accent.withValues(alpha: 0.8),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.accent.withValues(alpha: 0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'ARTA COMPLIANT',
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: Colors.black87,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Main Title
+                    Text(
+                      'Client Satisfaction\nMeasurement',
+                      style: Theme.of(context).textTheme.displayMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            height: 1.1,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                offset: const Offset(0, 4),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Description
+                    Text(
+                      'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices in compliance with the Anti-Red Tape Authority (ARTA).',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            height: 1.6,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                          ),
+                    ),
+
+                    const SizedBox(height: 60),
+
+                    // Start Button
+                    SizedBox(
+                      width: 300,
+                      height: 64,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const SurveyHomePage(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                          foregroundColor: Colors.white,
+                          elevation: 8,
+                          shadowColor: AppColors.secondary.withValues(
+                            alpha: 0.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              'Start Survey',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            SizedBox(width: 16),
+                            Icon(Icons.arrow_forward_rounded, size: 28),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Text(
+                      'Estimated Time: 3 - 5 minutes',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.7),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+
+                    const SizedBox(height: 60),
+
+                    // Bottom buttons
+                    Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const QRCodeScreen(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.qr_code_2,
+                            color: Colors.white,
+                          ),
+                          label: const Text('Scan QR Code'),
+                        ),
+                        const SizedBox(width: 24),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const AdminLogin(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.white,
+                          ),
+                          label: const Text('Admin Access'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Right side - Illustration
+              Expanded(
+                flex: 4,
+                child: Center(
+                  child: Container(
+                    width: 500,
+                    height: 600,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(40),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 40,
+                          offset: const Offset(0, 20),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(40),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(40),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    blurRadius: 30,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.assignment_turned_in_rounded,
+                                size: 120,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 40),
+                            Text(
+                              'Your Voice Matters',
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 40,
+                              ),
+                              child: Text(
+                                'Help us build a better government by sharing your honest feedback.',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
+                                      height: 1.5,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildMobileLayout(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Logo and Title
-          Row(
-            children: [
-              Image.asset('Valenzuela_Seal.svg.png', width: 60, height: 60),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final horizontalPadding = isSmallScreen ? 16.0 : 24.0;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(horizontalPadding),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - (horizontalPadding * 2),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'City Government of Valenzuela',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    // Logo and Title
+                    Row(
+                      children: [
+                        Image.asset(
+                          'Valenzuela_Seal.svg.png',
+                          width: isSmallScreen ? 48 : 60,
+                          height: isSmallScreen ? 48 : 60,
+                        ),
+                        SizedBox(width: isSmallScreen ? 12 : 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'City Government of Valenzuela',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: isSmallScreen ? 14 : 16,
+                                    ),
+                              ),
+                              Text(
+                                'Help Us Serve You Better',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
+                                      fontSize: isSmallScreen ? 11 : 12,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 32 : 48),
+
+                    // ARTA Label
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Text(
+                        'ARTA COMPLIANT',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: isSmallScreen ? 9 : 10,
+                        ),
                       ),
                     ),
+
+                    const SizedBox(height: 16),
+
+                    // Main Title
                     Text(
-                      'Help Us Serve You Better',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      'Client Satisfaction\nMeasurement',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            height: 1.2,
+                            fontSize: isSmallScreen ? 24 : 32,
+                          ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Description
+                    Text(
+                      'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.white.withValues(alpha: 0.9),
+                        height: 1.5,
+                        fontSize: isSmallScreen ? 13 : 14,
+                      ),
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 32 : 40),
+
+                    // Start Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: isSmallScreen ? 48 : 56,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const SurveyHomePage(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                          foregroundColor: Colors.white,
+                          elevation: 4,
+                          shadowColor: Colors.black.withValues(alpha: 0.3),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text('Start Survey'),
+                            SizedBox(width: 12),
+                            Icon(Icons.arrow_forward_rounded),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Center(
+                      child: Text(
+                        'Estimated Time: 3 - 5 minutes',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontStyle: FontStyle.italic,
+                          fontSize: isSmallScreen ? 11 : 12,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 24 : 32),
+                  ],
+                ),
+
+                // Bottom buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const QRCodeScreen(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.qr_code_2,
+                        color: Colors.white,
+                        size: isSmallScreen ? 18 : 20,
+                      ),
+                      label: Text(
+                        'Scan QR',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: isSmallScreen ? 13 : 14,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const AdminLogin(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.admin_panel_settings,
+                        color: Colors.white,
+                        size: isSmallScreen ? 18 : 20,
+                      ),
+                      label: Text(
+                        'Admin',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: isSmallScreen ? 13 : 14,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 48),
-
-          // ARTA Label
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-            ),
-            child: Text(
-              'ARTA COMPLIANT',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Colors.white,
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.bold,
-              ),
+              ],
             ),
           ),
-
-          const SizedBox(height: 16),
-
-          // Main Title
-          Text(
-            'Client Satisfaction\nMeasurement',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Description
-          Text(
-            'Your feedback is crucial for our continuous improvement. This survey tracks the customer experience of government offices.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-              height: 1.5,
-            ),
-          ),
-
-          const SizedBox(height: 40),
-
-          // Start Button
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const SurveyHomePage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondary,
-                foregroundColor: Colors.white,
-                elevation: 4,
-                shadowColor: Colors.black.withValues(alpha: 0.3),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text('Start Survey'),
-                  SizedBox(width: 12),
-                  Icon(Icons.arrow_forward_rounded),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          Center(
-            child: Text(
-              'Estimated Time: 3 - 5 minutes',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.7),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 48),
-
-          // Bottom buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const QRCodeScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.qr_code_2,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                label: const Text(
-                  'Scan QR',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              const SizedBox(width: 16),
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const AdminLogin()),
-                  );
-                },
-                icon: const Icon(
-                  Icons.admin_panel_settings,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                label: const Text(
-                  'Admin',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -1119,6 +1189,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final horizontalMargin = isSmallScreen ? 12.0 : 16.0;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
@@ -1156,10 +1230,17 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 _buildHeader(),
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    margin: EdgeInsets.fromLTRB(
+                      horizontalMargin,
+                      0,
+                      horizontalMargin,
+                      horizontalMargin,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(
+                        isSmallScreen ? 20 : 28,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.primary.withValues(alpha: 0.08),
@@ -1175,7 +1256,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(
+                        isSmallScreen ? 20 : 28,
+                      ),
                       child: Column(
                         children: [
                           _buildProgressIndicator(),
@@ -1350,6 +1433,12 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildProgressIndicator() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final padding = isSmallScreen
+        ? const EdgeInsets.fromLTRB(16, 16, 16, 12)
+        : const EdgeInsets.fromLTRB(24, 20, 24, 16);
+
     final stepLabels = ['Info', 'CC', 'Quality', 'Feedback'];
     final stepIcons = [
       Icons.person_outline,
@@ -1359,7 +1448,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     ];
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+      padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -1384,8 +1473,12 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
-                          width: isCurrent ? 44 : 36,
-                          height: isCurrent ? 44 : 36,
+                          width: isSmallScreen
+                              ? (isCurrent ? 36 : 30)
+                              : (isCurrent ? 44 : 36),
+                          height: isSmallScreen
+                              ? (isCurrent ? 36 : 30)
+                              : (isCurrent ? 44 : 36),
                           decoration: BoxDecoration(
                             gradient: isCompleted || isCurrent
                                 ? LinearGradient(
@@ -1440,17 +1533,19 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                           ),
                           child: Center(
                             child: isCompleted
-                                ? const Icon(
+                                ? Icon(
                                     Icons.check_rounded,
                                     color: Colors.white,
-                                    size: 20,
+                                    size: isSmallScreen ? 16 : 20,
                                   )
                                 : Icon(
                                     stepIcons[index],
                                     color: isCurrent
                                         ? Colors.white
                                         : AppColors.textSecondary,
-                                    size: isCurrent ? 22 : 18,
+                                    size: isSmallScreen
+                                        ? (isCurrent ? 18 : 14)
+                                        : (isCurrent ? 22 : 18),
                                   ),
                           ),
                         ),
@@ -1458,7 +1553,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                         Text(
                           stepLabels[index],
                           style: GoogleFonts.poppins(
-                            fontSize: 11,
+                            fontSize: isSmallScreen ? 9 : 11,
                             fontWeight: isCurrent
                                 ? FontWeight.w600
                                 : FontWeight.w500,
@@ -1476,13 +1571,15 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     if (!isLast)
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 24),
+                          padding: EdgeInsets.only(
+                            bottom: isSmallScreen ? 20 : 24,
+                          ),
                           child: Stack(
                             children: [
                               Container(
                                 height: 3,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 8,
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: isSmallScreen ? 4 : 8,
                                 ),
                                 decoration: BoxDecoration(
                                   color: AppColors.border.withValues(
@@ -1497,11 +1594,12 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                     duration: const Duration(milliseconds: 400),
                                     curve: Curves.easeInOut,
                                     height: 3,
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 8,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: isSmallScreen ? 4 : 8,
                                     ),
                                     width: isCompleted
-                                        ? constraints.maxWidth - 16
+                                        ? constraints.maxWidth -
+                                              (isSmallScreen ? 8 : 16)
                                         : 0,
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
@@ -1532,8 +1630,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildDemographicPage() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = screenWidth < 360 ? 16.0 : 24.0;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1571,8 +1672,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildCCAwarenessPage() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = screenWidth < 360 ? 16.0 : 24.0;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1634,8 +1738,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildServiceQualityPage() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = screenWidth < 360 ? 16.0 : 24.0;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1718,8 +1825,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildSuggestionsPage() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = screenWidth < 360 ? 16.0 : 24.0;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2192,8 +2302,13 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildSatisfactionScale() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final padding = isSmallScreen ? 12.0 : 24.0;
+    final innerPadding = isSmallScreen ? 8.0 : 16.0;
+
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.white, AppColors.background],
@@ -2231,7 +2346,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                 child: Text(
                   'Rating Scale Guide',
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 12 : 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                     letterSpacing: 0.5,
@@ -2242,7 +2357,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
           ),
           const SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(innerPadding),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -2258,15 +2373,35 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   'Strongly\nDisagree',
                   1,
                   const Color(0xFFE53935),
+                  isSmallScreen,
                 ),
-                _buildScaleItem('😕', 'Disagree', 2, const Color(0xFFFF7043)),
-                _buildScaleItem('😐', 'Neither', 3, const Color(0xFFFFA726)),
-                _buildScaleItem('🙂', 'Agree', 4, const Color(0xFF66BB6A)),
+                _buildScaleItem(
+                  '😕',
+                  'Disagree',
+                  2,
+                  const Color(0xFFFF7043),
+                  isSmallScreen,
+                ),
+                _buildScaleItem(
+                  '😐',
+                  'Neither',
+                  3,
+                  const Color(0xFFFFA726),
+                  isSmallScreen,
+                ),
+                _buildScaleItem(
+                  '🙂',
+                  'Agree',
+                  4,
+                  const Color(0xFF66BB6A),
+                  isSmallScreen,
+                ),
                 _buildScaleItem(
                   '😄',
                   'Strongly\nAgree',
                   5,
                   const Color(0xFF4CAF50),
+                  isSmallScreen,
                 ),
               ],
             ),
@@ -2276,24 +2411,33 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     );
   }
 
-  Widget _buildScaleItem(String emoji, String label, int value, Color color) {
+  Widget _buildScaleItem(
+    String emoji,
+    String label,
+    int value,
+    Color color,
+    bool isSmallScreen,
+  ) {
     return Expanded(
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(isSmallScreen ? 4 : 8),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Text(emoji, style: const TextStyle(fontSize: 28)),
+            child: Text(
+              emoji,
+              style: TextStyle(fontSize: isSmallScreen ? 20 : 28),
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: isSmallScreen ? 4 : 8),
           Text(
             label,
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              fontSize: 10,
+              fontSize: isSmallScreen ? 8 : 10,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
               height: 1.3,

@@ -125,10 +125,13 @@ class _AdminLoginState extends State<AdminLogin> {
       return;
     }
 
-    final confirm = await showDialog<bool>(
+    final confirm =
+        await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             title: Text(
               'Reset password',
               style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
@@ -160,9 +163,11 @@ class _AdminLoginState extends State<AdminLogin> {
     final users = await _authService.getAllUsers();
     String? userId;
     try {
-      final u = users.firstWhere((u) =>
-          u.username == identifier ||
-          u.email.toLowerCase() == identifier.toLowerCase());
+      final u = users.firstWhere(
+        (u) =>
+            u.username == identifier ||
+            u.email.toLowerCase() == identifier.toLowerCase(),
+      );
       userId = u.id;
     } catch (_) {}
 
@@ -199,8 +204,10 @@ class _AdminLoginState extends State<AdminLogin> {
       SnackBar(
         content: Row(
           children: [
-            Icon(ok ? Icons.check_circle_outline : Icons.error_outline,
-                color: Colors.white),
+            Icon(
+              ok ? Icons.check_circle_outline : Icons.error_outline,
+              color: Colors.white,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -212,18 +219,20 @@ class _AdminLoginState extends State<AdminLogin> {
             ),
           ],
         ),
-        backgroundColor:
-            ok ? Colors.green.shade600 : Colors.red.shade600,
+        backgroundColor: ok ? Colors.green.shade600 : Colors.red.shade600,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final outerPadding = isSmallScreen ? 16.0 : 24.0;
+    final innerPadding = isSmallScreen ? 24.0 : 40.0;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -232,17 +241,16 @@ class _AdminLoginState extends State<AdminLogin> {
             child: Image.asset(
               'assets/cityhall_facade.jpg',
               fit: BoxFit.cover,
-              errorBuilder: (c, o, s) => Container(color: AppColors.primary.withOpacity(0.1)),
+              errorBuilder: (c, o, s) =>
+                  Container(color: AppColors.primary.withValues(alpha: 0.1)),
             ),
           ),
-          
+
           // Blur Effect
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                color: Colors.black.withOpacity(0.4),
-              ),
+              child: Container(color: Colors.black.withValues(alpha: 0.4)),
             ),
           ),
 
@@ -259,23 +267,23 @@ class _AdminLoginState extends State<AdminLogin> {
           // Login Card
           Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(outerPadding),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(40),
+                    padding: EdgeInsets.all(innerPadding),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -289,7 +297,7 @@ class _AdminLoginState extends State<AdminLogin> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
                                 ),
@@ -297,7 +305,11 @@ class _AdminLoginState extends State<AdminLogin> {
                             ),
                             child: Image.asset(
                               'Valenzuela_Seal.svg.png',
-                              errorBuilder: (c, o, s) => const Icon(Icons.admin_panel_settings, size: 60, color: AppColors.primary),
+                              errorBuilder: (c, o, s) => const Icon(
+                                Icons.admin_panel_settings,
+                                size: 60,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -306,7 +318,7 @@ class _AdminLoginState extends State<AdminLogin> {
                           Text(
                             'Admin Portal',
                             style: GoogleFonts.poppins(
-                              fontSize: 28,
+                              fontSize: isSmallScreen ? 24 : 28,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
@@ -314,7 +326,7 @@ class _AdminLoginState extends State<AdminLogin> {
                           Text(
                             'City Government of Valenzuela',
                             style: GoogleFonts.poppins(
-                              fontSize: 14,
+                              fontSize: isSmallScreen ? 12 : 14,
                               color: AppColors.textSecondary,
                             ),
                             textAlign: TextAlign.center,
@@ -328,19 +340,31 @@ class _AdminLoginState extends State<AdminLogin> {
                             style: GoogleFonts.poppins(),
                             decoration: InputDecoration(
                               labelText: 'Username or Email',
-                              labelStyle: GoogleFonts.poppins(color: AppColors.textSecondary),
-                              prefixIcon: const Icon(Icons.person_outline, color: AppColors.primary),
+                              labelStyle: GoogleFonts.poppins(
+                                color: AppColors.textSecondary,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.person_outline,
+                                color: AppColors.primary,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: AppColors.border),
+                                borderSide: const BorderSide(
+                                  color: AppColors.border,
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: AppColors.border),
+                                borderSide: const BorderSide(
+                                  color: AppColors.border,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                                borderSide: const BorderSide(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
                               ),
                               filled: true,
                               fillColor: Colors.grey.shade50,
@@ -363,8 +387,13 @@ class _AdminLoginState extends State<AdminLogin> {
                             style: GoogleFonts.poppins(),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              labelStyle: GoogleFonts.poppins(color: AppColors.textSecondary),
-                              prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
+                              labelStyle: GoogleFonts.poppins(
+                                color: AppColors.textSecondary,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.lock_outline,
+                                color: AppColors.primary,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword
@@ -380,15 +409,22 @@ class _AdminLoginState extends State<AdminLogin> {
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: AppColors.border),
+                                borderSide: const BorderSide(
+                                  color: AppColors.border,
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: AppColors.border),
+                                borderSide: const BorderSide(
+                                  color: AppColors.border,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                                borderSide: const BorderSide(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
                               ),
                               filled: true,
                               fillColor: Colors.grey.shade50,
@@ -429,7 +465,9 @@ class _AdminLoginState extends State<AdminLogin> {
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
                                 elevation: 4,
-                                shadowColor: AppColors.primary.withOpacity(0.4),
+                                shadowColor: AppColors.primary.withValues(
+                                  alpha: 0.4,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -444,7 +482,8 @@ class _AdminLoginState extends State<AdminLogin> {
                                       ),
                                     )
                                   : Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Sign In',

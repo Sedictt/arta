@@ -10,6 +10,12 @@ class QRCodeScreen extends StatelessWidget {
     // In production, this would be the actual survey URL
     const surveyUrl = 'https://valenzuela.gov.ph/survey';
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final outerPadding = isSmallScreen ? 16.0 : 32.0;
+    final cardPadding = isSmallScreen ? 16.0 : 40.0;
+    final qrSize = isSmallScreen ? 180.0 : 250.0;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -21,10 +27,10 @@ class QRCodeScreen extends StatelessWidget {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(outerPadding),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(40),
+              padding: EdgeInsets.all(cardPadding),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -37,11 +43,11 @@ class QRCodeScreen extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.qr_code_2,
-                      size: 48,
+                      size: isSmallScreen ? 36 : 48,
                       color: AppColors.primary,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: isSmallScreen ? 16 : 24),
 
                   // Title
                   Text(
@@ -49,6 +55,7 @@ class QRCodeScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
+                      fontSize: isSmallScreen ? 20 : 24,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -57,15 +64,16 @@ class QRCodeScreen extends StatelessWidget {
                     'Use your mobile device to scan this QR code',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
+                      fontSize: isSmallScreen ? 12 : 14,
                     ),
                     textAlign: TextAlign.center,
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: isSmallScreen ? 24 : 32),
 
                   // QR Code
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(isSmallScreen ? 12 : 20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -74,7 +82,7 @@ class QRCodeScreen extends StatelessWidget {
                     child: QrImageView(
                       data: surveyUrl,
                       version: QrVersions.auto,
-                      size: 250,
+                      size: qrSize,
                       backgroundColor: Colors.white,
                       eyeStyle: const QrEyeStyle(
                         eyeShape: QrEyeShape.square,
@@ -87,7 +95,7 @@ class QRCodeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: isSmallScreen ? 24 : 32),
 
                   // URL Display
                   Container(
@@ -112,6 +120,7 @@ class QRCodeScreen extends StatelessWidget {
                                 ?.copyWith(
                                   fontFamily: 'monospace',
                                   color: AppColors.textPrimary,
+                                  fontSize: isSmallScreen ? 11 : 14,
                                 ),
                           ),
                         ),
