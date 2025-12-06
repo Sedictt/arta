@@ -267,6 +267,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
 
           // Section list
           ReorderableListView.builder(
+            buildDefaultDragHandles: false,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _sections.length,
@@ -643,6 +644,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                 children: [
                   // Questions List
                   ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: section.questions.length,
@@ -708,12 +710,25 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.drag_indicator, size: 20, color: Colors.grey.shade400),
-            const SizedBox(width: 8),
+            // Drag handle - properly positioned on the left
+            ReorderableDragStartListener(
+              index: qIndex,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.grab,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.drag_indicator,
+                    size: 20,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+              ),
+            ),
+            // Question type badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
@@ -730,9 +745,11 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               ),
             ),
             const SizedBox(width: 12),
+            // Question content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
@@ -773,6 +790,8 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            // Action buttons
             IconButton(
               icon: const Icon(Icons.edit_outlined, size: 18),
               onPressed: () {
@@ -783,6 +802,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               },
               tooltip: 'Edit',
               visualDensity: VisualDensity.compact,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
             IconButton(
               icon: Icon(
@@ -793,6 +813,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               onPressed: () => _deleteQuestion(section, qIndex),
               tooltip: 'Delete',
               visualDensity: VisualDensity.compact,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
           ],
         ),
