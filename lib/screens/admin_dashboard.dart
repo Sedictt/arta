@@ -124,14 +124,17 @@ class _AdminDashboardState extends State<AdminDashboard>
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Responses Over Time',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                Flexible(
+                  child: Text(
+                    'Response Trends',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -212,8 +215,9 @@ class _AdminDashboardState extends State<AdminDashboard>
                             : 1,
                         getTitlesWidget: (value, meta) {
                           final idx = value.toInt();
-                          if (idx < 0 || idx >= dates.length)
+                          if (idx < 0 || idx >= dates.length) {
                             return const SizedBox.shrink();
+                          }
                           return Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
@@ -578,7 +582,7 @@ class _AdminDashboardState extends State<AdminDashboard>
       onSelected: (value) async {
         if (value == 'logout') {
           await _authService.logout();
-          if (context.mounted) {
+          if (mounted) {
             Navigator.of(context).pushReplacementNamed('/');
           }
         } else if (value == 'generate_test') {
@@ -932,7 +936,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                           gradient: LinearGradient(
                             colors: [
                               AppColors.primary,
-                              AppColors.primary.withOpacity(0.8),
+                              AppColors.primary.withValues(alpha: 0.8),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -940,7 +944,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -962,7 +966,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                               'Here\'s what\'s happening with your survey data today.',
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                               ),
                             ),
                           ],
@@ -1051,14 +1055,17 @@ class _AdminDashboardState extends State<AdminDashboard>
               children: [
                 Icon(Icons.filter_list, color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
-                Text(
-                  'Filter Data',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                Flexible(
+                  child: Text(
+                    'Filter Data',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -1082,6 +1089,7 @@ class _AdminDashboardState extends State<AdminDashboard>
             LayoutBuilder(
               builder: (context, constraints) {
                 final regionDropdown = DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _selectedRegion,
                   decoration: const InputDecoration(
                     labelText: 'Region',
@@ -1104,6 +1112,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                 );
 
                 final serviceDropdown = DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _selectedService,
                   decoration: const InputDecoration(
                     labelText: 'Service',
@@ -1676,7 +1685,7 @@ class _AdminDashboardState extends State<AdminDashboard>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1769,14 +1778,17 @@ class _AdminDashboardState extends State<AdminDashboard>
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Satisfaction Distribution',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                Flexible(
+                  child: Text(
+                    'Satisfaction Distribution',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -1803,12 +1815,16 @@ class _AdminDashboardState extends State<AdminDashboard>
                     constraints.maxWidth >
                     400; // Breakpoint for chart vs legend
 
+                final isSmall = constraints.maxWidth < 320;
+                final radius = isSmall ? 60.0 : 100.0;
+                final centerRadius = isSmall ? 30.0 : 50.0;
+
                 final pieChart = SizedBox(
                   height: 240,
                   child: PieChart(
                     PieChartData(
                       sectionsSpace: 3,
-                      centerSpaceRadius: 50,
+                      centerSpaceRadius: centerRadius,
                       sections: dist.entries.map((entry) {
                         final percentage = (entry.value / total * 100);
 
@@ -1816,7 +1832,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                           value: entry.value.toDouble(),
                           title: '${percentage.toStringAsFixed(1)}%',
                           color: colors[entry.key],
-                          radius: 100,
+                          radius: radius,
                           titleStyle: Theme.of(context).textTheme.labelSmall
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -1846,11 +1862,11 @@ class _AdminDashboardState extends State<AdminDashboard>
                                   child: Icon(
                                     icons[entry.key],
                                     color: colors[entry.key],
-                                    size: 16,
+                                    size: isSmall ? 12 : 16,
                                   ),
                                 )
                               : null,
-                          badgePositionPercentageOffset: 1.3,
+                          badgePositionPercentageOffset: isSmall ? 1.5 : 1.3,
                         );
                       }).toList(),
                       pieTouchData: PieTouchData(
@@ -2004,14 +2020,17 @@ class _AdminDashboardState extends State<AdminDashboard>
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Service Quality Dimensions',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                Flexible(
+                  child: Text(
+                    'Service Quality Dimensions',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -2040,156 +2059,172 @@ class _AdminDashboardState extends State<AdminDashboard>
               ],
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              height: 350,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY: 5,
-                  minY: 0,
-                  barGroups: avgScores.entries.map((entry) {
-                    final index = int.parse(entry.key.replaceAll('SQD', ''));
-                    final score = entry.value;
-                    Color barColor;
-                    if (score >= 4.5) {
-                      barColor = Colors.green;
-                    } else if (score >= 4.0) {
-                      barColor = Colors.lightGreen;
-                    } else if (score >= 3.5) {
-                      barColor = Colors.amber;
-                    } else if (score >= 3.0) {
-                      barColor = Colors.orange;
-                    } else {
-                      barColor = Colors.red;
-                    }
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isSmall = constraints.maxWidth < 400;
+                final barWidth = isSmall ? 16.0 : 28.0;
 
-                    return BarChartGroupData(
-                      x: index,
-                      barRods: [
-                        BarChartRodData(
-                          toY: entry.value,
-                          gradient: LinearGradient(
-                            colors: [barColor, barColor.withValues(alpha: 0.7)],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                          ),
-                          width: 28,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(8),
-                          ),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: 5,
-                            color: AppColors.secondary.withValues(alpha: 0.05),
-                          ),
-                        ),
-                      ],
-                      showingTooltipIndicators: [],
-                    );
-                  }).toList(),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 30,
-                        interval: 1,
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            value.toInt().toString(),
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              color: AppColors.textSecondary,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 60,
-                        getTitlesWidget: (value, meta) {
-                          final idx = value.toInt();
-                          if (idx < 0 || idx >= sqdLabels.length)
-                            return const SizedBox.shrink();
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'SQD$idx',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.secondary,
-                                  ),
+                return SizedBox(
+                  height: 350,
+                  child: BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
+                      maxY: 5,
+                      minY: 0,
+                      barGroups: avgScores.entries.map((entry) {
+                        final index = int.parse(
+                          entry.key.replaceAll('SQD', ''),
+                        );
+                        final score = entry.value;
+                        Color barColor;
+                        if (score >= 4.5) {
+                          barColor = Colors.green;
+                        } else if (score >= 4.0) {
+                          barColor = Colors.lightGreen;
+                        } else if (score >= 3.5) {
+                          barColor = Colors.amber;
+                        } else if (score >= 3.0) {
+                          barColor = Colors.orange;
+                        } else {
+                          barColor = Colors.red;
+                        }
+
+                        return BarChartGroupData(
+                          x: index,
+                          barRods: [
+                            BarChartRodData(
+                              toY: entry.value,
+                              gradient: LinearGradient(
+                                colors: [
+                                  barColor,
+                                  barColor.withValues(alpha: 0.7),
+                                ],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                              ),
+                              width: barWidth,
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(8),
+                              ),
+                              backDrawRodData: BackgroundBarChartRodData(
+                                show: true,
+                                toY: 5,
+                                color: AppColors.secondary.withValues(
+                                  alpha: 0.05,
                                 ),
-                                Text(
-                                  sqdLabels[idx],
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 8,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    horizontalInterval: 1,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: AppColors.border,
-                        strokeWidth: 1,
-                        dashArray: [5, 5],
-                      );
-                    },
-                  ),
-                  borderData: FlBorderData(show: false),
-                  barTouchData: BarTouchData(
-                    enabled: true,
-                    touchTooltipData: BarTouchTooltipData(
-                      getTooltipColor: (group) => Colors.blueGrey.shade800,
-                      tooltipPadding: const EdgeInsets.all(8),
-                      tooltipMargin: 8,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        final label = sqdLabels[group.x.toInt()];
-                        return BarTooltipItem(
-                          '$label\n',
-                          const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: '${rod.toY.toStringAsFixed(2)} / 5.0',
-                              style: const TextStyle(
-                                color: Colors.amber,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
+                          showingTooltipIndicators: [],
                         );
-                      },
+                      }).toList(),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 30,
+                            interval: 1,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                value.toInt().toString(),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  color: AppColors.textSecondary,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: isSmall ? 30 : 60,
+                            getTitlesWidget: (value, meta) {
+                              final idx = value.toInt();
+                              if (idx < 0 || idx >= sqdLabels.length) {
+                                return const SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      isSmall ? 'D$idx' : 'SQD$idx',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: isSmall ? 9 : 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.secondary,
+                                      ),
+                                    ),
+                                    if (!isSmall)
+                                      Text(
+                                        sqdLabels[idx],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 8,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                      ),
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: 1,
+                        getDrawingHorizontalLine: (value) {
+                          return FlLine(
+                            color: AppColors.border,
+                            strokeWidth: 1,
+                            dashArray: [5, 5],
+                          );
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      barTouchData: BarTouchData(
+                        enabled: true,
+                        touchTooltipData: BarTouchTooltipData(
+                          getTooltipColor: (group) => Colors.blueGrey.shade800,
+                          tooltipPadding: const EdgeInsets.all(8),
+                          tooltipMargin: 8,
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            final label = sqdLabels[group.x.toInt()];
+                            return BarTooltipItem(
+                              '$label\n',
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: '${rod.toY.toStringAsFixed(2)} / 5.0',
+                                  style: const TextStyle(
+                                    color: Colors.amber,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),

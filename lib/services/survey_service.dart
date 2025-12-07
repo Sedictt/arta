@@ -9,18 +9,20 @@ class SurveyService {
   final ApiService _apiService = ApiService();
 
   // Save survey response (with MongoDB sync)
-  Future<Map<String, dynamic>> saveSurveyResponse(SurveyResponse response) async {
+  Future<Map<String, dynamic>> saveSurveyResponse(
+    SurveyResponse response,
+  ) async {
     // First, try to save to MongoDB via backend API
     final apiResult = await _apiService.submitSurvey(response);
-    
+
     // Always save locally as backup (offline capability)
     final prefs = await SharedPreferences.getInstance();
     final surveys = await getAllSurveyResponses();
     surveys.add(response);
-    
+
     final jsonList = surveys.map((s) => s.toJson()).toList();
     await prefs.setString(_surveysKey, jsonEncode(jsonList));
-    
+
     // Return the API result to inform the UI
     return apiResult;
   }
@@ -30,21 +32,23 @@ class SurveyService {
     try {
       // Try to fetch from backend first
       final result = await _apiService.fetchSurveys(limit: 1000);
-      
+
       if (result['success'] == true && result['data'] != null) {
         final List<dynamic> surveysData = result['data'];
-        return surveysData.map((json) => SurveyResponse.fromBackendJson(json)).toList();
+        return surveysData
+            .map((json) => SurveyResponse.fromBackendJson(json))
+            .toList();
       }
     } catch (e) {
-      print('Error fetching from backend, using local storage: $e');
+      // print('Error fetching from backend, using local storage: $e');
     }
-    
+
     // Fallback to local storage if backend fails
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_surveysKey);
-    
+
     if (jsonString == null) return [];
-    
+
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((json) => SurveyResponse.fromJson(json)).toList();
   }
@@ -74,9 +78,7 @@ class SurveyService {
   // Get responses by region
   Future<List<SurveyResponse>> getResponsesByRegion(String region) async {
     final allResponses = await getAllSurveyResponses();
-    return allResponses
-        .where((response) => response.region == region)
-        .toList();
+    return allResponses.where((response) => response.region == region).toList();
   }
 
   // Calculate average SQD scores
@@ -85,7 +87,7 @@ class SurveyService {
     if (responses.isEmpty) return {};
 
     final Map<String, List<int>> sqdScores = {};
-    
+
     for (var response in responses) {
       response.sqdAnswers.forEach((key, value) {
         sqdScores.putIfAbsent(key, () => []).add(value);
@@ -127,12 +129,12 @@ class SurveyService {
   Future<bool> verifyAdminPassword(String password) async {
     final prefs = await SharedPreferences.getInstance();
     final storedPassword = prefs.getString(_adminPasswordKey);
-    
+
     // Default password if not set
     if (storedPassword == null) {
       return password == 'admin123';
     }
-    
+
     return password == storedPassword;
   }
 

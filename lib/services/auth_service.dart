@@ -26,8 +26,8 @@ class AuthService {
       final isLastUrl = i == urlsToTry.length - 1;
 
       try {
-        print('🔐 Attempting login to: $baseUrl/api/admin/login');
-        print('👤 Username: $username');
+        // print('🔐 Attempting login to: $baseUrl/api/admin/login');
+        // print('👤 Username: $username');
 
         final url = Uri.parse('$baseUrl/api/admin/login');
 
@@ -40,12 +40,12 @@ class AuthService {
             .timeout(
               const Duration(seconds: 5), // Short timeout for faster failover
               onTimeout: () {
-                print('❌ Login request timeout for $baseUrl');
+                // print('❌ Login request timeout for $baseUrl');
                 throw Exception('Connection timeout');
               },
             );
 
-        print('📡 Response status: ${response.statusCode}');
+        // print('📡 Response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
@@ -54,7 +54,7 @@ class AuthService {
             final token = data['token'];
             final adminData = data['admin'];
 
-            print('✅ Login successful! Token received.');
+            // print('✅ Login successful! Token received.');
 
             // Save token and user data
             final prefs = await SharedPreferences.getInstance();
@@ -77,13 +77,13 @@ class AuthService {
 
             return user;
           } else {
-            print('❌ Login failed: ${data['message']}');
+            // print('❌ Login failed: ${data['message']}');
             // If explicit failure from server, stop trying other URLs (credentials likely wrong)
             return null;
           }
         }
       } catch (e) {
-        print('❌ Connection error for $baseUrl: $e');
+        // print('❌ Connection error for $baseUrl: $e');
         // If it's the last URL and failed, return null
         if (isLastUrl) return null;
         // Otherwise continue to next URL

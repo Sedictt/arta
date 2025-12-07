@@ -1103,8 +1103,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         if (_sex == null) missingFields.add('Sex');
         if (_age == null) missingFields.add('Age');
         if (_region == null || _region!.isEmpty) missingFields.add('Region');
-        if (_serviceAvailed == null || _serviceAvailed!.isEmpty)
+        if (_serviceAvailed == null || _serviceAvailed!.isEmpty) {
           missingFields.add('Service Availed');
+        }
         if (_date == null) missingFields.add('Date');
         break;
       case 1: // CC Awareness

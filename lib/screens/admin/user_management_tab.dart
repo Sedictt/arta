@@ -349,6 +349,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
 
                 final success = await _authService.createUser(newUser);
                 if (success) {
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                   _loadUsers();
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -361,6 +362,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     ),
                   );
                 } else {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -458,6 +460,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 );
 
                 await _authService.updateUser(updatedUser);
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 _loadUsers();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -563,6 +566,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 user.id,
                 passwordController.text,
               );
+              if (!context.mounted) return;
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -591,6 +595,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
     final updatedUser = user.copyWith(isActive: !user.isActive);
     await _authService.updateUser(updatedUser);
     _loadUsers();
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -634,6 +639,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
     if (confirm == true) {
       await _authService.deleteUser(user.id);
       _loadUsers();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

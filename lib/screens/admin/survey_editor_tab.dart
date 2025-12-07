@@ -241,79 +241,90 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          _buildHeader(),
-          const SizedBox(height: 24),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmall = constraints.maxWidth < 600;
+        final horizontalPadding = isSmall ? 16.0 : 32.0;
 
-          // Survey Metadata Card
-          _buildMetadataCard(),
-          const SizedBox(height: 24),
-
-          // Sections
-          Text(
-            'Survey Sections',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 32,
           ),
-          const SizedBox(height: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              _buildHeader(),
+              const SizedBox(height: 24),
 
-          // Section list
-          ReorderableListView.builder(
-            buildDefaultDragHandles: false,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _sections.length,
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) newIndex -= 1;
-                final item = _sections.removeAt(oldIndex);
-                _sections.insert(newIndex, item);
-                _hasChanges = true;
-              });
-            },
-            itemBuilder: (context, index) {
-              return _buildSectionCard(_sections[index], index);
-            },
-          ),
+              // Survey Metadata Card
+              _buildMetadataCard(),
+              const SizedBox(height: 24),
 
-          const SizedBox(height: 16),
-
-          // Add Section Button
-          Center(
-            child: OutlinedButton.icon(
-              onPressed: _addSection,
-              icon: const Icon(Icons.add_box_outlined),
-              label: Text('Add New Section', style: GoogleFonts.poppins()),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.secondary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                side: BorderSide(
-                  color: AppColors.secondary.withValues(alpha: 0.5),
+              // Sections
+              Text(
+                'Survey Sections',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+
+              // Section list
+              ReorderableListView.builder(
+                buildDefaultDragHandles: false,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _sections.length,
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) newIndex -= 1;
+                    final item = _sections.removeAt(oldIndex);
+                    _sections.insert(newIndex, item);
+                    _hasChanges = true;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return _buildSectionCard(_sections[index], index);
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Add Section Button
+              Center(
+                child: OutlinedButton.icon(
+                  onPressed: _addSection,
+                  icon: const Icon(Icons.add_box_outlined),
+                  label: Text('Add New Section', style: GoogleFonts.poppins()),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.secondary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    side: BorderSide(
+                      color: AppColors.secondary.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmall = constraints.maxWidth < 600;
+
+        final titleColumn = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -332,8 +343,12 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               ),
             ),
           ],
-        ),
-        Row(
+        );
+
+        final actionsRow = Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             if (_hasChanges)
               Container(
@@ -341,7 +356,6 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                   horizontal: 12,
                   vertical: 6,
                 ),
-                margin: const EdgeInsets.only(right: 12),
                 decoration: BoxDecoration(
                   color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -367,7 +381,6 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               icon: const Icon(Icons.preview),
               label: Text('Preview', style: GoogleFonts.poppins()),
             ),
-            const SizedBox(width: 12),
             ElevatedButton.icon(
               onPressed: _hasChanges ? _saveSurvey : null,
               icon: const Icon(Icons.save),
@@ -379,8 +392,20 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               ),
             ),
           ],
-        ),
-      ],
+        );
+
+        if (isSmall) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [titleColumn, const SizedBox(height: 16), actionsRow],
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [titleColumn, actionsRow],
+        );
+      },
     );
   }
 
@@ -468,14 +493,15 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               ),
             ],
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 24,
+              runSpacing: 12,
               children: [
                 _buildMetadataStat(
                   'Sections',
                   _sections.length.toString(),
                   Icons.folder_outlined,
                 ),
-                const SizedBox(width: 24),
                 _buildMetadataStat(
                   'Questions',
                   _sections
@@ -483,7 +509,6 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                       .toString(),
                   Icons.help_outline,
                 ),
-                const SizedBox(width: 24),
                 _buildMetadataStat(
                   'Required',
                   _sections
@@ -546,7 +571,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               child: Row(
                 children: [
                   Icon(Icons.drag_handle, color: Colors.grey.shade400),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Container(
                     width: 32,
                     height: 32,
@@ -564,22 +589,24 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Text(
+                          section.title,
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Expanded(
-                              child: Text(
-                                section.title,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
                             if (section.isRequired)
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -599,31 +626,58 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                                   ),
                                 ),
                               ),
+                            Text(
+                              '${section.questions.length} questions',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
                           ],
-                        ),
-                        Text(
-                          '${section.questions.length} questions',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
                         ),
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, size: 20),
-                    onPressed: () => _editSection(section, sectionIndex),
-                    tooltip: 'Edit Section',
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      size: 20,
-                      color: Colors.red,
-                    ),
-                    onPressed: () => _deleteSection(sectionIndex),
-                    tooltip: 'Delete Section',
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, size: 20),
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        _editSection(section, sectionIndex);
+                      } else if (value == 'delete') {
+                        _deleteSection(sectionIndex);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.edit_outlined, size: 18),
+                            const SizedBox(width: 8),
+                            Text('Edit Section', style: GoogleFonts.poppins()),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete_outline,
+                              size: 18,
+                              color: Colors.red.shade700,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Delete Section',
+                              style: GoogleFonts.poppins(
+                                color: Colors.red.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   Icon(
                     isExpanded ? Icons.expand_less : Icons.expand_more,
@@ -791,29 +845,48 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               ),
             ),
             const SizedBox(width: 8),
-            // Action buttons
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, size: 18),
-              onPressed: () {
-                setState(() {
-                  _editingSectionId = section.id;
-                  _editingQuestionIndex = qIndex;
-                });
+            // Action Menu
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, size: 18),
+              onSelected: (value) {
+                if (value == 'edit') {
+                  setState(() {
+                    _editingSectionId = section.id;
+                    _editingQuestionIndex = qIndex;
+                  });
+                } else if (value == 'delete') {
+                  _deleteQuestion(section, qIndex);
+                }
               },
-              tooltip: 'Edit',
-              visualDensity: VisualDensity.compact,
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.delete_outline,
-                size: 18,
-                color: Colors.red.shade400,
-              ),
-              onPressed: () => _deleteQuestion(section, qIndex),
-              tooltip: 'Delete',
-              visualDensity: VisualDensity.compact,
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit_outlined, size: 18),
+                      const SizedBox(width: 8),
+                      Text('Edit Question', style: GoogleFonts.poppins()),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete_outline,
+                        size: 18,
+                        color: Colors.red.shade700,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Delete Question',
+                        style: GoogleFonts.poppins(color: Colors.red.shade700),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -936,7 +1009,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<QuestionType>(
-                        value: selectedType,
+                        initialValue: selectedType,
                         decoration: InputDecoration(
                           labelText: 'Type',
                           border: OutlineInputBorder(
