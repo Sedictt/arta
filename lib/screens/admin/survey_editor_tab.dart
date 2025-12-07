@@ -764,16 +764,17 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Drag handle - properly positioned on the left
+            // Drag handle
             ReorderableDragStartListener(
               index: qIndex,
               child: MouseRegion(
                 cursor: SystemMouseCursors.grab,
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.only(right: 6, top: 4),
                   child: Icon(
                     Icons.drag_indicator,
                     size: 20,
@@ -782,30 +783,37 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                 ),
               ),
             ),
-            // Question type badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: _getTypeColor(question.type).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                question.type.displayName,
-                style: GoogleFonts.poppins(
-                  fontSize: 10,
-                  color: _getTypeColor(question.type),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Question content
+            // Content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Type Badge moved to top
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getTypeColor(
+                        question.type,
+                      ).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      question.type.displayName,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10,
+                        color: _getTypeColor(question.type),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Question Text
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Text(
@@ -844,9 +852,9 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
             // Action Menu
             PopupMenuButton<String>(
+              padding: EdgeInsets.zero,
               icon: const Icon(Icons.more_vert, size: 18),
               onSelected: (value) {
                 if (value == 'edit') {
