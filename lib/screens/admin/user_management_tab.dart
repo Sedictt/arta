@@ -37,163 +37,357 @@ class _UserManagementTabState extends State<UserManagementTab> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmall = constraints.maxWidth < 600;
+        final horizontalPadding = isSmall ? 16.0 : 32.0;
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 32,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'User Management',
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              if (isSmall)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'User Management',
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showAddUserDialog(),
+                        icon: const Icon(Icons.add),
+                        label: Text('Add User', style: GoogleFonts.poppins()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'User Management',
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => _showAddUserDialog(),
+                      icon: const Icon(Icons.add),
+                      label: Text('Add User', style: GoogleFonts.poppins()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () => _showAddUserDialog(),
-                icon: const Icon(Icons.add),
-                label: Text('Add User', style: GoogleFonts.poppins()),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
+              const SizedBox(height: 24),
+              if (isSmall)
+                _buildMobileUserList()
+              else
+                Card(
+                  elevation: 3,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: [
+                        DataColumn(
+                          label: Text(
+                            'Username',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Email',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Role',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Created',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Last Login',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Status',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Actions',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                      rows: _users.map((user) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              Text(user.username, style: GoogleFonts.poppins()),
+                            ),
+                            DataCell(
+                              Text(user.email, style: GoogleFonts.poppins()),
+                            ),
+                            DataCell(_buildRoleBadge(user.role)),
+                            DataCell(
+                              Text(
+                                DateFormat(
+                                  'MMM dd, yyyy',
+                                ).format(user.createdAt),
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                user.lastLogin != null
+                                    ? DateFormat(
+                                        'MMM dd, HH:mm',
+                                      ).format(user.lastLogin!)
+                                    : 'Never',
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            DataCell(_buildStatusBadge(user.isActive)),
+                            DataCell(
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 20),
+                                    onPressed: () => _showEditUserDialog(user),
+                                    tooltip: 'Edit User',
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.lock_reset,
+                                      size: 20,
+                                    ),
+                                    onPressed: () =>
+                                        _showChangePasswordDialog(user),
+                                    tooltip: 'Change Password',
+                                  ),
+                                  if (user.id != widget.currentUser.id)
+                                    IconButton(
+                                      icon: Icon(
+                                        user.isActive
+                                            ? Icons.block
+                                            : Icons.check_circle,
+                                        size: 20,
+                                        color: user.isActive
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                      onPressed: () => _toggleUserStatus(user),
+                                      tooltip: user.isActive
+                                          ? 'Deactivate'
+                                          : 'Activate',
+                                    ),
+                                  if (user.id != widget.currentUser.id)
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        size: 20,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () => _deleteUser(user),
+                                      tooltip: 'Delete User',
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
-          const SizedBox(height: 24),
-          Card(
-            elevation: 3,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Username',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        );
+      },
+    );
+  }
+
+  Widget _buildMobileUserList() {
+    return Column(
+      children: _users.map((user) => _buildUserListCard(user)).toList(),
+    );
+  }
+
+  Widget _buildUserListCard(AdminUser user) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    user.username,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  DataColumn(
-                    label: Text(
-                      'Email',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                ),
+                _buildStatusBadge(user.isActive),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildInfoRow(Icons.email_outlined, user.email),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.badge_outlined, size: 16, color: Colors.grey[600]),
+                const SizedBox(width: 8),
+                _buildRoleBadge(user.role),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _buildInfoRow(
+              Icons.calendar_today_outlined,
+              'Created: ${DateFormat('MMM dd, yyyy').format(user.createdAt)}',
+            ),
+            const SizedBox(height: 8),
+            _buildInfoRow(
+              Icons.access_time,
+              'Last Login: ${user.lastLogin != null ? DateFormat('MMM dd, HH:mm').format(user.lastLogin!) : 'Never'}',
+            ),
+            const Divider(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: () => _showEditUserDialog(user),
+                  tooltip: 'Edit User',
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                    foregroundColor: Colors.blue,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.lock_reset, size: 20),
+                  onPressed: () => _showChangePasswordDialog(user),
+                  tooltip: 'Change Password',
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.orange.withValues(alpha: 0.1),
+                    foregroundColor: Colors.orange,
+                  ),
+                ),
+                if (user.id != widget.currentUser.id) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(
+                      user.isActive ? Icons.block : Icons.check_circle,
+                      size: 20,
+                    ),
+                    onPressed: () => _toggleUserStatus(user),
+                    tooltip: user.isActive ? 'Deactivate' : 'Activate',
+                    style: IconButton.styleFrom(
+                      backgroundColor: user.isActive
+                          ? Colors.red.withValues(alpha: 0.1)
+                          : Colors.green.withValues(alpha: 0.1),
+                      foregroundColor: user.isActive
+                          ? Colors.red
+                          : Colors.green,
                     ),
                   ),
-                  DataColumn(
-                    label: Text(
-                      'Role',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Created',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Last Login',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Status',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Actions',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () => _deleteUser(user),
+                    tooltip: 'Delete User',
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.red.withValues(alpha: 0.1),
+                      foregroundColor: Colors.red,
                     ),
                   ),
                 ],
-                rows: _users.map((user) {
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Text(user.username, style: GoogleFonts.poppins()),
-                      ),
-                      DataCell(Text(user.email, style: GoogleFonts.poppins())),
-                      DataCell(_buildRoleBadge(user.role)),
-                      DataCell(
-                        Text(
-                          DateFormat('MMM dd, yyyy').format(user.createdAt),
-                          style: GoogleFonts.poppins(fontSize: 12),
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          user.lastLogin != null
-                              ? DateFormat(
-                                  'MMM dd, HH:mm',
-                                ).format(user.lastLogin!)
-                              : 'Never',
-                          style: GoogleFonts.poppins(fontSize: 12),
-                        ),
-                      ),
-                      DataCell(_buildStatusBadge(user.isActive)),
-                      DataCell(
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, size: 20),
-                              onPressed: () => _showEditUserDialog(user),
-                              tooltip: 'Edit User',
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.lock_reset, size: 20),
-                              onPressed: () => _showChangePasswordDialog(user),
-                              tooltip: 'Change Password',
-                            ),
-                            if (user.id != widget.currentUser.id)
-                              IconButton(
-                                icon: Icon(
-                                  user.isActive
-                                      ? Icons.block
-                                      : Icons.check_circle,
-                                  size: 20,
-                                  color: user.isActive
-                                      ? Colors.red
-                                      : Colors.green,
-                                ),
-                                onPressed: () => _toggleUserStatus(user),
-                                tooltip: user.isActive
-                                    ? 'Deactivate'
-                                    : 'Activate',
-                              ),
-                            if (user.id != widget.currentUser.id)
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  size: 20,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () => _deleteUser(user),
-                                tooltip: 'Delete User',
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
-              ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey[600]),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800]),
+          ),
+        ),
+      ],
     );
   }
 
