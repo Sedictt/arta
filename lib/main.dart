@@ -2494,6 +2494,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   List<Widget> _buildSQDQuestions() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWrapped = screenWidth <= 320;
+
     final questions = [
       'I am satisfied with the service that I availed.',
       'I spent a reasonable amount of time for my transaction.',
@@ -2645,7 +2648,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
               // Emoji rating buttons
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                padding: isWrapped
+                    ? const EdgeInsets.fromLTRB(12, 12, 12, 20)
+                    : const EdgeInsets.fromLTRB(20, 12, 20, 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -2671,6 +2676,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                           const Color(0xFF4CAF50), // Green - Strongly Agree
                         ];
 
+                        final normalSize = isWrapped ? 36.0 : 48.0;
+                        final selectedSize = isWrapped ? 44.0 : 56.0;
+
                         return Tooltip(
                           message: tooltips[rating],
                           textStyle: GoogleFonts.poppins(
@@ -2689,8 +2697,8 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 250),
                               curve: Curves.easeOutCubic,
-                              width: isSelected ? 56 : 48,
-                              height: isSelected ? 56 : 48,
+                              width: isSelected ? selectedSize : normalSize,
+                              height: isSelected ? selectedSize : normalSize,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: isSelected
@@ -2730,7 +2738,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                 child: AnimatedDefaultTextStyle(
                                   duration: const Duration(milliseconds: 250),
                                   style: TextStyle(
-                                    fontSize: isSelected ? 28 : 24,
+                                    fontSize: isSelected
+                                        ? (isWrapped ? 22 : 28)
+                                        : (isWrapped ? 18 : 24),
                                   ),
                                   child: Opacity(
                                     opacity: isSelected ? 1.0 : 0.4,
@@ -2746,6 +2756,8 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       } else {
                         // Not Applicable button
                         final isSelected = _sqdAnswers[key] == 0;
+                        final normalSize = isWrapped ? 36.0 : 48.0;
+                        final selectedSize = isWrapped ? 44.0 : 56.0;
 
                         return Tooltip(
                           message: 'Not Applicable',
@@ -2764,8 +2776,8 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 250),
                               curve: Curves.easeOutCubic,
-                              width: isSelected ? 56 : 48,
-                              height: isSelected ? 56 : 48,
+                              width: isSelected ? selectedSize : normalSize,
+                              height: isSelected ? selectedSize : normalSize,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: isSelected
@@ -2801,7 +2813,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                         milliseconds: 250,
                                       ),
                                       style: TextStyle(
-                                        fontSize: isSelected ? 24 : 20,
+                                        fontSize: isSelected
+                                            ? (isWrapped ? 18 : 24)
+                                            : (isWrapped ? 16 : 20),
                                       ),
                                       child: Opacity(
                                         opacity: isSelected ? 1.0 : 0.4,
@@ -2814,7 +2828,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                         child: Text(
                                           'N/A',
                                           style: GoogleFonts.poppins(
-                                            fontSize: 8,
+                                            fontSize: isWrapped ? 6 : 8,
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white,
                                             letterSpacing: 0.5,
@@ -2840,11 +2854,18 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   }
 
   Widget _buildNavigationButtons() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isExtraSmallScreen = screenWidth <= 320;
     final isLastPage = _currentPage == 3;
     final isFirstPage = _currentPage == 0;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: EdgeInsets.fromLTRB(
+        isExtraSmallScreen ? 12 : 20,
+        isExtraSmallScreen ? 12 : 16,
+        isExtraSmallScreen ? 12 : 20,
+        isExtraSmallScreen ? 12 : 20,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -2863,7 +2884,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
             if (!isFirstPage)
               Expanded(
                 child: Container(
-                  height: 54,
+                  height: isExtraSmallScreen ? 48 : 54,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.border, width: 1.5),
@@ -2874,22 +2895,26 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
+                      padding: isExtraSmallScreen ? EdgeInsets.zero : null,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.arrow_back_rounded,
-                          size: 20,
+                          size: isExtraSmallScreen ? 18 : 20,
                           color: AppColors.textSecondary,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Back',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
+                        SizedBox(width: isExtraSmallScreen ? 6 : 8),
+                        Flexible(
+                          child: Text(
+                            'Back',
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: isExtraSmallScreen ? 13 : 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ),
                       ],
@@ -2897,13 +2922,13 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                   ),
                 ),
               ),
-            if (!isFirstPage) const SizedBox(width: 12),
+            if (!isFirstPage) SizedBox(width: isExtraSmallScreen ? 8 : 12),
 
             // Next/Submit button
             Expanded(
               flex: isFirstPage ? 1 : 2,
               child: Container(
-                height: 54,
+                height: isExtraSmallScreen ? 48 : 54,
                 decoration: BoxDecoration(
                   gradient: isLastPage
                       ? LinearGradient(
@@ -2934,39 +2959,46 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    padding: isExtraSmallScreen ? EdgeInsets.zero : null,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (isLastPage)
-                        const Icon(
+                        Icon(
                           Icons.check_circle_outline,
-                          size: 22,
+                          size: isExtraSmallScreen ? 18 : 22,
                           color: Colors.white,
                         )
                       else
-                        Text(
-                          'Continue',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                        Flexible(
+                          child: Text(
+                            'Continue',
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: isExtraSmallScreen ? 14 : 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: isExtraSmallScreen ? 6 : 8),
                       if (isLastPage)
-                        Text(
-                          'Submit Survey',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                        Flexible(
+                          child: Text(
+                            'Submit Survey',
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: isExtraSmallScreen ? 14 : 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         )
                       else
-                        const Icon(
+                        Icon(
                           Icons.arrow_forward_rounded,
-                          size: 22,
+                          size: isExtraSmallScreen ? 18 : 22,
                           color: Colors.white,
                         ),
                     ],
