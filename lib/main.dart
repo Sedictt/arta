@@ -188,7 +188,7 @@ class WelcomePage extends StatelessWidget {
       child: SingleChildScrollView(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
           child: Row(
             children: [
               // Left side - Content
@@ -247,7 +247,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 40),
 
                     // ARTA Label
                     Container(
@@ -282,7 +282,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
                     // Main Title
                     Text(
@@ -302,7 +302,7 @@ class WelcomePage extends StatelessWidget {
                           ),
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
                     // Description
                     Text(
@@ -316,7 +316,7 @@ class WelcomePage extends StatelessWidget {
                           ),
                     ),
 
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 40),
 
                     // Start Button
                     SizedBox(
@@ -355,7 +355,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     Text(
                       'Estimated Time: 3 - 5 minutes',
@@ -365,7 +365,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 40),
 
                     // Bottom buttons
                     Row(
@@ -436,8 +436,8 @@ class WelcomePage extends StatelessWidget {
                 flex: 4,
                 child: Center(
                   child: Container(
-                    width: 500,
-                    height: 600,
+                    width: 450,
+                    height: 500,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(40),
@@ -532,12 +532,11 @@ class WelcomePage extends StatelessWidget {
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: 24,
+            vertical: isSmallScreen ? 24 : 32,
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight:
-                  constraints.maxHeight - 48, // Account for vertical padding
+              minHeight: constraints.maxHeight - (isSmallScreen ? 48 : 64),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -590,7 +589,7 @@ class WelcomePage extends StatelessWidget {
                     ),
 
                     SizedBox(
-                      height: isSmallScreen ? 24 : 48,
+                      height: isSmallScreen ? 24 : 32,
                     ), // Reduced spacing
                     // ARTA Label
                     Container(
@@ -643,7 +642,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: isSmallScreen ? 24 : 40),
+                    SizedBox(height: isSmallScreen ? 24 : 32),
 
                     // Start Button
                     SizedBox(

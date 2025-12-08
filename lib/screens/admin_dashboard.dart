@@ -841,6 +841,7 @@ class _AdminDashboardState extends State<AdminDashboard>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        toolbarHeight: 80,
         titleSpacing: 0,
         leading: isSmallScreen
             ? Builder(
@@ -850,33 +851,36 @@ class _AdminDashboardState extends State<AdminDashboard>
                 ),
               )
             : Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(24, 8, 8, 8),
                 child: Image.asset('Valenzuela_Seal.svg.png'),
               ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Admin Portal',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-                fontSize: 18,
-              ),
-            ),
-            if (!isSmallScreen)
+        title: Padding(
+          padding: const EdgeInsets.only(top: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
-                'City Government of Valenzuela',
+                'Admin Portal',
                 style: GoogleFonts.poppins(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
                 ),
               ),
-          ],
+              if (!isSmallScreen)
+                Text(
+                  'City Government of Valenzuela',
+                  style: GoogleFonts.poppins(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+            ],
+          ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16, top: 12.0),
             child: _buildUserMenu(),
           ),
         ],
@@ -1816,11 +1820,11 @@ class _AdminDashboardState extends State<AdminDashboard>
                     400; // Breakpoint for chart vs legend
 
                 final isSmall = constraints.maxWidth < 320;
-                final radius = isSmall ? 60.0 : 100.0;
-                final centerRadius = isSmall ? 30.0 : 50.0;
+                final radius = isSmall ? 50.0 : 80.0;
+                final centerRadius = isSmall ? 30.0 : 40.0;
 
                 final pieChart = SizedBox(
-                  height: 240,
+                  height: 300,
                   child: PieChart(
                     PieChartData(
                       sectionsSpace: 3,

@@ -26,9 +26,6 @@ class AuthService {
       final isLastUrl = i == urlsToTry.length - 1;
 
       try {
-        // print('🔐 Attempting login to: $baseUrl/api/admin/login');
-        // print('👤 Username: $username');
-
         final url = Uri.parse('$baseUrl/api/admin/login');
 
         final response = await http
@@ -40,12 +37,9 @@ class AuthService {
             .timeout(
               const Duration(seconds: 5), // Short timeout for faster failover
               onTimeout: () {
-                // print('❌ Login request timeout for $baseUrl');
                 throw Exception('Connection timeout');
               },
             );
-
-        // print('📡 Response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
@@ -53,8 +47,6 @@ class AuthService {
           if (data['success'] == true) {
             final token = data['token'];
             final adminData = data['admin'];
-
-            // print('✅ Login successful! Token received.');
 
             // Save token and user data
             final prefs = await SharedPreferences.getInstance();
@@ -75,22 +67,32 @@ class AuthService {
 
             await prefs.setString(_currentUserKey, jsonEncode(user.toJson()));
 
+            // Update last login in the local user list
+            await _updateLocalUserLastLogin(user.username);
+
             return user;
           } else {
-            // print('❌ Login failed: ${data['message']}');
-            // If explicit failure from server, stop trying other URLs (credentials likely wrong)
             return null;
           }
         }
       } catch (e) {
-        // print('❌ Connection error for $baseUrl: $e');
-        // If it's the last URL and failed, return null
         if (isLastUrl) return null;
-        // Otherwise continue to next URL
         continue;
       }
     }
     return null;
+  }
+
+  // Update last login for a specific user in local storage
+  Future<void> _updateLocalUserLastLogin(String username) async {
+    final users = await getAllUsers();
+    final index = users.indexWhere((u) => u.username == username);
+
+    if (index != -1) {
+      final updatedUser = users[index].copyWith(lastLogin: DateTime.now());
+      users[index] = updatedUser;
+      await _saveUsers(users);
+    }
   }
 
   // Get stored auth token

@@ -17,7 +17,10 @@ class UserManagementTab extends StatefulWidget {
 class _UserManagementTabState extends State<UserManagementTab> {
   final AuthService _authService = AuthService();
   List<AdminUser> _users = [];
+  List<AdminUser> _filteredUsers = [];
   bool _isLoading = true;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -25,10 +28,35 @@ class _UserManagementTabState extends State<UserManagementTab> {
     _loadUsers();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadUsers() async {
     setState(() => _isLoading = true);
     _users = await _authService.getAllUsers();
+    _filterUsers();
     setState(() => _isLoading = false);
+  }
+
+  void _filterUsers() {
+    setState(() {
+      if (_searchQuery.isEmpty) {
+        _filteredUsers = List.from(_users);
+      } else {
+        _filteredUsers = _users
+            .where(
+              (u) =>
+                  u.username.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  ) ||
+                  u.email.toLowerCase().contains(_searchQuery.toLowerCase()),
+            )
+            .toList();
+      }
+    });
   }
 
   @override
@@ -37,9 +65,16 @@ class _UserManagementTabState extends State<UserManagementTab> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final totalUsers = _users.length;
+    final activeUsers = _users.where((u) => u.isActive).length;
+    final adminUsers = _users
+        .where((u) => u.role == UserRole.admin || u.role == UserRole.superAdmin)
+        .length;
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isSmall = constraints.maxWidth < 600;
+        // Keep the mobile view for really small screens, but give desktop view more room to breathe
+        final isSmall = constraints.maxWidth < 900;
         final horizontalPadding = isSmall ? 16.0 : 32.0;
 
         return SingleChildScrollView(
@@ -50,213 +85,118 @@ class _UserManagementTabState extends State<UserManagementTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (isSmall)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'User Management',
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () => _showAddUserDialog(),
-                        icon: const Icon(Icons.add),
-                        label: Text('Add User', style: GoogleFonts.poppins()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              else
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'User Management',
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () => _showAddUserDialog(),
-                      icon: const Icon(Icons.add),
-                      label: Text('Add User', style: GoogleFonts.poppins()),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                      ),
+              // Header Section
+              _buildHeader(isSmall),
+              const SizedBox(height: 32),
+
+              // Stats Row
+              _buildStatsRow(totalUsers, activeUsers, adminUsers, isSmall),
+              const SizedBox(height: 32),
+
+              // Main Content Card
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-              const SizedBox(height: 24),
-              if (isSmall)
-                _buildMobileUserList()
-              else
-                Card(
-                  elevation: 3,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columns: [
-                        DataColumn(
-                          label: Text(
-                            'Username',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Email',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Role',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Created',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Last Login',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Status',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Actions',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                      rows: _users.map((user) {
-                        return DataRow(
-                          cells: [
-                            DataCell(
-                              Text(user.username, style: GoogleFonts.poppins()),
-                            ),
-                            DataCell(
-                              Text(user.email, style: GoogleFonts.poppins()),
-                            ),
-                            DataCell(_buildRoleBadge(user.role)),
-                            DataCell(
-                              Text(
-                                DateFormat(
-                                  'MMM dd, yyyy',
-                                ).format(user.createdAt),
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                user.lastLogin != null
-                                    ? DateFormat(
-                                        'MMM dd, HH:mm',
-                                      ).format(user.lastLogin!)
-                                    : 'Never',
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
-                            ),
-                            DataCell(_buildStatusBadge(user.isActive)),
-                            DataCell(
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, size: 20),
-                                    onPressed: () => _showEditUserDialog(user),
-                                    tooltip: 'Edit User',
+                child: Column(
+                  children: [
+                    // Toolbar
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              decoration: InputDecoration(
+                                hintText: 'Search users...',
+                                prefixIcon: const Icon(Icons.search),
+                                filled: true,
+                                fillColor: Colors.grey.shade50,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade200,
                                   ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.lock_reset,
-                                      size: 20,
-                                    ),
-                                    onPressed: () =>
-                                        _showChangePasswordDialog(user),
-                                    tooltip: 'Change Password',
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: AppColors.primary,
                                   ),
-                                  if (user.id != widget.currentUser.id)
-                                    IconButton(
-                                      icon: Icon(
-                                        user.isActive
-                                            ? Icons.block
-                                            : Icons.check_circle,
-                                        size: 20,
-                                        color: user.isActive
-                                            ? Colors.red
-                                            : Colors.green,
-                                      ),
-                                      onPressed: () => _toggleUserStatus(user),
-                                      tooltip: user.isActive
-                                          ? 'Deactivate'
-                                          : 'Activate',
-                                    ),
-                                  if (user.id != widget.currentUser.id)
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        size: 20,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () => _deleteUser(user),
-                                      tooltip: 'Delete User',
-                                    ),
-                                ],
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
                               ),
+                              onChanged: (value) {
+                                _searchQuery = value;
+                                _filterUsers();
+                              },
                             ),
-                          ],
-                        );
-                      }).toList(),
+                          ),
+                          const SizedBox(width: 16),
+                          IconButton(
+                            onPressed: _loadUsers,
+                            icon: const Icon(Icons.refresh),
+                            tooltip: 'Refresh',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    const Divider(height: 1),
+                    // Content
+                    if (_filteredUsers.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(48),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.person_off_outlined,
+                                size: 48,
+                                color: Colors.grey.shade300,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No users found',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else if (isSmall)
+                      _buildMobileUserList()
+                    else
+                      Column(
+                        children: [
+                          _buildTableHeader(),
+                          ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _filteredUsers.length,
+                            separatorBuilder: (context, index) =>
+                                const Divider(height: 1),
+                            itemBuilder: (context, index) =>
+                                _buildDesktopUserRow(_filteredUsers[index]),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
+              ),
             ],
           ),
         );
@@ -264,111 +204,251 @@ class _UserManagementTabState extends State<UserManagementTab> {
     );
   }
 
-  Widget _buildMobileUserList() {
-    return Column(
-      children: _users.map((user) => _buildUserListCard(user)).toList(),
+  Widget _buildTableHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      color: Colors.grey.shade50,
+      child: Row(
+        children: [
+          Expanded(flex: 3, child: _buildHeaderCell('USER DETAILS')),
+          Expanded(flex: 1, child: _buildHeaderCell('ROLE')),
+          Expanded(flex: 1, child: _buildHeaderCell('STATUS')),
+          Expanded(flex: 2, child: _buildHeaderCell('LAST LOGIN')),
+          Expanded(
+            flex: 1,
+            child: _buildHeaderCell('ACTIONS', align: TextAlign.end),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildUserListCard(AdminUser user) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+  Widget _buildHeaderCell(String text, {TextAlign align = TextAlign.start}) {
+    return Text(
+      text,
+      textAlign: align,
+      style: GoogleFonts.poppins(
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+        fontSize: 13,
+      ),
+    );
+  }
+
+  Widget _buildDesktopUserRow(AdminUser user) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        children: [
+          // User Details
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  child: Text(
+                    user.username[0].toUpperCase(),
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.username,
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        user.email,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Role
+          Expanded(
+            flex: 1,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: _buildRoleBadge(user.role),
+            ),
+          ),
+          // Status
+          Expanded(
+            flex: 1,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: _buildStatusBadge(user.isActive),
+            ),
+          ),
+          // Last Login
+          Expanded(
+            flex: 2,
+            child: Text(
+              user.lastLogin != null
+                  ? DateFormat('MMM dd, HH:mm').format(user.lastLogin!)
+                  : 'Never',
+              style: GoogleFonts.poppins(fontSize: 14),
+            ),
+          ),
+          // Actions
+          Expanded(
+            flex: 1,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: _buildActions(user),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(bool isSmall) {
+    if (isSmall) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'User Management',
+            style: GoogleFonts.poppins(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Manage system access and roles',
+            style: GoogleFonts.poppins(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(width: double.infinity, child: _buildAddButton()),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    user.username,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-                _buildStatusBadge(user.isActive),
-              ],
+            Text(
+              'User Management',
+              style: GoogleFonts.poppins(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
-            const SizedBox(height: 12),
-            _buildInfoRow(Icons.email_outlined, user.email),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.badge_outlined, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 8),
-                _buildRoleBadge(user.role),
-              ],
+            const SizedBox(height: 4),
+            Text(
+              'Manage system access and roles',
+              style: GoogleFonts.poppins(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
             ),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              Icons.calendar_today_outlined,
-              'Created: ${DateFormat('MMM dd, yyyy').format(user.createdAt)}',
-            ),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              Icons.access_time,
-              'Last Login: ${user.lastLogin != null ? DateFormat('MMM dd, HH:mm').format(user.lastLogin!) : 'Never'}',
-            ),
+          ],
+        ),
+        _buildAddButton(),
+      ],
+    );
+  }
+
+  Widget _buildAddButton() {
+    return ElevatedButton.icon(
+      onPressed: () => _showAddUserDialog(),
+      icon: const Icon(Icons.add, size: 20),
+      label: Text(
+        'Add Member',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        elevation: 4,
+        shadowColor: AppColors.primary.withValues(alpha: 0.4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow(int total, int active, int admins, bool isSmall) {
+    if (isSmall) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Column(
+          children: [
+            _buildStatItem('Total Users', total.toString(), Colors.blue),
             const Divider(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, size: 20),
-                  onPressed: () => _showEditUserDialog(user),
-                  tooltip: 'Edit User',
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.blue.withValues(alpha: 0.1),
-                    foregroundColor: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.lock_reset, size: 20),
-                  onPressed: () => _showChangePasswordDialog(user),
-                  tooltip: 'Change Password',
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.orange.withValues(alpha: 0.1),
-                    foregroundColor: Colors.orange,
-                  ),
-                ),
-                if (user.id != widget.currentUser.id) ...[
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: Icon(
-                      user.isActive ? Icons.block : Icons.check_circle,
-                      size: 20,
-                    ),
-                    onPressed: () => _toggleUserStatus(user),
-                    tooltip: user.isActive ? 'Deactivate' : 'Activate',
-                    style: IconButton.styleFrom(
-                      backgroundColor: user.isActive
-                          ? Colors.red.withValues(alpha: 0.1)
-                          : Colors.green.withValues(alpha: 0.1),
-                      foregroundColor: user.isActive
-                          ? Colors.red
-                          : Colors.green,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.delete, size: 20),
-                    onPressed: () => _deleteUser(user),
-                    tooltip: 'Delete User',
-                    style: IconButton.styleFrom(
-                      backgroundColor: Colors.red.withValues(alpha: 0.1),
-                      foregroundColor: Colors.red,
-                    ),
-                  ),
-                ],
-              ],
+            _buildStatItem('Active Users', active.toString(), Colors.green),
+            const Divider(height: 24),
+            _buildStatItem('Administrators', admins.toString(), Colors.purple),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Expanded(
+              child: _buildStatItem(
+                'Total Users',
+                total.toString(),
+                Colors.blue,
+                centered: true,
+              ),
+            ),
+            const VerticalDivider(width: 32, thickness: 1),
+            Expanded(
+              child: _buildStatItem(
+                'Active Users',
+                active.toString(),
+                Colors.green,
+                centered: true,
+              ),
+            ),
+            const VerticalDivider(width: 32, thickness: 1),
+            Expanded(
+              child: _buildStatItem(
+                'Administrators',
+                admins.toString(),
+                Colors.purple,
+                centered: true,
+              ),
             ),
           ],
         ),
@@ -376,15 +456,38 @@ class _UserManagementTabState extends State<UserManagementTab> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildStatItem(
+    String label,
+    String value,
+    Color color, {
+    bool centered = false,
+  }) {
     return Row(
+      mainAxisAlignment: centered
+          ? MainAxisAlignment.center
+          : MainAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: Colors.grey[600]),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[800]),
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
@@ -392,25 +495,26 @@ class _UserManagementTabState extends State<UserManagementTab> {
   }
 
   Widget _buildRoleBadge(UserRole role) {
-    final colors = {
-      UserRole.superAdmin: Colors.purple,
-      UserRole.admin: Colors.blue,
-      UserRole.viewer: Colors.grey,
+    final styles = {
+      UserRole.superAdmin: (Colors.purple, 'Super Admin'),
+      UserRole.admin: (Colors.blue, 'Admin'),
+      UserRole.viewer: (Colors.grey, 'Viewer'),
     };
 
+    final style = styles[role]!;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: colors[role]!.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors[role]!),
+        color: style.$1.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: style.$1.withValues(alpha: 0.2)),
       ),
       child: Text(
-        role.name,
+        style.$2,
         style: GoogleFonts.poppins(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: colors[role],
+          color: style.$1,
         ),
       ),
     );
@@ -418,21 +522,162 @@ class _UserManagementTabState extends State<UserManagementTab> {
 
   Widget _buildStatusBadge(bool isActive) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isActive
             ? Colors.green.withValues(alpha: 0.1)
             : Colors.red.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isActive ? Colors.green : Colors.red),
-      ),
-      child: Text(
-        isActive ? 'Active' : 'Inactive',
-        style: GoogleFonts.poppins(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: isActive ? Colors.green : Colors.red,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isActive
+              ? Colors.green.withValues(alpha: 0.2)
+              : Colors.red.withValues(alpha: 0.2),
         ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isActive ? Colors.green : Colors.red,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            isActive ? 'Active' : 'Inactive',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isActive ? Colors.green : Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActions(AdminUser user) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.edit_outlined, size: 20),
+          onPressed: () => _showEditUserDialog(user),
+          tooltip: 'Edit',
+          style: IconButton.styleFrom(foregroundColor: AppColors.textSecondary),
+        ),
+        if (user.id != widget.currentUser.id) ...[
+          IconButton(
+            icon: user.isActive
+                ? const Icon(Icons.block_outlined, size: 20)
+                : const Icon(Icons.check_circle_outline, size: 20),
+            onPressed: () => _toggleUserStatus(user),
+            tooltip: user.isActive ? 'Deactivate' : 'Activate',
+            color: user.isActive ? Colors.orange : Colors.green,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 20),
+            onPressed: () => _deleteUser(user),
+            tooltip: 'Delete',
+            color: Colors.red,
+          ),
+        ],
+        IconButton(
+          icon: const Icon(Icons.key_outlined, size: 20),
+          onPressed: () => _showChangePasswordDialog(user),
+          tooltip: 'Change Password',
+          style: IconButton.styleFrom(foregroundColor: AppColors.textSecondary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileUserList() {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      itemCount: _filteredUsers.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      itemBuilder: (context, index) =>
+          _buildUserListCard(_filteredUsers[index]),
+    );
+  }
+
+  Widget _buildUserListCard(AdminUser user) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                child: Text(
+                  user.username[0].toUpperCase(),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.username,
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      user.email,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _buildStatusBadge(user.isActive),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildRoleBadge(user.role),
+              const Spacer(),
+              Text(
+                user.lastLogin != null
+                    ? DateFormat('MMM dd, HH:mm').format(user.lastLogin!)
+                    : 'Never',
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [_buildActions(user)],
+          ),
+        ],
       ),
     );
   }
@@ -769,6 +1014,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     style: GoogleFonts.poppins(),
                   ),
                   backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
                 ),
               );
             },
@@ -797,6 +1043,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
           style: GoogleFonts.poppins(),
         ),
         backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -841,6 +1088,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
             style: GoogleFonts.poppins(),
           ),
           backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
