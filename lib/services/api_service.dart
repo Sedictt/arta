@@ -5,31 +5,32 @@ import '../models/survey_response.dart';
 
 class ApiService {
   // IMPORTANT: Change this based on where you're running the Flutter app:
-  // 
+  //
   // Windows/Web/Desktop:     'http://localhost:3000'
   // Android Emulator:        'http://10.0.2.2:3000'
   // iOS Simulator:           'http://localhost:3000'
   // Physical Device:         'http://YOUR_PC_IP:3000' (e.g., 'http://192.168.1.100:3000')
   // Production:              Your deployed backend URL
-  
-  static const String baseUrl = 'http://localhost:3000'; // ← CHANGE THIS IF NEEDED
+
+  static const String baseUrl =
+      'http://localhost:3000'; // ← CHANGE THIS IF NEEDED
 
   // Get auth headers with token
   Future<Map<String, String>> _getAuthHeaders() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
-    
+
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
-  
+
   // Submit survey to MongoDB via backend API
   Future<Map<String, dynamic>> submitSurvey(SurveyResponse response) async {
     try {
       final url = Uri.parse('$baseUrl/api/surveys');
-      
+
       // Convert SurveyResponse to the format expected by backend
       final Map<String, dynamic> requestBody = {
         'date': response.date.toIso8601String(),
@@ -37,28 +38,32 @@ class ApiService {
         'sex': response.sex,
         'age': response.age,
         'region': response.region,
+        'serviceAvailed': response.serviceAvailed,
         'cc1Answer': response.cc1Answer,
         'cc2Answer': response.cc2Answer,
         'cc3Answer': response.cc3Answer,
         'sqdAnswers': response.sqdAnswers,
         'suggestions': response.suggestions,
+        'extraAnswers': response.extraAnswers,
       };
-      
-      final httpResponse = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(requestBody),
-      ).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception('Request timeout - please check your internet connection');
-        },
-      );
-      
+
+      final httpResponse = await http
+          .post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception(
+                'Request timeout - please check your internet connection',
+              );
+            },
+          );
+
       final responseData = jsonDecode(httpResponse.body);
-      
+
       if (httpResponse.statusCode == 201) {
         return {
           'success': true,
@@ -80,7 +85,7 @@ class ApiService {
       };
     }
   }
-  
+
   // Fetch all surveys from backend (for admin dashboard)
   Future<Map<String, dynamic>> fetchSurveys({
     int page = 1,
@@ -95,21 +100,21 @@ class ApiService {
         'page': page.toString(),
         'limit': limit.toString(),
       };
-      
+
       if (clientType != null) queryParams['clientType'] = clientType;
       if (region != null) queryParams['region'] = region;
       if (startDate != null) queryParams['startDate'] = startDate;
       if (endDate != null) queryParams['endDate'] = endDate;
-      
-      final url = Uri.parse('$baseUrl/api/surveys').replace(
-        queryParameters: queryParams,
-      );
-      
+
+      final url = Uri.parse(
+        '$baseUrl/api/surveys',
+      ).replace(queryParameters: queryParams);
+
       final headers = await _getAuthHeaders();
-      final response = await http.get(url, headers: headers).timeout(
-        const Duration(seconds: 10),
-      );
-      
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -123,14 +128,12 @@ class ApiService {
       };
     }
   }
-  
+
   // Check backend health
   Future<bool> checkBackendHealth() async {
     try {
       final url = Uri.parse('$baseUrl/');
-      final response = await http.get(url).timeout(
-        const Duration(seconds: 5),
-      );
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -142,11 +145,11 @@ class ApiService {
     try {
       final url = Uri.parse('$baseUrl/api/analytics/summary');
       final headers = await _getAuthHeaders();
-      
-      final response = await http.get(url, headers: headers).timeout(
-        const Duration(seconds: 10),
-      );
-      
+
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -166,11 +169,11 @@ class ApiService {
     try {
       final url = Uri.parse('$baseUrl/api/analytics/satisfaction-distribution');
       final headers = await _getAuthHeaders();
-      
-      final response = await http.get(url, headers: headers).timeout(
-        const Duration(seconds: 10),
-      );
-      
+
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -190,11 +193,11 @@ class ApiService {
     try {
       final url = Uri.parse('$baseUrl/api/analytics/by-client-type');
       final headers = await _getAuthHeaders();
-      
-      final response = await http.get(url, headers: headers).timeout(
-        const Duration(seconds: 10),
-      );
-      
+
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -214,11 +217,11 @@ class ApiService {
     try {
       final url = Uri.parse('$baseUrl/api/surveys/$surveyId');
       final headers = await _getAuthHeaders();
-      
-      final response = await http.delete(url, headers: headers).timeout(
-        const Duration(seconds: 10),
-      );
-      
+
+      final response = await http
+          .delete(url, headers: headers)
+          .timeout(const Duration(seconds: 10));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {

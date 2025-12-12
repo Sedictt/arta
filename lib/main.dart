@@ -1,8 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'models/survey_response.dart';
+import 'models/survey_config.dart';
+
 import 'services/survey_service.dart';
 import 'screens/admin_login.dart';
 import 'screens/qr_code_screen.dart';
@@ -801,6 +804,22 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   String? _cc2Answer;
   String? _cc3Answer;
 
+  List<String> _sectionOrder = ['demographics', 'cc', 'sqd', 'feedback'];
+
+  final Map<String, String> _sectionLabels = {
+    'demographics': 'Info',
+    'cc': 'CC',
+    'sqd': 'Quality',
+    'feedback': 'Feedback',
+  };
+
+  final Map<String, IconData> _sectionIcons = {
+    'demographics': Icons.person_outline,
+    'cc': Icons.assignment_outlined,
+    'sqd': Icons.star_outline,
+    'feedback': Icons.lightbulb_outline,
+  };
+
   // Service Quality Dimensions (SQD) - 9 questions with 5-point scale
   final Map<String, int?> _sqdAnswers = {
     'SQD0': null,
@@ -816,6 +835,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   String _suggestions = '';
 
+  // Dynamic sections support
+  List<SurveySection> _loadedSections = [];
+  final Map<String, dynamic> _dynamicAnswers = {};
+
   @override
   void initState() {
     super.initState();
@@ -825,6 +848,32 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         _showConsentModal();
       }
     });
+    _loadSurveyConfig();
+  }
+
+  Future<void> _loadSurveyConfig() async {
+    final sections = await _surveyService.getSurveyConfig();
+    if (sections.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _loadedSections = sections;
+
+          // Use the order from the config
+          _sectionOrder = sections.map((s) => s.id).toList();
+
+          // Ensure default sections exist in labels/icons if not present
+          for (var section in sections) {
+            // Keep existing logic for known sections
+            if (!_sectionLabels.containsKey(section.id)) {
+              // Add dynamic label and icon if it's a new section
+              _sectionLabels[section.id] = section.title;
+              _sectionIcons[section.id] =
+                  Icons.article_outlined; // Default icon
+            }
+          }
+        });
+      }
+    }
   }
 
   @override
@@ -1085,7 +1134,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       return;
     }
 
-    if (_currentPage < 3) {
+    if (_currentPage < _sectionOrder.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -1095,9 +1144,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
 
   bool _validateCurrentPage() {
     final missingFields = <String>[];
+    final currentSectionId = _sectionOrder[_currentPage];
 
-    switch (_currentPage) {
-      case 0: // Personal Information
+    switch (currentSectionId) {
+      case 'demographics': // Personal Information
         if (_clientType == null) missingFields.add('Client Type');
         if (_sex == null) missingFields.add('Sex');
         if (_age == null) missingFields.add('Age');
@@ -1107,15 +1157,43 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         }
         if (_date == null) missingFields.add('Date');
         break;
-      case 1: // CC Awareness
+      case 'cc': // CC Awareness
         if (_cc1Answer == null) missingFields.add('CC1');
         if (_cc2Answer == null) missingFields.add('CC2');
         if (_cc3Answer == null) missingFields.add('CC3');
         break;
-      case 2: // Service Quality
+      case 'sqd': // Service Quality
         for (var i = 0; i < 9; i++) {
           if (_sqdAnswers['SQD$i'] == null) {
             missingFields.add('SQD$i');
+          }
+        }
+        break;
+      default:
+        // Validate dynamic sections
+        final section = _loadedSections.firstWhere(
+          (s) => s.id == currentSectionId,
+          orElse: () => SurveySection(
+            id: 'unknown',
+            title: '',
+            description: '',
+            isRequired: false,
+            questions: [],
+          ),
+        );
+
+        if (section.id != 'unknown' && section.isRequired) {
+          for (var question in section.questions) {
+            if (question.isRequired) {
+              final answer = _dynamicAnswers[question.id];
+              if (answer == null ||
+                  (answer is String && answer.isEmpty) ||
+                  (answer is List && answer.isEmpty)) {
+                missingFields.add(
+                  'Question ${section.questions.indexOf(question) + 1}',
+                );
+              }
+            }
           }
         }
         break;
@@ -1190,8 +1268,11 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         ),
       );
       // Navigate to personal info page
-      _pageController.jumpToPage(1);
-      setState(() => _currentPage = 1);
+      final demoIndex = _sectionOrder.indexOf('demographics');
+      if (demoIndex != -1) {
+        _pageController.jumpToPage(demoIndex);
+        setState(() => _currentPage = demoIndex);
+      }
       return;
     }
 
@@ -1215,6 +1296,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         ),
         suggestions: _suggestions,
         submittedAt: DateTime.now(),
+        extraAnswers: _dynamicAnswers,
       );
 
       // Save response locally
@@ -1317,12 +1399,35 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
                                     _currentPage = page;
                                   });
                                 },
-                                children: [
-                                  _buildDemographicPage(),
-                                  _buildCCAwarenessPage(),
-                                  _buildServiceQualityPage(),
-                                  _buildSuggestionsPage(),
-                                ],
+                                children: _sectionOrder.map((id) {
+                                  switch (id) {
+                                    case 'demographics':
+                                      return _buildDemographicPage();
+                                    case 'cc':
+                                      return _buildCCAwarenessPage();
+                                    case 'sqd':
+                                      return _buildServiceQualityPage();
+                                    case 'feedback':
+                                      return _buildSuggestionsPage();
+                                    default:
+                                      // Find the section object
+                                      final section = _loadedSections
+                                          .firstWhere(
+                                            (s) => s.id == id,
+                                            orElse: () => SurveySection(
+                                              id: 'unknown',
+                                              title: 'Unknown',
+                                              description: '',
+                                              isRequired: false,
+                                              questions: [],
+                                            ),
+                                          );
+                                      if (section.id == 'unknown') {
+                                        return Container();
+                                      }
+                                      return _buildDynamicSectionPage(section);
+                                  }
+                                }).toList(),
                               ),
                             ),
                           ),
@@ -1483,13 +1588,12 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         ? const EdgeInsets.fromLTRB(16, 16, 16, 12)
         : const EdgeInsets.fromLTRB(24, 20, 24, 16);
 
-    final stepLabels = ['Info', 'CC', 'Quality', 'Feedback'];
-    final stepIcons = [
-      Icons.person_outline,
-      Icons.assignment_outlined,
-      Icons.star_outline,
-      Icons.lightbulb_outline,
-    ];
+    final stepLabels = _sectionOrder
+        .map((id) => _sectionLabels[id] ?? '')
+        .toList();
+    final stepIcons = _sectionOrder
+        .map((id) => _sectionIcons[id] ?? Icons.circle)
+        .toList();
 
     return Container(
       padding: padding,
@@ -1503,10 +1607,10 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
         children: [
           // Step indicators row
           Row(
-            children: List.generate(4, (index) {
+            children: List.generate(_sectionOrder.length, (index) {
               final isCompleted = index < _currentPage;
               final isCurrent = index == _currentPage;
-              final isLast = index == 3;
+              final isLast = index == _sectionOrder.length - 1;
 
               return Expanded(
                 child: Row(
@@ -1931,6 +2035,242 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
     );
   }
 
+  Widget _buildDynamicSectionPage(SurveySection section) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = screenWidth < 360 ? 16.0 : 24.0;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(padding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionCard(
+            title: section.title,
+            icon: _sectionIcons[section.id] ?? Icons.article_outlined,
+            children: [
+              if (section.description.isNotEmpty) ...[
+                Text(
+                  section.description,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              ...section.questions.asMap().entries.map((entry) {
+                return _buildDynamicQuestion(entry.value, entry.key);
+              }),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDynamicQuestion(SurveyQuestion question, int index) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  question.question,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              if (question.isRequired)
+                Text(
+                  ' *',
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red.shade700,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildDynamicInput(question),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDynamicInput(SurveyQuestion question) {
+    switch (question.type) {
+      case QuestionType.text:
+        return TextField(
+          decoration: InputDecoration(
+            hintText: 'Your answer',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _dynamicAnswers[question.id] = value;
+            });
+          },
+          controller:
+              TextEditingController(
+                  text: _dynamicAnswers[question.id] as String?,
+                )
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(
+                    offset:
+                        (_dynamicAnswers[question.id] as String?)?.length ?? 0,
+                  ),
+                ),
+        );
+
+      case QuestionType.number:
+        return TextField(
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: '0',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _dynamicAnswers[question.id] = value;
+            });
+          },
+          controller:
+              TextEditingController(
+                  text: _dynamicAnswers[question.id] as String?,
+                )
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(
+                    offset:
+                        (_dynamicAnswers[question.id] as String?)?.length ?? 0,
+                  ),
+                ),
+        );
+
+      case QuestionType.radio:
+        return Column(
+          children: question.options.map((option) {
+            // final isSelected = _dynamicAnswers[question.id] == option;
+            return RadioListTile<String>(
+              title: Text(option, style: GoogleFonts.poppins(fontSize: 14)),
+              value: option,
+              groupValue: _dynamicAnswers[question.id] as String?,
+              onChanged: (value) {
+                setState(() {
+                  _dynamicAnswers[question.id] = value;
+                });
+              },
+              activeColor: AppColors.primary,
+              contentPadding: EdgeInsets.zero,
+            );
+          }).toList(),
+        );
+
+      case QuestionType.checkbox:
+        final currentAnswers =
+            (_dynamicAnswers[question.id] as List<dynamic>?)?.cast<String>() ??
+            [];
+        return Column(
+          children: question.options.map((option) {
+            final isSelected = currentAnswers.contains(option);
+            return CheckboxListTile(
+              title: Text(option, style: GoogleFonts.poppins(fontSize: 14)),
+              value: isSelected,
+              onChanged: (value) {
+                setState(() {
+                  if (value == true) {
+                    currentAnswers.add(option);
+                  } else {
+                    currentAnswers.remove(option);
+                  }
+                  _dynamicAnswers[question.id] = currentAnswers;
+                });
+              },
+              activeColor: AppColors.primary,
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+            );
+          }).toList(),
+        );
+
+      case QuestionType.dropdown:
+        return DropdownButtonFormField<String>(
+          value: _dynamicAnswers[question.id] as String?,
+          items: question.options.map((option) {
+            return DropdownMenuItem(
+              value: option,
+              child: Text(option, style: GoogleFonts.poppins(fontSize: 14)),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _dynamicAnswers[question.id] = value;
+            });
+          },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+        );
+
+      case QuestionType.scale:
+        // Simple 1-5 scale implementation
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(5, (index) {
+            final value = index + 1;
+            final isSelected = _dynamicAnswers[question.id] == value.toString();
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  _dynamicAnswers[question.id] = value.toString();
+                });
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected ? AppColors.primary : Colors.grey.shade100,
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.primary
+                        : Colors.grey.shade300,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  value.toString(),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+    }
+  }
+
   Widget _buildSectionCard({
     required String title,
     required IconData icon,
@@ -2065,8 +2405,13 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       decoration: InputDecoration(
         labelText: 'Age',
         prefixIcon: const Icon(Icons.cake_outlined),
+        hintText: '15-150',
       ),
       keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(3),
+      ],
       onChanged: (value) {
         setState(() {
           _age = int.tryParse(value);
@@ -2074,7 +2419,9 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
       },
       validator: (value) {
         if (value == null || value.isEmpty) return 'Required';
-        if (int.tryParse(value) == null) return 'Invalid';
+        final age = int.tryParse(value);
+        if (age == null) return 'Invalid';
+        if (age < 15 || age > 150) return 'Must be 15-150';
         return null;
       },
     );
@@ -2855,7 +3202,7 @@ class _SurveyHomePageState extends State<SurveyHomePage> {
   Widget _buildNavigationButtons() {
     final screenWidth = MediaQuery.of(context).size.width;
     final isExtraSmallScreen = screenWidth <= 320;
-    final isLastPage = _currentPage == 3;
+    final isLastPage = _currentPage == _sectionOrder.length - 1;
     final isFirstPage = _currentPage == 0;
 
     return Container(

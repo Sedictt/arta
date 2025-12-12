@@ -32,7 +32,6 @@ class _AdminDashboardState extends State<AdminDashboard>
   final AuthService _authService = AuthService();
   final ExportService _exportService = ExportService();
 
-  List<SurveyResponse> _recentResponses = [];
   List<SurveyResponse> _allResponses = [];
   bool _isLoading = true;
 
@@ -40,6 +39,10 @@ class _AdminDashboardState extends State<AdminDashboard>
   String? _selectedRegion;
   String? _selectedService;
   DateTimeRange? _selectedDateRange;
+
+  // Filters for Recent Responses section
+  String? _recentRegionFilter;
+  String? _recentServiceFilter;
 
   @override
   void initState() {
@@ -471,7 +474,8 @@ class _AdminDashboardState extends State<AdminDashboard>
     setState(() => _isLoading = true);
 
     _allResponses = await _surveyService.getAllSurveyResponses();
-    _recentResponses = _allResponses.reversed.take(10).toList();
+    // Sort by latest first
+    _allResponses.sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
 
     setState(() => _isLoading = false);
   }
@@ -1139,39 +1143,109 @@ class _AdminDashboardState extends State<AdminDashboard>
                       setState(() => _selectedService = value),
                 );
 
-                final dateButton = ElevatedButton.icon(
-                  onPressed: () async {
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime.now(),
+                Widget buildDatePicker({
+                  required String label,
+                  required DateTime? value,
+                  required DateTime firstDate,
+                  required DateTime lastDate,
+                  required Function(DateTime) onChanged,
+                }) {
+                  return InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: value ?? DateTime.now(),
+                        firstDate: firstDate,
+                        lastDate: lastDate,
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: AppColors.primary,
+                                onPrimary: Colors.white,
+                                surface: Colors.white,
+                                onSurface: AppColors.textPrimary,
+                              ),
+                              dialogTheme: DialogThemeData(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+                      if (picked != null) onChanged(picked);
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: label,
+                        prefixIcon: const Icon(Icons.calendar_today, size: 18),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                      ),
+                      child: Text(
+                        value != null
+                            ? DateFormat('MMM dd, yyyy').format(value)
+                            : 'Select Date',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: value != null
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  );
+                }
+
+                final startDateControl = buildDatePicker(
+                  label: 'Start Date',
+                  value: _selectedDateRange?.start,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime.now(),
+                  onChanged: (date) {
+                    final currentEnd =
+                        _selectedDateRange?.end ?? DateTime.now();
+                    final end = date.isAfter(currentEnd) ? date : currentEnd;
+                    setState(
+                      () => _selectedDateRange = DateTimeRange(
+                        start: date,
+                        end: end,
+                      ),
                     );
-                    if (picked != null) {
-                      setState(() => _selectedDateRange = picked);
-                    }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.surface,
-                    foregroundColor: AppColors.primary,
-                    elevation: 0,
-                    side: BorderSide(color: AppColors.border),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.date_range, size: 18),
-                  label: Text(
-                    _selectedDateRange == null
-                        ? 'Date Range'
-                        : '${DateFormat('MMM dd').format(_selectedDateRange!.start)} - ${DateFormat('MMM dd').format(_selectedDateRange!.end)}',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-                  ),
+                );
+
+                final endDateControl = buildDatePicker(
+                  label: 'End Date',
+                  value: _selectedDateRange?.end,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime.now(),
+                  onChanged: (date) {
+                    final currentStart =
+                        _selectedDateRange?.start ?? DateTime(2000);
+                    final start = date.isBefore(currentStart)
+                        ? date
+                        : currentStart;
+                    setState(
+                      () => _selectedDateRange = DateTimeRange(
+                        start: start,
+                        end: date,
+                      ),
+                    );
+                  },
                 );
 
                 final clearButton =
@@ -1202,22 +1276,24 @@ class _AdminDashboardState extends State<AdminDashboard>
                       )
                     : null;
 
-                if (constraints.maxWidth > 700) {
+                if (constraints.maxWidth > 900) {
                   return Row(
                     children: [
                       Expanded(flex: 2, child: regionDropdown),
                       const SizedBox(width: 12),
                       Expanded(flex: 3, child: serviceDropdown),
                       const SizedBox(width: 12),
-                      dateButton,
+                      Expanded(flex: 2, child: startDateControl),
+                      const SizedBox(width: 12),
+                      Expanded(flex: 2, child: endDateControl),
                       if (clearButton != null) ...[
                         const SizedBox(width: 12),
                         clearButton,
                       ],
                     ],
                   );
-                } else if (constraints.maxWidth < 400) {
-                  // Very small screens (mobile)
+                } else if (constraints.maxWidth < 600) {
+                  // Mobile
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -1225,7 +1301,13 @@ class _AdminDashboardState extends State<AdminDashboard>
                       const SizedBox(height: 12),
                       serviceDropdown,
                       const SizedBox(height: 12),
-                      dateButton,
+                      Row(
+                        children: [
+                          Expanded(child: startDateControl),
+                          const SizedBox(width: 12),
+                          Expanded(child: endDateControl),
+                        ],
+                      ),
                       if (clearButton != null) ...[
                         const SizedBox(height: 12),
                         clearButton,
@@ -1233,6 +1315,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                     ],
                   );
                 } else {
+                  // Tablet
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -1246,10 +1329,12 @@ class _AdminDashboardState extends State<AdminDashboard>
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          Expanded(child: dateButton),
+                          Expanded(child: startDateControl),
+                          const SizedBox(width: 12),
+                          Expanded(child: endDateControl),
                           if (clearButton != null) ...[
                             const SizedBox(width: 12),
-                            Expanded(child: clearButton),
+                            clearButton,
                           ],
                         ],
                       ),
@@ -2237,24 +2322,31 @@ class _AdminDashboardState extends State<AdminDashboard>
   }
 
   Widget _buildRecentResponses() {
-    if (_recentResponses.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: EdgeInsets.all(
-            MediaQuery.of(context).size.width < 360 ? 16 : 24,
-          ),
-          child: Center(
-            child: Text(
-              'No responses yet',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
+    // Get unique regions and services for filters
+    final regions = _allResponses.map((r) => r.region).toSet().toList()..sort();
+    final services =
+        _allResponses
+            .map((r) => r.serviceAvailed)
+            .where((s) => s != null)
+            .cast<String>()
+            .toSet()
+            .toList()
+          ..sort();
+
+    // Apply local filters
+    final recentList = _allResponses
+        .where((r) {
+          if (_recentRegionFilter != null && r.region != _recentRegionFilter) {
+            return false;
+          }
+          if (_recentServiceFilter != null &&
+              r.serviceAvailed != _recentServiceFilter) {
+            return false;
+          }
+          return true;
+        })
+        .take(10)
+        .toList();
 
     return Card(
       elevation: 3,
@@ -2265,63 +2357,219 @@ class _AdminDashboardState extends State<AdminDashboard>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Recent Responses',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+            // Header with Filters
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Recent Responses',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    if (_recentRegionFilter != null ||
+                        _recentServiceFilter != null)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _recentRegionFilter = null;
+                            _recentServiceFilter = null;
+                          });
+                        },
+                        icon: const Icon(Icons.clear, size: 16),
+                        label: Text(
+                          'Clear Filters',
+                          style: GoogleFonts.poppins(fontSize: 12),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Filter Row
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth > 600;
+
+                    Widget buildFilterDropdown({
+                      required String? value,
+                      required String label,
+                      required IconData icon,
+                      required List<String> items,
+                      required Function(String?) onChanged,
+                    }) {
+                      return DropdownButtonFormField<String>(
+                        value: value,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: label,
+                          prefixIcon: Icon(
+                            icon,
+                            size: 18,
+                            color: AppColors.primary,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                        ),
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.grey,
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text(
+                              'All ${label.replaceAll("Filter by ", "")}s',
+                              style: GoogleFonts.poppins(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          ...items.map(
+                            (item) => DropdownMenuItem(
+                              value: item,
+                              child: Text(
+                                item,
+                                style: GoogleFonts.poppins(
+                                  color: AppColors.textPrimary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
+                        onChanged: onChanged,
+                      );
+                    }
+
+                    return Flex(
+                      direction: isWide ? Axis.horizontal : Axis.vertical,
+                      children: [
+                        Expanded(
+                          flex: isWide ? 1 : 0,
+                          child: buildFilterDropdown(
+                            value: _recentRegionFilter,
+                            label: 'Region',
+                            icon: Icons.location_on_outlined,
+                            items: regions,
+                            onChanged: (value) =>
+                                setState(() => _recentRegionFilter = value),
+                          ),
+                        ),
+                        SizedBox(
+                          width: isWide ? 16 : 0,
+                          height: isWide ? 0 : 12,
+                        ),
+                        Expanded(
+                          flex: isWide ? 1 : 0,
+                          child: buildFilterDropdown(
+                            value: _recentServiceFilter,
+                            label: 'Service',
+                            icon: Icons.business_center_outlined,
+                            items: services,
+                            onChanged: (value) =>
+                                setState(() => _recentServiceFilter = value),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            if (recentList.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: Text(
+                    'No responses found matching filters',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: recentList.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  final response = recentList[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: AppColors.secondary.withValues(
+                        alpha: 0.2,
+                      ),
+                      child: Text(
+                        response.sex[0],
+                        style: GoogleFonts.poppins(
+                          color: AppColors.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      '${response.clientType} - ${response.region}',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text(
+                      DateFormat(
+                        'MMM dd, yyyy hh:mm a',
+                      ).format(response.submittedAt.toLocal()),
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        response.averageSQDScore.toStringAsFixed(1),
+                        style: GoogleFonts.poppins(
+                          color: AppColors.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-            const SizedBox(height: 16),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _recentResponses.length,
-              separatorBuilder: (context, index) => const Divider(),
-              itemBuilder: (context, index) {
-                final response = _recentResponses[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
-                    child: Text(
-                      response.sex[0],
-                      style: GoogleFonts.poppins(
-                        color: AppColors.secondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    '${response.clientType} - ${response.region}',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text(
-                    DateFormat(
-                      'MMM dd, yyyy hh:mm a',
-                    ).format(response.submittedAt.toLocal()),
-                    style: GoogleFonts.poppins(fontSize: 12),
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      response.averageSQDScore.toStringAsFixed(1),
-                      style: GoogleFonts.poppins(
-                        color: AppColors.secondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),

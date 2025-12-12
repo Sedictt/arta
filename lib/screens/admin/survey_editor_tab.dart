@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../main.dart';
+import '../../models/survey_config.dart';
+import '../../services/survey_service.dart';
 
 class SurveyEditorTab extends StatefulWidget {
   const SurveyEditorTab({super.key});
@@ -16,7 +18,7 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
       'Help us improve government services by sharing your feedback.';
 
   // Survey sections with their questions
-  final List<SurveySection> _sections = [
+  List<SurveySection> _sections = [
     SurveySection(
       id: 'demographics',
       title: 'Personal Information',
@@ -237,7 +239,24 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
   int? _editingQuestionIndex;
   String? _editingSectionId;
   bool _isEditingMetadata = false;
+
   bool _hasChanges = false;
+  final SurveyService _surveyService = SurveyService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSurveyConfig();
+  }
+
+  Future<void> _loadSurveyConfig() async {
+    final savedSections = await _surveyService.getSurveyConfig();
+    if (savedSections.isNotEmpty) {
+      setState(() {
+        _sections = savedSections;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -570,7 +589,16 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Icon(Icons.drag_handle, color: Colors.grey.shade400),
+                  ReorderableDragStartListener(
+                    index: sectionIndex,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.grab,
+                      child: Icon(
+                        Icons.drag_handle,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Container(
                     width: 32,
@@ -1554,7 +1582,8 @@ class _SurveyEditorTabState extends State<SurveyEditorTab> {
     }
   }
 
-  void _saveSurvey() {
+  Future<void> _saveSurvey() async {
+    await _surveyService.saveSurveyConfig(_sections);
     setState(() {
       _hasChanges = false;
     });
@@ -1702,63 +1731,4 @@ class _SectionEditorDialogState extends State<_SectionEditorDialog> {
       ],
     );
   }
-}
-
-// Data Models
-enum QuestionType {
-  radio,
-  checkbox,
-  text,
-  scale,
-  number,
-  dropdown;
-
-  String get displayName {
-    switch (this) {
-      case QuestionType.radio:
-        return 'Single Choice';
-      case QuestionType.checkbox:
-        return 'Multiple Choice';
-      case QuestionType.text:
-        return 'Text';
-      case QuestionType.scale:
-        return 'Rating Scale';
-      case QuestionType.number:
-        return 'Number';
-      case QuestionType.dropdown:
-        return 'Dropdown';
-    }
-  }
-}
-
-class SurveySection {
-  final String id;
-  String title;
-  String description;
-  bool isRequired;
-  final List<SurveyQuestion> questions;
-
-  SurveySection({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.isRequired,
-    required this.questions,
-  });
-}
-
-class SurveyQuestion {
-  final String id;
-  final String question;
-  final QuestionType type;
-  final bool isRequired;
-  final List<String> options;
-
-  SurveyQuestion({
-    required this.id,
-    required this.question,
-    required this.type,
-    required this.isRequired,
-    required this.options,
-  });
 }

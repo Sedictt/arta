@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/survey_response.dart';
+import '../models/survey_config.dart';
 import 'api_service.dart';
 
 class SurveyService {
   static const String _surveysKey = 'survey_responses';
+  static const String _surveyConfigKey = 'survey_config';
   static const String _adminPasswordKey = 'admin_password';
   final ApiService _apiService = ApiService();
 
@@ -165,5 +167,23 @@ class SurveyService {
     }
 
     return dateCount;
+  }
+
+  // Save survey configuration
+  Future<void> saveSurveyConfig(List<SurveySection> sections) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = sections.map((s) => s.toJson()).toList();
+    await prefs.setString(_surveyConfigKey, jsonEncode(jsonList));
+  }
+
+  // Get survey configuration
+  Future<List<SurveySection>> getSurveyConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_surveyConfigKey);
+
+    if (jsonString == null) return [];
+
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((json) => SurveySection.fromJson(json)).toList();
   }
 }

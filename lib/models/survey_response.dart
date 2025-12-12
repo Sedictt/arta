@@ -12,6 +12,7 @@ class SurveyResponse {
   final Map<String, int> sqdAnswers;
   final String suggestions;
   final DateTime submittedAt;
+  final Map<String, dynamic> extraAnswers;
 
   SurveyResponse({
     required this.id,
@@ -27,6 +28,7 @@ class SurveyResponse {
     required this.sqdAnswers,
     required this.suggestions,
     required this.submittedAt,
+    this.extraAnswers = const {},
   });
 
   Map<String, dynamic> toJson() {
@@ -44,6 +46,7 @@ class SurveyResponse {
       'sqdAnswers': sqdAnswers,
       'suggestions': suggestions,
       'submittedAt': submittedAt.toIso8601String(),
+      'extraAnswers': extraAnswers,
     };
   }
 
@@ -62,6 +65,9 @@ class SurveyResponse {
       sqdAnswers: Map<String, int>.from(json['sqdAnswers']),
       suggestions: json['suggestions'],
       submittedAt: DateTime.parse(json['submittedAt']),
+      extraAnswers: json['extraAnswers'] != null
+          ? Map<String, dynamic>.from(json['extraAnswers'])
+          : {},
     );
   }
 
@@ -80,7 +86,14 @@ class SurveyResponse {
       cc3Answer: json['cc3Answer'],
       sqdAnswers: Map<String, int>.from(json['sqdAnswers'] ?? {}),
       suggestions: json['suggestions'] ?? '',
-      submittedAt: DateTime.parse(json['submittedAt'] ?? json['createdAt'] ?? DateTime.now().toIso8601String()),
+      submittedAt: DateTime.parse(
+        json['submittedAt'] ??
+            json['createdAt'] ??
+            DateTime.now().toIso8601String(),
+      ),
+      extraAnswers: json['extraAnswers'] != null
+          ? Map<String, dynamic>.from(json['extraAnswers'])
+          : {},
     );
   }
 

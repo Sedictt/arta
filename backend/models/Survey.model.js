@@ -28,7 +28,11 @@ const surveySchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  
+  serviceAvailed: {
+    type: String,
+    trim: true
+  },
+
   // Citizen's Charter Awareness
   cc1Answer: {
     type: String,
@@ -42,7 +46,7 @@ const surveySchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  
+
   // Service Quality Dimensions (SQD)
   sqdAnswers: {
     SQD0: { type: Number, min: 1, max: 5 },
@@ -55,14 +59,20 @@ const surveySchema = new mongoose.Schema({
     SQD7: { type: Number, min: 1, max: 5 },
     SQD8: { type: Number, min: 1, max: 5 }
   },
-  
+
   // Suggestions
   suggestions: {
     type: String,
     trim: true,
     maxlength: 2000
   },
-  
+
+  // Dynamic Answers
+  extraAnswers: {
+    type: Object,
+    default: {}
+  },
+
   // Metadata
   submittedAt: {
     type: Date,
@@ -79,14 +89,14 @@ const surveySchema = new mongoose.Schema({
 });
 
 // Virtual for average SQD score
-surveySchema.virtual('averageSQDScore').get(function() {
+surveySchema.virtual('averageSQDScore').get(function () {
   const scores = Object.values(this.sqdAnswers).filter(score => score != null);
   if (scores.length === 0) return 0;
   return scores.reduce((a, b) => a + b, 0) / scores.length;
 });
 
 // Virtual for satisfaction level
-surveySchema.virtual('satisfactionLevel').get(function() {
+surveySchema.virtual('satisfactionLevel').get(function () {
   const avg = this.averageSQDScore;
   if (avg >= 4.5) return 'Very Satisfied';
   if (avg >= 3.5) return 'Satisfied';
@@ -103,6 +113,7 @@ surveySchema.set('toObject', { virtuals: true });
 surveySchema.index({ submittedAt: -1 });
 surveySchema.index({ clientType: 1 });
 surveySchema.index({ region: 1 });
+surveySchema.index({ serviceAvailed: 1 });
 surveySchema.index({ date: 1 });
 
 const Survey = mongoose.model('Survey', surveySchema);
